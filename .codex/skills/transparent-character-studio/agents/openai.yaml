@@ -1,0 +1,4 @@
+interface:
+  display_name: "Transparent Character Studio"
+  short_description: "Create and export pixel animations"
+  default_prompt: "Use $transparent-character-studio to create a transparent pixel animation for Premiere."

@@ -1,0 +1,8 @@
+{
+  "name": "Rainbow Bear",
+  "pixelScale": 12,
+  "fps": 12,
+  "loopDuration": 30,
+  "palette": { "1": "#af5f00", "5": "#af875f", "2": "#171717", "3": "#f7f7f7", "4": "#ff3b30", "R": "#ff4d45", "Y": "#ffd449", "G": "#5de38c", "C": "#63d9ff", "B": "#6988ff", "M": "#f178ff" },
+  "animation": { "alternatingSymbols": ["R", "G", "Y", "C", "B", "M"], "frameCount": 4 }
+}
