@@ -10,7 +10,7 @@ The comparison must use the immutable `cases.v1.json` ordering, `rubric.v1.json`
 
 ## Candidate admission
 
-The first conditional candidate is the direct Image API using the pinned `gpt-image-2-2026-04-21` snapshot. It remains unadmitted because dataset provenance is pending, so it cannot be called. Managed external APIs are the default candidate class; the provider operates its models and accelerators, while VOXL records requests, validates outputs, and stores evidence. A future candidate may enter the experiment only after its adapter boundary, model/version identity, commercial-use terms, model and dataset provenance, data-retention policy, and reference-use permissions are recorded. A candidate with unresolved commercial provenance is ineligible regardless of visual quality.
+The catalog contains two conditional managed-API candidates. The direct Image API candidate has a pinned `gpt-image-2-2026-04-21` snapshot but remains unadmitted because dataset provenance is pending. The provenance-oriented Firefly Image Model 5 candidate has clearer licensed/public-domain dataset evidence but remains unadmitted because the current API does not expose an immutable model version, its documented retention needs explicit acceptance, enterprise access and pricing are unverified, and only creation—not localized revision—is represented in its manifest. Neither candidate can be called. Managed external APIs are the default candidate class; the provider operates its models and accelerators, while VOXL records requests, validates outputs, and stores evidence. A future candidate may enter the experiment only after its adapter boundary, model/version identity, commercial-use terms, model and dataset provenance, data-retention policy, and reference-use permissions are recorded. A candidate with unresolved commercial provenance is ineligible regardless of visual quality.
 
 Native host generation may enter only when it can be invoked and measured through a reproducible provider contract. Local, notebook, rented-GPU, or self-hosted execution is not a Phase 5 requirement and requires separate explicit approval as comparative research. It cannot become product architecture without a new ADR.
 
@@ -75,6 +75,8 @@ Research runs must not charge product entitlements.
 ## Known pre-run gaps
 
 - Synthetic image references, baseline documents, and deterministic editable/protected/immutable revision masks are materialized only when `bun run eval:assets check` verifies their committed recipes, bytes, paths, formats, dimensions, and SHA-256 values.
-- The first conditional managed-API candidate is the direct Image API using the pinned `gpt-image-2-2026-04-21` snapshot. Its dossier remains pending because the public training-data disclosure is not a model-specific licensed-source inventory; no provider is admitted and no API call is authorized.
+- The pinned Image API candidate remains pending because its public training-data disclosure is not a model-specific licensed-source inventory.
+- The provenance-oriented Firefly candidate remains pending because the current Image Model 5 API is not immutably versioned, the documented retention needs product/privacy acceptance, enterprise entitlement and price are unverified, and the catalogued configuration does not claim localized-revision support.
+- Both candidate dossiers and public configurations are SHA-256 locked. No provider is admitted and no API call is authorized.
 - The evaluator can catalogue and dry-plan managed-API candidates, but no executable provider adapter, credential loading, network invocation, or paid-call path exists.
 - Thresholds are research commitments, not measured performance claims.

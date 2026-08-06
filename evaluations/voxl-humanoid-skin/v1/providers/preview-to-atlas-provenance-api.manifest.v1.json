@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "voxl.generation-provider-manifest/v1",
+  "descriptor": {
+    "id": "preview-to-atlas-provenance-api",
+    "version": "0.1.0",
+    "providerId": "adobe",
+    "modelId": "firefly-image-5",
+    "modelVersion": "provider-current-unpinned",
+    "networkAccess": "required",
+    "billingRisk": "possible",
+    "supportedOperations": ["create"]
+  },
+  "executionClass": "managed-api",
+  "computeOwnership": "provider-managed",
+  "credentialMode": "external-at-execution",
+  "configuration": {
+    "id": "preview-to-atlas-provenance-evaluation-defaults",
+    "values": {
+      "acceptedOutputMediaTypes": ["image/png"],
+      "apiSurface": "firefly-image-api",
+      "endpointClass": "v4-images-generate-async",
+      "modelSelection": "provider-current-image5",
+      "referencePolicy": "project-authored-synthetic-only",
+      "requestPurpose": "generation-evaluation"
+    }
+  },
+  "configurationSha256": "be3f5a88eefacd10906db4d4579b60a8e0d33f146eac128dcc22b1b59833c14c",
+  "provenanceDossier": {
+    "id": "preview-to-atlas-provenance-api-review",
+    "path": "preview-to-atlas-provenance-api.dossier.v1.json",
+    "sha256": "21894a1b830adbe9f7722346b307f206b13a6009ca6c3f5a7f9c3ee217f7d1a6"
+  }
+}

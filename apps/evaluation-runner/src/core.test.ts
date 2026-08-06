@@ -52,8 +52,8 @@ describe("generation evaluation specification", () => {
       revisionCases: 4,
       missingRevisionBaselines: 0,
       missingRevisionMaskSets: 0,
-      cataloguedProviderCandidates: 1,
-      pendingProviderCandidates: 1,
+      cataloguedProviderCandidates: 2,
+      pendingProviderCandidates: 2,
       provenanceAdmittedProviderCandidates: 0,
       executableProviderAdapters: 0,
     });
@@ -70,6 +70,33 @@ describe("generation evaluation specification", () => {
 });
 
 describe("managed API dry-run planning", () => {
+  test("catalogues the provenance-oriented candidate without claiming revision support or execution readiness", async () => {
+    const [specification, catalog] = await Promise.all([
+      loadAndValidateSpecification(repoRoot),
+      loadProviderCatalog(repoRoot),
+    ]);
+    const creation = planEvaluationCase({
+      specification,
+      catalog,
+      adapterId: "preview-to-atlas-provenance-api",
+      caseId: "v1-001",
+    });
+    assert.equal(creation.provider.descriptor.modelId, "firefly-image-5");
+    assert.equal(creation.provider.descriptor.modelVersion, "provider-current-unpinned");
+    assert.equal(creation.provider.admissionDecision, "pending");
+    assert.equal(creation.blockers.includes("unsupported-operation"), false);
+    assert.equal(creation.execution.adapterInvoked, false);
+
+    const revision = planEvaluationCase({
+      specification,
+      catalog,
+      adapterId: "preview-to-atlas-provenance-api",
+      caseId: "v1-027",
+    });
+    assert.ok(revision.blockers.includes("unsupported-operation"));
+    assert.equal(revision.readyForExecution, false);
+  });
+
   test("plans deterministically without credentials, network, billing, adapter invocation, or attempt evidence", async () => {
     const [specification, catalog] = await Promise.all([
       loadAndValidateSpecification(repoRoot),

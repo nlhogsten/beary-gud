@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "voxl.provider-provenance-dossier/v1",
+  "id": "preview-to-atlas-provenance-api-review",
+  "version": "0.1.0",
+  "candidateId": "preview-to-atlas-provenance-api",
+  "decision": "pending",
+  "reviewedAt": "2026-08-06T09:51:29Z",
+  "checks": {
+    "commercialUse": "approved",
+    "modelProvenance": "pending",
+    "datasetProvenance": "approved",
+    "referenceUse": "approved",
+    "retention": "pending"
+  },
+  "evidence": [
+    {
+      "id": "commercial-output-use-2026-08-05",
+      "check": "commercialUse",
+      "source": "Adobe's Firefly data and content usage paper states that outputs are customer content, Adobe asserts no intellectual-property rights in them, and outputs may be used in client projects subject to the agreement and restrictions: https://business.adobe.com/content/dam/dx/us/en/resources/sdk/adobe-firefly-data-and-content-usage/adobe-firefly-data-and-content-usage.pdf",
+      "checkedAt": "2026-08-06T09:51:29Z"
+    },
+    {
+      "id": "current-model-selection-2026-08-05",
+      "check": "modelProvenance",
+      "source": "Adobe's current Firefly API migration guide identifies Firefly Image Model 5 on the v4 generation endpoint but says the API does not expose explicit model versioning and removes the earlier modelVersion field: https://developer.adobe.com/firefly-services/docs/firefly-api/guides/how-tos/cm-generate-image/breaking-changes",
+      "checkedAt": "2026-08-06T09:51:29Z"
+    },
+    {
+      "id": "licensed-training-sources-2026-08-05",
+      "check": "datasetProvenance",
+      "source": "Adobe states that foundational Firefly models are trained on licensed content such as Adobe Stock and public-domain content whose copyright has expired, are not trained on customer content, and do not mine the web for training: https://www.adobe.com/ai/overview/firefly/gen-ai-approach.html",
+      "checkedAt": "2026-08-06T09:51:29Z"
+    },
+    {
+      "id": "synthetic-reference-scope-2026-08-05",
+      "check": "referenceUse",
+      "source": "Evaluation approval is limited to the committed project-authored synthetic fixtures. Adobe documents structure and style reference inputs, while its data-usage paper says customer content is not used to train or improve generative AI models: https://developer.adobe.com/firefly-services/docs/firefly-api/guides/concepts/structure-image-reference/ and https://developer.adobe.com/firefly-services/docs/firefly-api/guides/concepts/style-image-reference/ and https://business.adobe.com/content/dam/dx/us/en/resources/sdk/adobe-firefly-data-and-content-usage/adobe-firefly-data-and-content-usage.pdf",
+      "checkedAt": "2026-08-06T09:51:29Z"
+    },
+    {
+      "id": "service-retention-2026-08-05",
+      "check": "retention",
+      "source": "Adobe's Firefly Services security fact sheet states that reference content is deleted 24 hours after initial creation and prompt/configuration data plus a pseudonymous user identifier are retained for 90 days: https://www.adobe.com/cc-shared/assets/pdf/trust-center/ungated/whitepapers/creative-cloud/adobe-firefly-services-security-fact-sheet.pdf",
+      "checkedAt": "2026-08-06T09:51:29Z"
+    }
+  ],
+  "blockers": [
+    "The current Firefly Image Model 5 API does not expose an immutable model snapshot or explicit model version, so the fixed-model reproducibility gate is not satisfied.",
+    "Human product/privacy review must explicitly accept the documented 90-day prompt/configuration retention and 24-hour reference-content retention before an evaluation call.",
+    "Firefly Services enterprise entitlement, exact evaluation pricing, and current create/revise capability parity must be verified before implementing or invoking an adapter."
+  ]
+}

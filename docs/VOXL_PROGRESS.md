@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Post-Phase 4 conformance hardening, then Phase 5 provider admission.** Phases 0–4 are complete. Engine and Studio code now separate model geometry from texture density and implement wide/slim `64`/`128` profiles; the focused deterministic tests pass, while the updated browser journeys and full repository gate remain the sign-off boundary. The fixed Phase 5 evaluation stays intentionally locked to `64x64`. Its first managed-API candidate remains blocked on dataset provenance, so no provider is admitted, no API call is authorized, and VOXL does not plan to rent or manage GPUs.
+**Phase 5 provider admission, with independent density review deferred to the user.** Phases 0–4 are complete. The engine and Studio separate model geometry from texture density, implement wide/slim `64`/`128` profiles, and have passed the complete repository gate plus the updated browser journeys; the remaining independent visual judgment is intentionally still open. The fixed Phase 5 evaluation stays locked to `64x64`. Two managed-API candidates are now catalogued: the pinned candidate is blocked on dataset provenance, while the provenance-oriented candidate is blocked on immutable model identity, retention acceptance, enterprise access/pricing, and revision parity. No provider is admitted, no API call is authorized, and VOXL does not plan to rent or manage GPUs.
 
 ## Platform and repository foundation
 
@@ -193,6 +193,7 @@ Status: **in progress**
 - [x] Add schemas and a metadata-only catalog for managed-API candidates with explicit provenance decisions, provider-managed compute, secret rejection, integrity hashes, and separate executable-adapter counts.
 - [x] Add deterministic `eval:plan` output that binds the complete case, rubric, provider descriptor/configuration, provenance dossier, revision policy, and materialized-input hashes while proving it reads no credentials, invokes no adapter, uses no network, makes no paid call, and writes no provider attempt evidence.
 - [x] Identify and document the first conditional managed-API candidate, fixed snapshot, evaluation configuration, price floor, retention scope, official evidence, and unresolved dataset-provenance blocker without admitting or calling it.
+- [x] Preserve the strict dataset-origin gate and catalog a second provenance-oriented managed-API candidate with official evidence, integrity hashes, and explicit model-version, retention, enterprise-access, pricing, and revision-capability blockers.
 
 ### Remaining experiment gate
 
@@ -292,4 +293,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Have a reviewer other than the implementing agent judge the final `humanoid-2d-3d` and `humanoid-import-export` evidence against the required visual rubric. If it passes, close the density-invariant-proportions criterion and resume the documented dataset-provenance decision for the first conditional API candidate.
+Choose the Phase 5 admission path without weakening the recorded gates: either explicitly accept the pinned candidate's category-level dataset disclosure for the synthetic research run, or resolve the provenance-oriented candidate's immutable-version, retention, enterprise-entitlement, pricing, and localized-revision blockers. Independent review of the final density walkthrough remains open for the user's later visual review and must not be marked complete until then.
