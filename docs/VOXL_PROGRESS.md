@@ -207,6 +207,8 @@ Status: **not started**
 | 2026-08-05 | Phase 0 decisions and Phase 2 extraction | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, `ffprobe`, target-brand scan | 20 tests passed; legacy and registry paths passed; ProRes alpha confirmed | `8bab1ef` |
 | 2026-08-05 | Phase 3 deterministic humanoid-skin core | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, independent PNG `ffprobe`, target-brand scan | 28 tests passed; both profiles round-tripped; 64x64 RGBA import confirmed | `e4f56dc` |
 | 2026-08-05 | Phase 4 shared shell and 2D atlas slice | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, target-brand scan | 34 tests passed; both editor modules and separate storage boundaries passed; browser/package UV parity passed | `33d26c1` |
+| 2026-08-05 | Private Phase 4 compatibility checkpoint | Sites/Vite production build and private deployment | Published successfully at `https://voxl-studio.nhogsten.chatgpt.site` | `cde8ee3` |
+| 2026-08-05 | React/Vite consolidation slice and Seek pilot | `npm test`, `npm run lint`, scoped React `tsc`, `npm run typecheck:voxl`, `npx vite build`, target-brand scan; Seek setup/status audit and 24 focused source tests | 36 VOXL tests passed; native React skin module compiled; Seek CLI refreshed and remaining pilot findings recorded | `c7813d0` |
 
 ## Next unchecked step
 
