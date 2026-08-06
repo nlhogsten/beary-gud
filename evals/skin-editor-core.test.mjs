@@ -20,10 +20,11 @@ import {
 } from "../packages/engine-voxl-humanoid-skin/src/index.mjs";
 
 test("browser UV profiles exactly mirror the package engine", () => {
-  for (const profileId of ["wide-arm-64", "slim-arm-64"]) {
+  for (const profileId of ["wide-arm-64", "slim-arm-64", "wide-arm-128", "slim-arm-128"]) {
     const browser = skinProfile(profileId);
     const engine = getHumanoidSkinProfile(profileId);
     assert.equal(browser.armWidth, engine.armWidth);
+    assert.deepEqual(browser.geometry, engine.geometry);
     assert.deepEqual(browser.regions, engine.regions);
     assert.deepEqual(mappedMask(profileId), createMappedPixelMask(profileId));
   }
@@ -58,14 +59,31 @@ test("profile conversion round-trips required base regions", () => {
   assert.equal(detectProfile(restored), "wide-arm-64");
 });
 
+test("density conversion preserves geometry and base pixels through an up/down round trip", () => {
+  for (const arm of ["wide-arm", "slim-arm"]) {
+    const lowProfile = `${arm}-64`;
+    const highProfile = `${arm}-128`;
+    const low = createBlankPixels(lowProfile, [21, 43, 65, 255]);
+    const high = convertProfile(low, lowProfile, highProfile);
+    const restored = convertProfile(high, highProfile, lowProfile);
+
+    assert.deepEqual(restored, low);
+    assert.equal(validatePixels(highProfile, high).ok, true);
+    assert.deepEqual(skinProfile(lowProfile).geometry, skinProfile(highProfile).geometry);
+  }
+});
+
 test("browser front and back previews match deterministic engine output", () => {
-  for (const view of ["front", "back"]) {
-    const document = createBlankHumanoidSkinDocument("wide-arm-64", { baseColor: [12, 34, 56, 255] });
-    const browserPixels = renderPreview(document.profile, document.pixels, view, ["base", "outer"], ["head", "torso", "right-arm", "left-arm", "right-leg", "left-leg"]);
-    const engine = renderHumanoidSkinPreview(document, { view, scale: 1 });
-    assert.equal(16, engine.width);
-    assert.equal(32, engine.height);
-    assert.deepEqual(Array.from(browserPixels), Array.from(engine.pixels));
+  for (const profile of ["wide-arm-64", "wide-arm-128"]) {
+    for (const view of ["front", "back"]) {
+      const document = createBlankHumanoidSkinDocument(profile, { baseColor: [12, 34, 56, 255] });
+      const browserPixels = renderPreview(document.profile, document.pixels, view, ["base", "outer"], ["head", "torso", "right-arm", "left-arm", "right-leg", "left-leg"]);
+      const engine = renderHumanoidSkinPreview(document, { view, scale: 1 });
+      const densityScale = document.width / 64;
+      assert.equal(16 * densityScale, engine.width);
+      assert.equal(32 * densityScale, engine.height);
+      assert.deepEqual(Array.from(browserPixels), Array.from(engine.pixels));
+    }
   }
 });
 
@@ -82,4 +100,8 @@ test("3D renderer maps raycast UVs back to target-neutral atlas pixels", () => {
   assert.ok(face);
   assert.deepEqual(uvToAtlasPixel(face, 0, 1), { x: 8, y: 8 });
   assert.deepEqual(uvToAtlasPixel(face, 0.999, 0.001), { x: 15, y: 15 });
+  const highDensityFace = pixelRegion("wide-arm-128", 16, 16);
+  assert.ok(highDensityFace);
+  assert.deepEqual(uvToAtlasPixel(highDensityFace, 0, 1), { x: 16, y: 16 });
+  assert.deepEqual(uvToAtlasPixel(highDensityFace, 0.999, 0.001), { x: 31, y: 31 });
 });

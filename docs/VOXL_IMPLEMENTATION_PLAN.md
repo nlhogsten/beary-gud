@@ -13,7 +13,7 @@ Use [the VOXL build progress tracker](VOXL_PROGRESS.md) for checkboxes, current 
 Build VOXL as a componentized, generative-first asset platform that:
 
 - Preserves the current Bash-derived transparent-character workflow as the `transparent-character` engine.
-- Adds an independent `voxl-humanoid-skin` engine for open-ended multimodal creation, localized revision, synchronized 2D/3D editing, validation, and `wide-arm-64`/`slim-arm-64` PNG export.
+- Adds an independent `voxl-humanoid-skin` engine for open-ended multimodal creation, localized revision, synchronized 2D/3D editing, validation, and wide/slim `64`/`128` PNG export profiles.
 - Lets Codex, ChatGPT, Claude, the web studio, and future clients operate the same engines through stable contracts.
 - Allows each artifact engine to choose or replace generation providers without changing its document format or user-facing workflow.
 - Supports additional asset types without forcing them into a cuboid-humanoid or transparent-animation schema.
@@ -26,7 +26,7 @@ All components and references must be named for a VOXL visual artifact, geometry
 | --- | --- |
 | Artifact engine | `voxl-humanoid-skin` |
 | Document kind | `voxl.humanoid-skin/v1` |
-| Geometry/export profiles | `wide-arm-64`, `slim-arm-64` |
+| Geometry/export profiles | `wide-arm-64`, `slim-arm-64`, `wide-arm-128`, `slim-arm-128` |
 | Renderer adapter | `cuboid-humanoid-renderer` |
 | Generation provider | `preview-to-atlas` |
 | Package | `engine-voxl-humanoid-skin` |
@@ -53,7 +53,7 @@ Initial engines:
 | Engine ID | Purpose | Primary source | Primary exports |
 | --- | --- | --- | --- |
 | `transparent-character` | Existing palette-grid pixel animations descended from the Bash workflow | `character.json` plus frame text files | PNG sequence, APNG/sprite sheet where supported, ProRes alpha MOV |
-| `voxl-humanoid-skin` | Open-ended multimodal character skins mapped to `wide-arm-64`/`slim-arm-64` UV geometry | 64x64 RGBA texture plus semantic/version metadata | Profile-valid 64x64 PNG and rendered previews |
+| `voxl-humanoid-skin` | Open-ended multimodal character skins mapped to wide/slim cuboid-humanoid geometry | Profile-selected `64x64` or `128x128` RGBA texture plus semantic/version metadata | Profile-valid PNG and rendered previews |
 
 ### Generation provider
 
@@ -86,7 +86,7 @@ The shared platform owns concerns that should not be rebuilt per engine:
 
 Each engine registers an editor/viewer module with the shared studio shell. The shell owns project navigation, file selection, chat, job status, history, and account controls. The engine module owns format-specific controls.
 
-The transparent-character module can expose frames, palettes, effects, animation preview, and alpha-video export. The VOXL humanoid-skin module can expose the UV atlas, `wide-arm-64`/`slim-arm-64` geometry, base/overlay layers, 3D painting, semantic masks, and profile-valid export.
+The transparent-character module can expose frames, palettes, effects, animation preview, and alpha-video export. The VOXL humanoid-skin module can expose a density-aware UV atlas, wide/slim geometry, base/overlay layers, 3D painting, semantic masks, and profile-valid export.
 
 ## Proposed repository shape
 
@@ -340,6 +340,27 @@ Use one application shell while keeping format-specific editors independent.
 - Both editors load through the shared shell.
 - A VOXL humanoid skin can be painted from both 2D and 3D views and exported validly.
 - Existing transparent-character drafting still works.
+
+## Post-Phase 4 conformance hardening
+
+This slice resolves format and renderer assumptions discovered during browser review without reopening Phase 4.
+
+### Work
+
+- Make model-unit body geometry engine-owned and consume it from the Studio renderer.
+- Treat arm geometry and texture density as independent profile axes.
+- Add `wide-arm-128` and `slim-arm-128` documents, scaled UV maps, validation, import, export, preview, conversion, and browser editing.
+- Keep `64` and `128` profiles physically identical for the same arm geometry.
+- Separate surface editing from orbit interaction and add front/back/left/right, zoom, and reset controls.
+- Record destination-specific facts and sources only in a restricted compatibility dossier.
+- Keep the precommitted Phase 5 dataset at `64x64`; version a new experiment before claiming higher-density provider quality.
+
+### Exit criteria
+
+- All four profiles pass exact engine validation and independent PNG probing.
+- `64` to `128` to `64` conversion is deterministic, and the UI explains that upscaling does not invent detail while downscaling can discard it.
+- Browser evidence demonstrates unchanged physical proportions at `128`, successful `128` export/re-import, and recoverable 3D camera control.
+- Product namespaces and normal user-facing copy remain target-neutral.
 
 ## Phase 5: Generative provider research spike
 

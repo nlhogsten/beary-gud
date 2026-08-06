@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
 import {
+  BASE_TEXTURE_HEIGHT,
+  BASE_TEXTURE_WIDTH,
   HUMANOID_SKIN_PROFILE_IDS,
   HUMANOID_SKIN_PROFILES,
-  TEXTURE_HEIGHT,
-  TEXTURE_WIDTH,
+  HUMANOID_SKIN_TEXTURE_SIZES,
   createHumanoidSkinSelectionMask,
   createMappedPixelMask,
   createUnusedPixelMask,
@@ -13,10 +14,11 @@ import {
 import { decodeRgbaPng, encodeRgbaPng } from "./png.mjs";
 
 export {
+  BASE_TEXTURE_HEIGHT,
+  BASE_TEXTURE_WIDTH,
   HUMANOID_SKIN_PROFILE_IDS,
   HUMANOID_SKIN_PROFILES,
-  TEXTURE_HEIGHT,
-  TEXTURE_WIDTH,
+  HUMANOID_SKIN_TEXTURE_SIZES,
   createHumanoidSkinSelectionMask,
   createMappedPixelMask,
   createUnusedPixelMask,
@@ -31,7 +33,7 @@ export const HUMANOID_SKIN_SIDECAR_KIND = "voxl.humanoid-skin.sidecar/v1";
 
 export const humanoidSkinDescriptor = Object.freeze({
   id: "voxl-humanoid-skin",
-  version: "1.0.0",
+  version: "1.1.0",
   title: "VOXL humanoid skin",
   documentTypes: [HUMANOID_SKIN_DOCUMENT_KIND],
   inputTypes: ["text/plain", "image/png", HUMANOID_SKIN_DOCUMENT_KIND],
@@ -95,7 +97,8 @@ export function createBlankHumanoidSkinDocument(
   if (!Array.isArray(baseColor) || baseColor.length !== 4 || baseColor.some((value) => !Number.isInteger(value) || value < 0 || value > 255)) {
     throw new Error("baseColor must contain four RGBA byte values.");
   }
-  const pixels = Buffer.alloc(TEXTURE_WIDTH * TEXTURE_HEIGHT * 4);
+  const selectedProfile = getHumanoidSkinProfile(profile);
+  const pixels = Buffer.alloc(selectedProfile.width * selectedProfile.height * 4);
   const baseMask = createMappedPixelMask(profile, "base");
   for (let pixel = 0; pixel < baseMask.length; pixel += 1) {
     if (!baseMask[pixel]) continue;
@@ -150,13 +153,15 @@ export function validateHumanoidSkinDocument(document) {
   } catch {
     issues.push(issue("unsupported_profile", "Document profile is not supported.", "error", "profile"));
   }
-  if (document.width !== TEXTURE_WIDTH || document.height !== TEXTURE_HEIGHT) {
-    issues.push(issue("invalid_dimensions", `Texture dimensions must be ${TEXTURE_WIDTH}x${TEXTURE_HEIGHT}.`, "error", "pixels"));
+  if (profile && (document.width !== profile.width || document.height !== profile.height)) {
+    issues.push(issue("invalid_dimensions", `Texture dimensions must be ${profile.width}x${profile.height} for ${profile.id}.`, "error", "pixels"));
   }
   const pixelsValid = document.pixels instanceof Uint8Array
-    && document.pixels.length === TEXTURE_WIDTH * TEXTURE_HEIGHT * 4;
+    && profile
+    && document.pixels.length === profile.width * profile.height * 4;
   if (!pixelsValid) {
-    issues.push(issue("invalid_rgba_length", "Texture must contain exactly 64x64 RGBA bytes.", "error", "pixels"));
+    const dimensions = profile ? `${profile.width}x${profile.height}` : "a supported profile's";
+    issues.push(issue("invalid_rgba_length", `Texture must contain exactly ${dimensions} RGBA bytes.`, "error", "pixels"));
   }
   validateSidecar(document.sidecar, document.profile, issues);
 
@@ -170,7 +175,7 @@ export function validateHumanoidSkinDocument(document) {
       const alpha = document.pixels[pixel * 4 + 3];
       if (!mapped[pixel] && alpha !== 0) {
         unusedVisible += 1;
-        if (!firstUnused) firstUnused = { x: pixel % TEXTURE_WIDTH, y: Math.floor(pixel / TEXTURE_WIDTH) };
+        if (!firstUnused) firstUnused = { x: pixel % profile.width, y: Math.floor(pixel / profile.width) };
       }
       if (base[pixel] && alpha !== 255) transparentBase += 1;
     }
@@ -202,25 +207,34 @@ export function assertValidHumanoidSkinDocument(document) {
 }
 
 export function detectHumanoidSkinProfile(pixels) {
-  if (!(pixels instanceof Uint8Array) || pixels.length !== TEXTURE_WIDTH * TEXTURE_HEIGHT * 4) {
-    throw new Error("Profile detection requires exactly 64x64 RGBA bytes.");
+  const textureSize = pixels instanceof Uint8Array ? Math.sqrt(pixels.length / 4) : 0;
+  if (!Number.isInteger(textureSize) || !HUMANOID_SKIN_TEXTURE_SIZES.includes(textureSize)) {
+    throw new Error("Profile detection requires square RGBA bytes for a supported texture size.");
   }
-  const wide = createMappedPixelMask("wide-arm-64");
-  const slim = createMappedPixelMask("slim-arm-64");
+  const wideId = `wide-arm-${textureSize}`;
+  const slimId = `slim-arm-${textureSize}`;
+  const wide = createMappedPixelMask(wideId);
+  const slim = createMappedPixelMask(slimId);
   for (let pixel = 0; pixel < wide.length; pixel += 1) {
-    if (wide[pixel] && !slim[pixel] && pixels[pixel * 4 + 3] !== 0) return "wide-arm-64";
+    if (wide[pixel] && !slim[pixel] && pixels[pixel * 4 + 3] !== 0) return wideId;
   }
-  return "slim-arm-64";
+  return slimId;
 }
 
 export function importHumanoidSkinPng(input, { profile = "auto", sidecar } = {}) {
   const decoded = decodeRgbaPng(input);
-  if (decoded.width !== TEXTURE_WIDTH || decoded.height !== TEXTURE_HEIGHT) {
+  if (decoded.width !== decoded.height || !HUMANOID_SKIN_TEXTURE_SIZES.includes(decoded.width)) {
     throw new HumanoidSkinValidationError("Humanoid-skin PNG dimensions are invalid.", [
-      issue("invalid_dimensions", `Texture dimensions must be ${TEXTURE_WIDTH}x${TEXTURE_HEIGHT}.`, "error", "pixels"),
+      issue("invalid_dimensions", `Texture dimensions must be one of ${HUMANOID_SKIN_TEXTURE_SIZES.map((size) => `${size}x${size}`).join(" or ")}.`, "error", "pixels"),
     ]);
   }
   const selectedProfile = profile === "auto" ? detectHumanoidSkinProfile(decoded.pixels) : profile;
+  const expectedProfile = getHumanoidSkinProfile(selectedProfile);
+  if (decoded.width !== expectedProfile.width || decoded.height !== expectedProfile.height) {
+    throw new HumanoidSkinValidationError("Humanoid-skin PNG dimensions do not match the selected profile.", [
+      issue("profile_dimension_mismatch", `Profile ${selectedProfile} requires ${expectedProfile.width}x${expectedProfile.height} pixels.`, "error", "profile"),
+    ]);
+  }
   const document = createHumanoidSkinDocument({
     profile: selectedProfile,
     pixels: decoded.pixels,
@@ -255,10 +269,10 @@ function blendPixel(target, targetOffset, source, sourceOffset) {
   target[targetOffset + 3] = Math.round(outputAlpha * 255);
 }
 
-function drawRegion(canvas, canvasWidth, pixels, region, destinationX, destinationY) {
+function drawRegion(canvas, canvasWidth, sourceWidth, pixels, region, destinationX, destinationY) {
   for (let y = 0; y < region.height; y += 1) {
     for (let x = 0; x < region.width; x += 1) {
-      const sourceOffset = ((region.y + y) * TEXTURE_WIDTH + region.x + x) * 4;
+      const sourceOffset = ((region.y + y) * sourceWidth + region.x + x) * 4;
       const targetOffset = ((destinationY + y) * canvasWidth + destinationX + x) * 4;
       blendPixel(canvas, targetOffset, pixels, sourceOffset);
     }
@@ -268,8 +282,8 @@ function drawRegion(canvas, canvasWidth, pixels, region, destinationX, destinati
 function drawPart(document, canvas, canvasWidth, part, view, x, y) {
   const base = getHumanoidSkinRegion(document.profile, part, "base", view);
   const outer = getHumanoidSkinRegion(document.profile, part, "outer", view);
-  drawRegion(canvas, canvasWidth, document.pixels, base, x, y);
-  drawRegion(canvas, canvasWidth, document.pixels, outer, x, y);
+  drawRegion(canvas, canvasWidth, document.width, document.pixels, base, x, y);
+  drawRegion(canvas, canvasWidth, document.width, document.pixels, outer, x, y);
 }
 
 function scaleNearest(pixels, width, height, scale) {
@@ -295,20 +309,21 @@ export function renderHumanoidSkinPreview(document, { view = "front", scale = 8 
   if (!Number.isInteger(scale) || scale < 1 || scale > 32) throw new Error("Preview scale must be an integer from 1 to 32.");
 
   const profile = getHumanoidSkinProfile(document.profile);
-  const width = 16;
-  const height = 32;
+  const width = profile.geometry.previewWidth * profile.texelScale;
+  const height = profile.geometry.previewHeight * profile.texelScale;
   const canvas = Buffer.alloc(width * height * 4);
   const front = view === "front";
   const leftArm = front ? "right-arm" : "left-arm";
   const rightArm = front ? "left-arm" : "right-arm";
   const leftLeg = front ? "right-leg" : "left-leg";
   const rightLeg = front ? "left-leg" : "right-leg";
-  drawPart(document, canvas, width, "head", view, 4, 0);
-  drawPart(document, canvas, width, "torso", view, 4, 8);
-  drawPart(document, canvas, width, leftArm, view, 4 - profile.armWidth, 8);
-  drawPart(document, canvas, width, rightArm, view, 12, 8);
-  drawPart(document, canvas, width, leftLeg, view, 4, 20);
-  drawPart(document, canvas, width, rightLeg, view, 8, 20);
+  const texelScale = profile.texelScale;
+  drawPart(document, canvas, width, "head", view, 4 * texelScale, 0);
+  drawPart(document, canvas, width, "torso", view, 4 * texelScale, 8 * texelScale);
+  drawPart(document, canvas, width, leftArm, view, (4 - profile.armWidth) * texelScale, 8 * texelScale);
+  drawPart(document, canvas, width, rightArm, view, 12 * texelScale, 8 * texelScale);
+  drawPart(document, canvas, width, leftLeg, view, 4 * texelScale, 20 * texelScale);
+  drawPart(document, canvas, width, rightLeg, view, 8 * texelScale, 20 * texelScale);
   const scaled = scaleNearest(canvas, width, height, scale);
   return {
     width: width * scale,

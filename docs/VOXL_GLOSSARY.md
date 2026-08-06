@@ -11,7 +11,7 @@ VOXL is a studio for creating visual assets with conversation, reference images,
 The first two visual engines are:
 
 - `transparent-character`: the existing animated pixel-character and transparent-video workflow.
-- `voxl-humanoid-skin`: the planned 64x64 cuboid-humanoid texture workflow.
+- `voxl-humanoid-skin`: the density-aware cuboid-humanoid texture workflow.
 
 Neither engine is named after an external application, game, platform, or publisher.
 
@@ -161,6 +161,10 @@ A texture surface that can be viewed or edited independently. The humanoid-skin 
 
 An optional second texture surface slightly above the base layer. It can create hats, hair volume, jacket edges, sleeves, or other pixel-art details without changing the underlying base pixels. It is sometimes called an overlay.
 
+### Model unit
+
+A geometry measurement used to define the fixed cuboid body independently from the texture image. Changing texture density does not change the number of model units in a head, torso, arm, or leg.
+
 ### Pixel
 
 One colored square in a raster image. At 64x64 resolution, each pixel has a noticeable effect and must remain sharp rather than blurred.
@@ -189,9 +193,21 @@ The narrower of the two supported arm geometries. `slim` is only a technical geo
 
 The neutral 64x64 export profile using the narrower arm geometry.
 
+### `slim-arm-128`
+
+The neutral 128x128 export profile using the same narrower arm geometry with twice the texel density on each atlas axis.
+
+### Texel
+
+A texture pixel mapped onto a 3D surface. “Pixel” describes the image sample; “texel” emphasizes its role on the model. A `128x128` profile has twice as many texels along each atlas axis as its `64x64` counterpart.
+
+### Texel scale
+
+The ratio between a concrete texture density and the logical `64x64` UV grid. The `64` profiles use scale `1`; the `128` profiles use scale `2`. Texel scale changes UV coordinates and pixel capacity, not body geometry.
+
 ### Texture
 
-A 2D image applied to a 3D surface. The planned humanoid-skin texture is a 64x64 PNG.
+A 2D image applied to a 3D surface. A humanoid-skin texture is currently a `64x64` or `128x128` PNG selected by its profile.
 
 ### Texture atlas
 
@@ -221,9 +237,17 @@ The wider of the two supported arm geometries. “Wide” describes only the arm
 
 The neutral 64x64 export profile using the wider arm geometry.
 
+### `wide-arm-128`
+
+The neutral 128x128 export profile using the same wider arm geometry with twice the texel density on each atlas axis.
+
 ### 64x64
 
-An image that is exactly 64 pixels wide and 64 pixels high. The small fixed canvas is the visual format's main creative constraint.
+An image that is exactly 64 pixels wide and 64 pixels high. This is the baseline humanoid-skin texture density and the density used by the current generation evaluation.
+
+### 128x128
+
+An image that is exactly 128 pixels wide and 128 pixels high. It contains four times as many pixels as `64x64` while wrapping the same body proportions. Upscaling a `64x64` image to this size does not invent new detail.
 
 ## Generative AI terms
 
@@ -297,7 +321,7 @@ An instruction describing what should not appear or what should not change. Pres
 
 ### Open-ended generation
 
-Generation that can synthesize complex patterns not anticipated as fixed dropdowns or fields. It is still constrained by the output format's 64x64 canvas and UV layout.
+Generation that can synthesize complex patterns not anticipated as fixed dropdowns or fields. It is still constrained by the selected output profile's atlas density and UV layout.
 
 ### Procedural generation
 

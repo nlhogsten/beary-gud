@@ -113,6 +113,90 @@
       "target": "text=Imported voxl-humanoid-skin-wide-arm-64.png as wide-arm-64",
       "expected": "The exported atlas round-trips through validation and profile detection.",
       "required": true
+    },
+    {
+      "id": "convert-to-higher-density",
+      "title": "Convert to the higher-density profile",
+      "action": "select",
+      "target": "label=Export profile",
+      "value": "wide-arm-128",
+      "expected": "The same wide-arm geometry is represented by a 128 by 128 texture atlas.",
+      "required": true
+    },
+    {
+      "id": "assert-higher-density-conversion",
+      "title": "Confirm higher-density conversion semantics",
+      "action": "assert-visible",
+      "target": "text=existing pixels were expanded without inventing new detail",
+      "expected": "The editor distinguishes texture density from generated visual detail.",
+      "required": true
+    },
+    {
+      "id": "assert-higher-density-atlas",
+      "title": "Confirm the 128 atlas is active",
+      "action": "wait",
+      "target": "label=Editable 128 by 128 humanoid skin atlas",
+      "expected": "The editor exposes a 128 by 128 atlas while retaining the same body proportions.",
+      "required": true
+    },
+    {
+      "id": "capture-higher-density-profile",
+      "title": "Capture higher-density geometry",
+      "action": "screenshot",
+      "value": "humanoid-wide-128-profile",
+      "expected": "Evidence shows the higher-density atlas and unchanged wide-arm body geometry.",
+      "required": true
+    },
+    {
+      "id": "download-higher-density-profile",
+      "title": "Download the higher-density atlas",
+      "action": "download",
+      "target": "role=button[name=\"Download PNG\"]",
+      "value": "voxl-humanoid-skin-wide-arm-128.png",
+      "expected": "A non-empty 128 by 128 profile-valid PNG is downloaded with the expected name.",
+      "required": true
+    },
+    {
+      "id": "reimport-higher-density-profile",
+      "title": "Re-import the higher-density atlas",
+      "action": "upload",
+      "target": "css=input[type=\"file\"]",
+      "value": "voxl-humanoid-skin-wide-arm-128.png",
+      "expected": "The exact higher-density PNG from this run is accepted by the same import path.",
+      "required": true
+    },
+    {
+      "id": "assert-higher-density-reimport",
+      "title": "Confirm higher-density round trip",
+      "action": "assert-visible",
+      "target": "text=Imported voxl-humanoid-skin-wide-arm-128.png as wide-arm-128",
+      "expected": "The 128 by 128 atlas round-trips through validation and profile detection.",
+      "required": true
+    },
+    {
+      "id": "convert-to-slim-higher-density",
+      "title": "Convert to slim higher-density geometry",
+      "action": "select",
+      "target": "label=Export profile",
+      "value": "slim-arm-128",
+      "expected": "The document changes arm geometry while retaining the 128 by 128 density.",
+      "required": true
+    },
+    {
+      "id": "assert-slim-higher-density-conversion",
+      "title": "Confirm slim higher-density conversion",
+      "action": "assert-visible",
+      "target": "text=Converted draft to slim-arm-128",
+      "expected": "The editor confirms the fourth supported profile without a density change warning.",
+      "required": true
+    },
+    {
+      "id": "capture-slim-higher-density-profile",
+      "title": "Capture slim higher-density geometry",
+      "action": "screenshot",
+      "value": "humanoid-slim-128-profile",
+      "expected": "Evidence shows narrower arm geometry on the same 128 by 128 atlas density.",
+      "required": true
     }
   ]
 }

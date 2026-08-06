@@ -70,14 +70,20 @@ prompt + references + existing version/masks
                     |
                     v
        engine adapter + validator
-  map/normalize to exact 64x64 profile,
+  map/normalize to an exact density profile,
   reject invalid output, render evidence
                     |
                     v
        immutable VOXL asset version
 ```
 
-A provider adapter may use one API request or a short API pipeline—for example, create a coherent visual concept and then transform it into a texture-atlas candidate. That is still API usage: VOXL defines and evaluates the pipeline, while the external provider operates the generative models and accelerators. Deterministic engine code handles exact dimensions, profile rules, validation, rendering, and export. Whether any API can preserve enough detail and geometry through this pipeline is the central Phase 5 experiment, not an assumed capability.
+A provider adapter may use one API request or a short API pipeline—for example, create a coherent visual concept and then transform it into a texture-atlas candidate. That is still API usage: VOXL defines and evaluates the pipeline, while the external provider operates the generative models and accelerators. Deterministic engine code handles exact dimensions, profile rules, validation, rendering, and export. Whether any API can preserve enough detail and geometry through this pipeline is the central Phase 5 experiment, not an assumed capability. The deterministic engine supports `64x64` and `128x128` atlases, but the precommitted provider evaluation remains `64x64` until a separately versioned experiment measures higher-density generation.
+
+## Geometry and texture density
+
+The humanoid engine treats body geometry and texture density as separate axes. Wide and slim arms change the physical arm cuboids and their UV layout. A `64` or `128` suffix changes how many texels cover the same model-unit geometry. The 3D renderer consumes geometry from the engine profile, so selecting a higher density must not make the head, torso, limbs, or outer-layer offset physically larger.
+
+See [ADR 0012](adr/0012-separate-geometry-from-texture-density.md). Exact destination-specific support evidence is isolated in the restricted compatibility dossier rather than product component identities.
 
 ## What an in-chat editor is
 

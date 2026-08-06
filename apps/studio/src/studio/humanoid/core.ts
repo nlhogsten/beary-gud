@@ -1,6 +1,5 @@
 import {
   HUMANOID_SKIN_PROFILE_IDS,
-  TEXTURE_WIDTH,
   createMappedPixelMask,
   getHumanoidSkinProfile,
   getHumanoidSkinRegion,
@@ -11,7 +10,6 @@ import {
   type HumanoidSkinRegion,
 } from "../../../../../packages/engine-voxl-humanoid-skin/src/profiles.mjs";
 
-export const SKIN_SIZE = TEXTURE_WIDTH;
 export const SKIN_PROFILE_IDS = HUMANOID_SKIN_PROFILE_IDS;
 export const CUBOID_HUMANOID_RENDERER_ID = "cuboid-humanoid-renderer";
 export type SkinProfileId = HumanoidSkinProfileId;
@@ -59,11 +57,20 @@ export function mappedMask(profileId: SkinProfileId, layer?: SkinLayer): Uint8Ar
   return createMappedPixelMask(profileId, layer);
 }
 
+export function renderPreviewSize(profileId: SkinProfileId) {
+  const profile = skinProfile(profileId);
+  return {
+    width: profile.geometry.previewWidth * profile.texelScale,
+    height: profile.geometry.previewHeight * profile.texelScale,
+  };
+}
+
 export function createBlankPixels(
   profileId: SkinProfileId,
   color: readonly [number, number, number, number] = [127, 127, 127, 255],
 ): Uint8ClampedArray {
-  const output = new Uint8ClampedArray(SKIN_SIZE * SKIN_SIZE * 4);
+  const profile = skinProfile(profileId);
+  const output = new Uint8ClampedArray(profile.width * profile.height * 4);
   const base = mappedMask(profileId, "base");
   for (let pixel = 0; pixel < base.length; pixel += 1) {
     if (base[pixel]) output.set(color, pixel * 4);
@@ -72,14 +79,15 @@ export function createBlankPixels(
 }
 
 export function validatePixels(profileId: SkinProfileId, pixels: Uint8ClampedArray) {
+  const profile = skinProfile(profileId);
   const issues: SkinIssue[] = [];
-  if (pixels.length !== SKIN_SIZE * SKIN_SIZE * 4) {
+  if (pixels.length !== profile.width * profile.height * 4) {
     return {
       ok: false,
       issues: [{
         code: "invalid_rgba_length",
         severity: "error" as const,
-        message: "Texture must contain exactly 64×64 RGBA pixels.",
+        message: `Texture must contain exactly ${profile.width}×${profile.height} RGBA pixels.`,
       }],
     };
   }
@@ -110,20 +118,28 @@ export function validatePixels(profileId: SkinProfileId, pixels: Uint8ClampedArr
 }
 
 export function detectProfile(pixels: Uint8ClampedArray): SkinProfileId {
-  const wide = mappedMask("wide-arm-64");
-  const slim = mappedMask("slim-arm-64");
-  for (let pixel = 0; pixel < wide.length; pixel += 1) {
-    if (wide[pixel] && !slim[pixel] && pixels[pixel * 4 + 3] !== 0) return "wide-arm-64";
+  const textureSize = Math.sqrt(pixels.length / 4);
+  if (!Number.isInteger(textureSize)) throw new Error("Skin texture must be square RGBA pixels.");
+  const wideId = `wide-arm-${textureSize}`;
+  const slimId = `slim-arm-${textureSize}`;
+  if (!(SKIN_PROFILE_IDS as readonly string[]).includes(wideId)) {
+    throw new Error("Skin texture resolution is unsupported.");
   }
-  return "slim-arm-64";
+  const wide = mappedMask(wideId as SkinProfileId);
+  const slim = mappedMask(slimId as SkinProfileId);
+  for (let pixel = 0; pixel < wide.length; pixel += 1) {
+    if (wide[pixel] && !slim[pixel] && pixels[pixel * 4 + 3] !== 0) return wideId as SkinProfileId;
+  }
+  return slimId as SkinProfileId;
 }
 
 export function serializeSkinVersionDocument(
   profile: SkinProfileId,
   pixels: Uint8ClampedArray,
 ): string {
-  if (pixels.length !== SKIN_SIZE * SKIN_SIZE * 4) {
-    throw new Error("Skin version requires exactly 64×64 RGBA pixels.");
+  const dimensions = skinProfile(profile);
+  if (pixels.length !== dimensions.width * dimensions.height * 4) {
+    throw new Error(`Skin version requires exactly ${dimensions.width}×${dimensions.height} RGBA pixels.`);
   }
   return JSON.stringify({
     kind: "voxl.humanoid-skin/v1",
@@ -148,10 +164,13 @@ export function parseSkinVersionDocument(documentJson: string): {
     || typeof candidate.profile !== "string"
     || !(SKIN_PROFILE_IDS as readonly string[]).includes(candidate.profile)
     || !Array.isArray(candidate.pixels)
-    || candidate.pixels.length !== SKIN_SIZE * SKIN_SIZE * 4
     || candidate.pixels.some((channel) => !Number.isInteger(channel) || channel < 0 || channel > 255)
   ) throw new Error("Skin version document is invalid.");
   const profile = candidate.profile as SkinProfileId;
+  const dimensions = skinProfile(profile);
+  if (candidate.pixels.length !== dimensions.width * dimensions.height * 4) {
+    throw new Error("Skin version document is invalid.");
+  }
   const pixels = new Uint8ClampedArray(candidate.pixels);
   const validation = validatePixels(profile, pixels);
   const blocking = validation.issues.find((issue) => issue.severity === "error");
@@ -163,7 +182,8 @@ export function countChangedSkinPixels(leftJson: string, rightJson: string): num
   const left = parseSkinVersionDocument(leftJson);
   const right = parseSkinVersionDocument(rightJson);
   let changed = left.profile === right.profile ? 0 : 1;
-  for (let offset = 0; offset < left.pixels.length; offset += 4) {
+  const channelLength = Math.max(left.pixels.length, right.pixels.length);
+  for (let offset = 0; offset < channelLength; offset += 4) {
     if (
       left.pixels[offset] !== right.pixels[offset]
       || left.pixels[offset + 1] !== right.pixels[offset + 1]
@@ -179,13 +199,15 @@ export function convertProfile(
   currentProfile: SkinProfileId,
   nextProfile: SkinProfileId,
 ): Uint8ClampedArray {
-  if (pixels.length !== SKIN_SIZE * SKIN_SIZE * 4) {
-    throw new Error("Profile conversion requires exactly 64×64 RGBA pixels.");
+  const current = skinProfile(currentProfile);
+  const next = skinProfile(nextProfile);
+  if (pixels.length !== current.width * current.height * 4) {
+    throw new Error(`Profile conversion requires exactly ${current.width}×${current.height} RGBA pixels.`);
   }
   if (currentProfile === nextProfile) return new Uint8ClampedArray(pixels);
 
-  const output = new Uint8ClampedArray(pixels.length);
-  for (const destination of skinProfile(nextProfile).regions) {
+  const output = new Uint8ClampedArray(next.width * next.height * 4);
+  for (const destination of next.regions) {
     const source = skinRegion(
       currentProfile,
       destination.part,
@@ -202,9 +224,9 @@ export function convertProfile(
           source.height - 1,
           Math.floor((y * source.height) / destination.height),
         );
-        const sourceOffset = (sourceY * SKIN_SIZE + sourceX) * 4;
+        const sourceOffset = (sourceY * current.width + sourceX) * 4;
         const destinationOffset = (
-          (destination.y + y) * SKIN_SIZE + destination.x + x
+          (destination.y + y) * next.width + destination.x + x
         ) * 4;
         output.set(pixels.subarray(sourceOffset, sourceOffset + 4), destinationOffset);
       }
@@ -252,7 +274,9 @@ function blend(
 
 function drawFace(
   output: Uint8ClampedArray,
+  outputWidth: number,
   pixels: Uint8ClampedArray,
+  sourceWidth: number,
   region: SkinRegion,
   destinationX: number,
   destinationY: number,
@@ -261,9 +285,9 @@ function drawFace(
     for (let x = 0; x < region.width; x += 1) {
       blend(
         output,
-        ((destinationY + y) * 16 + destinationX + x) * 4,
+        ((destinationY + y) * outputWidth + destinationX + x) * 4,
         pixels,
-        ((region.y + y) * SKIN_SIZE + region.x + x) * 4,
+        ((region.y + y) * sourceWidth + region.x + x) * 4,
       );
     }
   }
@@ -276,22 +300,24 @@ export function renderPreview(
   layers: readonly SkinLayer[],
   parts: readonly SkinPart[],
 ): Uint8ClampedArray {
-  const output = new Uint8ClampedArray(16 * 32 * 4);
   const profile = skinProfile(profileId);
+  const size = renderPreviewSize(profileId);
+  const output = new Uint8ClampedArray(size.width * size.height * 4);
   const enabled = new Set(parts);
   const facingFront = view === "front";
+  const texelScale = profile.texelScale;
   const placements: readonly [SkinPart, number, number][] = [
-    ["head", 4, 0],
-    ["torso", 4, 8],
-    [facingFront ? "right-arm" : "left-arm", 4 - profile.armWidth, 8],
-    [facingFront ? "left-arm" : "right-arm", 12, 8],
-    [facingFront ? "right-leg" : "left-leg", 4, 20],
-    [facingFront ? "left-leg" : "right-leg", 8, 20],
+    ["head", 4 * texelScale, 0],
+    ["torso", 4 * texelScale, 8 * texelScale],
+    [facingFront ? "right-arm" : "left-arm", (4 - profile.armWidth) * texelScale, 8 * texelScale],
+    [facingFront ? "left-arm" : "right-arm", 12 * texelScale, 8 * texelScale],
+    [facingFront ? "right-leg" : "left-leg", 4 * texelScale, 20 * texelScale],
+    [facingFront ? "left-leg" : "right-leg", 8 * texelScale, 20 * texelScale],
   ];
   for (const [part, x, y] of placements) {
     if (!enabled.has(part)) continue;
     for (const layer of layers) {
-      drawFace(output, pixels, skinRegion(profileId, part, layer, view), x, y);
+      drawFace(output, size.width, pixels, profile.width, skinRegion(profileId, part, layer, view), x, y);
     }
   }
   return output;

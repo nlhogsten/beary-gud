@@ -79,8 +79,8 @@ The runner executes each journey in every declared viewport. Each viewport recei
 | --- | --- | --- |
 | `studio-smoke` | The standalone studio loads both native React engines, exposes the 2D atlas and 3D preview, and retains its VOXL identity. | Desktop and mobile |
 | `transparent-edit-export` | Transparent-character painting, undo/redo, an effect toggle, export-mode selection, current-frame PNG export, and sprite-sheet export. | Desktop |
-| `humanoid-2d-3d` | Mapped atlas painting, transparent outer-layer picking, direct WebGL painting, shared undo history, and side/rear/top/bottom rotation evidence without accidental painting. | Desktop |
-| `humanoid-import-export` | Wide/slim profile conversion, validation, a valid named PNG download, and safe re-import of that same-run artifact. | Desktop |
+| `humanoid-2d-3d` | Mapped atlas painting, transparent outer-layer picking, direct WebGL painting, shared undo history, explicit edit/orbit modes, directional rotation evidence, and camera reset. | Desktop |
+| `humanoid-import-export` | Wide/slim and `64`/`128` profile conversion, validation, valid named PNG downloads, and safe same-run re-import at both densities. | Desktop |
 
 The runner action language includes `navigate`, `click`, `fill`, `select`, `wait`, `assert-visible`, `screenshot`, `canvas-click`, `canvas-drag`, `download`, and `upload`. Canvas positions use normalized coordinates so the same journey works across viewport sizes; drags use real stepped pointer movement to distinguish rotation from painting. Upload paths are deliberately limited to a safe filename already captured in the current run's `downloads/` directory. The `humanoid-import-export` journey therefore proves a deterministic export/re-import round trip without allowing a journey to read arbitrary host files. Invalid-file fixtures remain a separate follow-up in the rubric.
 

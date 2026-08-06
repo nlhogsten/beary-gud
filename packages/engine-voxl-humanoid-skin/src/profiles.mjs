@@ -1,58 +1,92 @@
-export const TEXTURE_WIDTH = 64;
-export const TEXTURE_HEIGHT = 64;
+export const BASE_TEXTURE_WIDTH = 64;
+export const BASE_TEXTURE_HEIGHT = 64;
+export const HUMANOID_SKIN_TEXTURE_SIZES = Object.freeze([64, 128]);
 
-function face(part, layer, name, x, y, width, height) {
-  return Object.freeze({ part, layer, face: name, x, y, width, height });
+function face(part, layer, name, x, y, width, height, texelScale) {
+  return Object.freeze({
+    part,
+    layer,
+    face: name,
+    x: x * texelScale,
+    y: y * texelScale,
+    width: width * texelScale,
+    height: height * texelScale,
+  });
 }
 
-function box(part, layer, x, y, width, height, depth) {
+function box(part, layer, x, y, width, height, depth, texelScale) {
   return [
-    face(part, layer, "top", x + depth, y, width, depth),
-    face(part, layer, "bottom", x + depth + width, y, width, depth),
-    face(part, layer, "right", x, y + depth, depth, height),
-    face(part, layer, "front", x + depth, y + depth, width, height),
-    face(part, layer, "left", x + depth + width, y + depth, depth, height),
-    face(part, layer, "back", x + depth + width + depth, y + depth, width, height),
+    face(part, layer, "top", x + depth, y, width, depth, texelScale),
+    face(part, layer, "bottom", x + depth + width, y, width, depth, texelScale),
+    face(part, layer, "right", x, y + depth, depth, height, texelScale),
+    face(part, layer, "front", x + depth, y + depth, width, height, texelScale),
+    face(part, layer, "left", x + depth + width, y + depth, depth, height, texelScale),
+    face(part, layer, "back", x + depth + width + depth, y + depth, width, height, texelScale),
   ];
 }
 
-function buildRegions(armWidth) {
+function buildRegions(armWidth, texelScale) {
   return Object.freeze([
-    ...box("head", "base", 0, 0, 8, 8, 8),
-    ...box("head", "outer", 32, 0, 8, 8, 8),
-    ...box("right-leg", "base", 0, 16, 4, 12, 4),
-    ...box("torso", "base", 16, 16, 8, 12, 4),
-    ...box("right-arm", "base", 40, 16, armWidth, 12, 4),
-    ...box("right-leg", "outer", 0, 32, 4, 12, 4),
-    ...box("torso", "outer", 16, 32, 8, 12, 4),
-    ...box("right-arm", "outer", 40, 32, armWidth, 12, 4),
-    ...box("left-leg", "outer", 0, 48, 4, 12, 4),
-    ...box("left-leg", "base", 16, 48, 4, 12, 4),
-    ...box("left-arm", "base", 32, 48, armWidth, 12, 4),
-    ...box("left-arm", "outer", 48, 48, armWidth, 12, 4),
+    ...box("head", "base", 0, 0, 8, 8, 8, texelScale),
+    ...box("head", "outer", 32, 0, 8, 8, 8, texelScale),
+    ...box("right-leg", "base", 0, 16, 4, 12, 4, texelScale),
+    ...box("torso", "base", 16, 16, 8, 12, 4, texelScale),
+    ...box("right-arm", "base", 40, 16, armWidth, 12, 4, texelScale),
+    ...box("right-leg", "outer", 0, 32, 4, 12, 4, texelScale),
+    ...box("torso", "outer", 16, 32, 8, 12, 4, texelScale),
+    ...box("right-arm", "outer", 40, 32, armWidth, 12, 4, texelScale),
+    ...box("left-leg", "outer", 0, 48, 4, 12, 4, texelScale),
+    ...box("left-leg", "base", 16, 48, 4, 12, 4, texelScale),
+    ...box("left-arm", "base", 32, 48, armWidth, 12, 4, texelScale),
+    ...box("left-arm", "outer", 48, 48, armWidth, 12, 4, texelScale),
   ]);
 }
 
-function createProfile(id, armWidth) {
-  const regions = buildRegions(armWidth);
+function part(width, height, depth, position) {
+  return Object.freeze({ width, height, depth, position: Object.freeze(position) });
+}
+
+function buildGeometry(armWidth) {
+  return Object.freeze({
+    parts: Object.freeze({
+      head: part(8, 8, 8, [0, 28, 0]),
+      torso: part(8, 12, 4, [0, 18, 0]),
+      "right-arm": part(armWidth, 12, 4, [-(4 + armWidth / 2), 18, 0]),
+      "left-arm": part(armWidth, 12, 4, [4 + armWidth / 2, 18, 0]),
+      "right-leg": part(4, 12, 4, [-2, 6, 0]),
+      "left-leg": part(4, 12, 4, [2, 6, 0]),
+    }),
+    outerLayerOffset: 0.25,
+    previewWidth: 16,
+    previewHeight: 32,
+  });
+}
+
+function createProfile(id, armWidth, textureSize) {
+  const texelScale = textureSize / BASE_TEXTURE_WIDTH;
+  const regions = buildRegions(armWidth, texelScale);
   const byKey = Object.freeze(Object.fromEntries(regions.map((region) => [
     `${region.part}.${region.layer}.${region.face}`,
     region,
   ])));
   return Object.freeze({
     id,
-    width: TEXTURE_WIDTH,
-    height: TEXTURE_HEIGHT,
+    width: textureSize,
+    height: textureSize,
+    texelScale,
     armWidth,
     armDepth: 4,
+    geometry: buildGeometry(armWidth),
     regions,
     byKey,
   });
 }
 
 export const HUMANOID_SKIN_PROFILES = Object.freeze({
-  "wide-arm-64": createProfile("wide-arm-64", 4),
-  "slim-arm-64": createProfile("slim-arm-64", 3),
+  "wide-arm-64": createProfile("wide-arm-64", 4, 64),
+  "slim-arm-64": createProfile("slim-arm-64", 3, 64),
+  "wide-arm-128": createProfile("wide-arm-128", 4, 128),
+  "slim-arm-128": createProfile("slim-arm-128", 3, 128),
 });
 
 export const HUMANOID_SKIN_PROFILE_IDS = Object.freeze(Object.keys(HUMANOID_SKIN_PROFILES));
@@ -63,10 +97,10 @@ export function getHumanoidSkinProfile(profileId) {
   return profile;
 }
 
-export function getHumanoidSkinRegion(profileId, part, layer, faceName) {
+export function getHumanoidSkinRegion(profileId, partName, layer, faceName) {
   const profile = getHumanoidSkinProfile(profileId);
-  const region = profile.byKey[`${part}.${layer}.${faceName}`];
-  if (!region) throw new Error(`Unknown humanoid-skin region '${part}.${layer}.${faceName}'.`);
+  const region = profile.byKey[`${partName}.${layer}.${faceName}`];
+  if (!region) throw new Error(`Unknown humanoid-skin region '${partName}.${layer}.${faceName}'.`);
   return region;
 }
 

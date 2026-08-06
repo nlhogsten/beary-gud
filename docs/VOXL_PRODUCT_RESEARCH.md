@@ -6,12 +6,12 @@ Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) whenever a product, AI
 
 ## Decision summary
 
-VOXL should be developed as a componentized AI-native asset studio with a web service and optional chat clients. The first new asset engine, `voxl-humanoid-skin`, should produce valid 64x64 cuboid-humanoid texture atlases in the `wide-arm-64` and `slim-arm-64` export profiles. The existing Bash-derived `transparent-character` workflow must remain a first-class engine rather than being replaced or forced into the humanoid-skin schema.
+VOXL should be developed as a componentized AI-native asset studio with a web service and optional chat clients. The first new asset engine, `voxl-humanoid-skin`, produces valid cuboid-humanoid texture atlases in wide/slim `64` and `128` export profiles. The existing Bash-derived `transparent-character` workflow remains a first-class engine rather than being replaced or forced into the humanoid-skin schema.
 
 The product does not need a custom 3D generative model to begin. Three systems that have different jobs must not be conflated:
 
 1. **Conversation and reasoning:** Codex or Claude interprets natural language and reference images, produces a structured character brief, chooses editing operations, and explains results.
-2. **Skin construction:** Deterministic code, optionally supplied with creative output from a hosted provider API, creates a valid 64x64 RGBA texture atlas.
+2. **Skin construction:** Deterministic code, optionally supplied with creative output from a hosted provider API, creates a valid profile-selected RGBA texture atlas.
 3. **3D preview:** A conventional browser renderer wraps that 2D texture around fixed cuboid-humanoid geometry. It displays the skin; it does not invent the character.
 
 The intended VOXL humanoid-skin generator is generative-first and multimodal: text, reference images, an existing skin, masks, sketches, palettes, and future input types can condition full pixel synthesis. Structured fields such as hair color are optional control metadata, not the vocabulary or limit of creation. A procedural constructor remains useful as a test fixture and fallback, but it is not the long-term creative core.
@@ -24,7 +24,7 @@ VOXL's product architecture must never use an external application, game, platfo
 
 - Engine: `voxl-humanoid-skin`.
 - Document kind: `voxl.humanoid-skin/v1`.
-- Export profiles: `wide-arm-64` and `slim-arm-64`.
+- Export profiles: `wide-arm-64`, `slim-arm-64`, `wide-arm-128`, and `slim-arm-128`.
 - Renderer capability: `cuboid-humanoid-renderer`.
 - Provider capability: `preview-to-atlas`, regardless of the model used behind it.
 - Package: `engine-voxl-humanoid-skin`.
@@ -53,7 +53,7 @@ User prompt + optional reference image
        - procedural provider only as fallback/fixture
                   |
                   v
-         Valid 64x64 RGBA skin PNG
+       Valid profile-selected RGBA skin PNG
              /                \
             v                  v
    3D browser preview      2D pixel editor
@@ -89,7 +89,13 @@ type GenerationRequest = {
 
 After generation, semantic masks and descriptions become a control plane for revision. A complex generated asset can be analyzed into regions such as face, hair, armor, cloak, emblem, or outer layer. The user can then request a localized edit while the system sends the existing asset, a mask, the edit instruction, and preservation constraints back to an image-editing provider.
 
-The product is open-ended within the physical capacity of the visual format. A `voxl-humanoid-skin` atlas has only 64x64 pixels split across UV faces, so fine details must be compressed into pixel art. That resolution is the creative constraint; a VOXL feature catalog should not be.
+The product is open-ended within the physical capacity of the selected visual profile. A `64x64` atlas has a small pixel budget split across UV faces; a `128x128` atlas has four times as many texels over the same geometry. Higher density creates room for finer authored or generated texture detail, but deterministic upscaling alone only repeats existing pixels. The selected profile remains a creative constraint; a VOXL feature catalog should not be.
+
+## Resolution and geometry finding
+
+Research found that texture density, arm geometry, and 3D outer-layer presentation are separate concerns. The engine therefore owns one logical UV layout that scales by density while retaining exact model-unit proportions. VOXL initially supports `64x64` and `128x128` atlases for both wide and slim arms. A renderer may visually extrude an outer layer without changing either atlas density or document meaning.
+
+The source links and destination names supporting these conclusions live in the [restricted compatibility dossier](compliance/DESTINATION_COMPATIBILITY.md), as required by the target-neutral naming policy. Deterministic support is not a compatibility promise for every destination path, and it is not evidence that the eventual managed generation provider produces worthwhile higher-density detail.
 
 ## What Codex subscription compute can and cannot do
 

@@ -8,7 +8,7 @@
   "properties": {
     "kind": { "const": "voxl.humanoid-skin.sidecar/v1" },
     "formatVersion": { "const": 1 },
-    "profile": { "enum": ["wide-arm-64", "slim-arm-64"] },
+    "profile": { "enum": ["wide-arm-64", "slim-arm-64", "wide-arm-128", "slim-arm-128"] },
     "semanticRegions": {
       "type": "object",
       "additionalProperties": {

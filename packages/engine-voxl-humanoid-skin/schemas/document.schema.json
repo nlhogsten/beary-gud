@@ -8,7 +8,7 @@
   "properties": {
     "kind": { "const": "voxl.humanoid-skin/v1" },
     "formatVersion": { "const": 1 },
-    "profile": { "enum": ["wide-arm-64", "slim-arm-64"] },
+    "profile": { "enum": ["wide-arm-64", "slim-arm-64", "wide-arm-128", "slim-arm-128"] },
     "texture": {
       "type": "object",
       "additionalProperties": false,
@@ -16,8 +16,8 @@
       "properties": {
         "filename": { "type": "string", "minLength": 1 },
         "mediaType": { "const": "image/png" },
-        "width": { "const": 64 },
-        "height": { "const": 64 },
+        "width": { "enum": [64, 128] },
+        "height": { "enum": [64, 128] },
         "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
       }
     },
@@ -31,5 +31,15 @@
         "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "profile": { "enum": ["wide-arm-64", "slim-arm-64"] } } },
+      "then": { "properties": { "texture": { "properties": { "width": { "const": 64 }, "height": { "const": 64 } } } } }
+    },
+    {
+      "if": { "properties": { "profile": { "enum": ["wide-arm-128", "slim-arm-128"] } } },
+      "then": { "properties": { "texture": { "properties": { "width": { "const": 128 }, "height": { "const": 128 } } } } }
+    }
+  ]
 }

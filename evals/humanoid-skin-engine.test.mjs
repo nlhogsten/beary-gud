@@ -25,7 +25,7 @@ import {
 const root = resolve(import.meta.dirname, "..");
 
 function setPixel(document, x, y, rgba) {
-  const offset = (y * 64 + x) * 4;
+  const offset = (y * document.width + x) * 4;
   document.pixels.set(rgba, offset);
 }
 
@@ -35,16 +35,23 @@ function paintRegion(document, region, rgba) {
   }
 }
 
-test("defines non-overlapping wide and slim UV maps within the 64x64 atlas", () => {
-  assert.deepEqual(HUMANOID_SKIN_PROFILE_IDS, ["wide-arm-64", "slim-arm-64"]);
+test("defines scale-aware, non-overlapping wide and slim UV maps", () => {
+  assert.deepEqual(HUMANOID_SKIN_PROFILE_IDS, [
+    "wide-arm-64",
+    "slim-arm-64",
+    "wide-arm-128",
+    "slim-arm-128",
+  ]);
   assert.equal(createMappedPixelMask("wide-arm-64").reduce((sum, value) => sum + value, 0), 3264);
   assert.equal(createMappedPixelMask("slim-arm-64").reduce((sum, value) => sum + value, 0), 3136);
+  assert.equal(createMappedPixelMask("wide-arm-128").reduce((sum, value) => sum + value, 0), 3264 * 4);
+  assert.equal(createMappedPixelMask("slim-arm-128").reduce((sum, value) => sum + value, 0), 3136 * 4);
 
   for (const profile of Object.values(HUMANOID_SKIN_PROFILES)) {
     const regionArea = profile.regions.reduce((sum, region) => {
       assert.ok(region.x >= 0 && region.y >= 0);
-      assert.ok(region.x + region.width <= 64);
-      assert.ok(region.y + region.height <= 64);
+      assert.ok(region.x + region.width <= profile.width);
+      assert.ok(region.y + region.height <= profile.height);
       return sum + region.width * region.height;
     }, 0);
     assert.equal(createMappedPixelMask(profile.id).reduce((sum, value) => sum + value, 0), regionArea);
@@ -53,6 +60,18 @@ test("defines non-overlapping wide and slim UV maps within the 64x64 atlas", () 
   assert.deepEqual(
     getHumanoidSkinRegion("slim-arm-64", "right-arm", "base", "front"),
     { part: "right-arm", layer: "base", face: "front", x: 44, y: 20, width: 3, height: 12 },
+  );
+  assert.deepEqual(
+    getHumanoidSkinRegion("slim-arm-128", "right-arm", "base", "front"),
+    { part: "right-arm", layer: "base", face: "front", x: 88, y: 40, width: 6, height: 24 },
+  );
+  assert.deepEqual(
+    HUMANOID_SKIN_PROFILES["wide-arm-64"].geometry,
+    HUMANOID_SKIN_PROFILES["wide-arm-128"].geometry,
+  );
+  assert.deepEqual(
+    HUMANOID_SKIN_PROFILES["slim-arm-64"].geometry,
+    HUMANOID_SKIN_PROFILES["slim-arm-128"].geometry,
   );
   assert.deepEqual(
     getHumanoidSkinRegion("wide-arm-64", "left-arm", "outer", "back"),
@@ -144,19 +163,22 @@ test("rejects PNG dimensions and checksum corruption", () => {
   assert.throws(() => decodeRgbaPng(corrupted), /checksum/);
 });
 
-test("renders deterministic front and back nearest-neighbor previews", () => {
-  const document = createBlankHumanoidSkinDocument("slim-arm-64", { baseColor: [10, 20, 30, 255] });
-  paintRegion(document, getHumanoidSkinRegion(document.profile, "head", "base", "front"), [255, 0, 0, 255]);
-  paintRegion(document, getHumanoidSkinRegion(document.profile, "head", "base", "back"), [0, 0, 255, 255]);
-  paintRegion(document, getHumanoidSkinRegion(document.profile, "head", "outer", "front"), [0, 255, 0, 128]);
+test("renders deterministic density-aware front and back nearest-neighbor previews", () => {
+  for (const profile of ["slim-arm-64", "slim-arm-128"]) {
+    const document = createBlankHumanoidSkinDocument(profile, { baseColor: [10, 20, 30, 255] });
+    paintRegion(document, getHumanoidSkinRegion(document.profile, "head", "base", "front"), [255, 0, 0, 255]);
+    paintRegion(document, getHumanoidSkinRegion(document.profile, "head", "base", "back"), [0, 0, 255, 255]);
+    paintRegion(document, getHumanoidSkinRegion(document.profile, "head", "outer", "front"), [0, 255, 0, 128]);
 
-  const first = renderHumanoidSkinPreviews(document, { scale: 4 });
-  const second = renderHumanoidSkinPreviews(document, { scale: 4 });
-  assert.equal(first.length, 2);
-  assert.equal(first[0].width, 64);
-  assert.equal(first[0].height, 128);
-  assert.deepEqual(first.map(({ bytes }) => bytes), second.map(({ bytes }) => bytes));
-  assert.notDeepEqual(first[0].bytes, first[1].bytes);
+    const first = renderHumanoidSkinPreviews(document, { scale: 4 });
+    const second = renderHumanoidSkinPreviews(document, { scale: 4 });
+    const densityScale = document.width / 64;
+    assert.equal(first.length, 2);
+    assert.equal(first[0].width, 64 * densityScale);
+    assert.equal(first[0].height, 128 * densityScale);
+    assert.deepEqual(first.map(({ bytes }) => bytes), second.map(({ bytes }) => bytes));
+    assert.notDeepEqual(first[0].bytes, first[1].bytes);
+  }
 });
 
 test("registers, validates, renders, and exports without a generation provider", async () => {
@@ -176,25 +198,28 @@ test("registers, validates, renders, and exports without a generation provider",
   assert.match(exported.sha256, /^[a-f0-9]{64}$/);
 });
 
-test("passes an independent PNG import smoke test", async (context) => {
+test("passes independent PNG import smoke tests for each density", async (context) => {
   const directory = await mkdtemp(join(tmpdir(), "voxl-humanoid-skin-"));
   context.after(() => rm(directory, { recursive: true, force: true }));
-  const path = join(directory, "wide-arm-64.png");
-  await writeFile(path, exportHumanoidSkinPng(createBlankHumanoidSkinDocument("wide-arm-64")));
-  const probe = JSON.parse(execFileSync("ffprobe", [
-    "-v",
-    "error",
-    "-show_entries",
-    "stream=codec_name,pix_fmt,width,height",
-    "-of",
-    "json",
-    path,
-  ], { encoding: "utf8" }));
+  for (const size of [64, 128]) {
+    const profile = `wide-arm-${size}`;
+    const path = join(directory, `${profile}.png`);
+    await writeFile(path, exportHumanoidSkinPng(createBlankHumanoidSkinDocument(profile)));
+    const probe = JSON.parse(execFileSync("ffprobe", [
+      "-v",
+      "error",
+      "-show_entries",
+      "stream=codec_name,pix_fmt,width,height",
+      "-of",
+      "json",
+      path,
+    ], { encoding: "utf8" }));
 
-  assert.deepEqual(probe.streams[0], {
-    codec_name: "png",
-    width: 64,
-    height: 64,
-    pix_fmt: "rgba",
-  });
+    assert.deepEqual(probe.streams[0], {
+      codec_name: "png",
+      width: size,
+      height: size,
+      pix_fmt: "rgba",
+    });
+  }
 });

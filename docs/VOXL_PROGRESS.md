@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 5 — generative-provider research spike.** Phases 0–4 are complete. The studio, synchronized 2D/3D editor, profile-valid export, and named local versions are verified. The fixed evaluation specification, offline harness, no-call dry-run planner, and all deterministic reference/baseline/mask fixtures exist and pass integrity checks. A first managed-API candidate and pinned model snapshot are documented, but dataset provenance remains pending, so the provider is not admitted and no API call is authorized. VOXL does not plan to rent or manage GPUs.
+**Post-Phase 4 conformance hardening, then Phase 5 provider admission.** Phases 0–4 are complete. Engine and Studio code now separate model geometry from texture density and implement wide/slim `64`/`128` profiles; the focused deterministic tests pass, while the updated browser journeys and full repository gate remain the sign-off boundary. The fixed Phase 5 evaluation stays intentionally locked to `64x64`. Its first managed-API candidate remains blocked on dataset provenance, so no provider is admitted, no API call is authorized, and VOXL does not plan to rent or manage GPUs.
 
 ## Platform and repository foundation
 
@@ -152,6 +152,30 @@ Status: **complete**
 - [x] A humanoid skin can be painted in synchronized 2D/3D views and exported validly.
 - [x] Existing transparent-character drafting still works.
 
+## Post-Phase 4 — conformance and density hardening
+
+Status: **in progress**
+
+### Work
+
+- [x] Record the geometry-versus-density decision in ADR 0012 and isolate destination names, source links, and release checks in the restricted compatibility dossier.
+- [x] Add engine-owned model-unit geometry plus scale-aware UV maps for `wide-arm-64`, `slim-arm-64`, `wide-arm-128`, and `slim-arm-128`.
+- [x] Add deterministic validation, import/export, detection, preview, conversion, and independent PNG probes for both densities.
+- [x] Update the React editor to use profile dimensions throughout and explain higher-density up/down conversion behavior.
+- [x] Make the Three.js renderer consume engine-owned geometry and add separate edit/orbit modes, directional views, zoom, and reset.
+- [x] Extend the quality journeys to exercise interaction-mode separation, reset, `128x128` editing, and same-run export/re-import.
+- [x] Run the updated Playwright journeys and retain complete browser evidence with no runtime errors.
+- [ ] Complete independent visual review for proportions, UV alignment, transparent-layer picking, camera control, and density-invariant geometry.
+- [x] Run the full canonical repository gate and focused engine/density probes; no database or infrastructure boundary changed in this slice.
+
+### Exit criteria
+
+- [x] All four profiles pass the complete repository gate and browser walkthroughs.
+- [ ] Browser evidence proves `128` changes texture density without changing physical body proportions.
+- [x] Both `64` and `128` PNGs round-trip through the user-facing export/import path.
+- [x] The 3D viewer has recoverable camera controls and surface painting is not conflated with orbiting.
+- [x] The current Phase 5 evaluation remains reproducible and unchanged at its precommitted `64x64` density.
+
 ## Phase 5 — generative-provider research spike
 
 Status: **in progress**
@@ -264,7 +288,8 @@ Status: **not started**
 | 2026-08-05 | Phase 4 local versions and Phase 5 evaluation foundation | `bun run check`, `local-version-compare` desktop/mobile Playwright journey, independent rubric review, evidence audit, `bun run eval:check`, `bun run eval:adapters`, `bun audit`, `bun run db:generate`, `tofu fmt -check`, `tofu validate`, localhost studio/API probes, target-brand scan | 80 automated tests passed; 74/74 browser steps passed with 0 runtime errors; immutable compare/restore and Skin/Motion isolation passed; 36-case evaluation specification validates; 0 admitted providers, 25 reference assets and 4 revision baselines remain explicit blockers; 0 vulnerabilities | `1ef2d8a` |
 | 2026-08-05 | API-first generation architecture and safe planning | `bun run check`, `bun run eval:check`, `bun run eval:adapters`, `bun run eval:plan -- --adapter preview-to-atlas-managed-api --case v1-027`, `bun audit`, `bun run db:generate`, `tofu fmt -check`, `tofu validate`, matched-skill validation, target-brand scan, independent diff review | 86 automated tests passed; lint/types/build passed; managed API compute is provider-owned; dry plan made no credential, adapter, network, paid-call, or evidence-write action; full plan hashes and revision mask gates reviewed; 25 references, 4 baselines, 4 mask sets, provenance admission, and an executable adapter remain blockers; 0 vulnerabilities | `bc9145f` |
 | 2026-08-05 | Phase 5 deterministic inputs and first conditional API candidate | `bun run check`, `bun run eval:assets check`, `bun run eval:check`, `bun run eval:adapters`, `bun run eval:plan -- --adapter preview-to-atlas-managed-api --case v1-027`, engine-valid atlas and mask inspection, independent fixture-semantic audit, `bun audit`, `bun run db:generate`, `tofu fmt -check`, `tofu validate`, target-brand scan | 92 automated tests passed; lint/types/build passed; 25 synthetic references, 4 valid baselines, and 12 binary masks are deterministic and SHA-256 locked with 0 third-party inputs and 0 missing assets; candidate is pinned and documented but remains pending with 0 admitted/executable providers; no credentials, network, paid call, or GPU infrastructure used; 0 vulnerabilities | `58b3e67` |
+| 2026-08-05 | Humanoid conformance and density hardening | `bun run check`; `bun run qa:walkthrough humanoid-2d-3d`; `bun run qa:walkthrough humanoid-import-export`; focused engine/browser parity tests; independent `ffprobe` on same-run downloads; implementing-agent screenshot review; target-brand boundary scan | 59 repository tests plus 57/57 final browser steps passed with 0 runtime errors; all four profiles exercised; 64/128 RGBA exports independently probed; edit/orbit separation and reset passed; destination-specific names isolated to the compliance dossier; independent rubric review remains open | pending |
 
 ## Next unchecked step
 
-Resolve the documented dataset-provenance decision for the first conditional API candidate. If it is approved for the synthetic research run, implement the adapter and capped shakedown; if the strict licensed/public-domain-only gate remains, evaluate the documented provenance-oriented fallback instead.
+Have a reviewer other than the implementing agent judge the final `humanoid-2d-3d` and `humanoid-import-export` evidence against the required visual rubric. If it passes, close the density-invariant-proportions criterion and resume the documented dataset-provenance decision for the first conditional API candidate.

@@ -16,7 +16,6 @@ import { CuboidHumanoidRenderer } from "./CuboidHumanoidRenderer";
 import {
   SKIN_PARTS,
   SKIN_PROFILE_IDS,
-  SKIN_SIZE,
   convertProfile,
   countChangedSkinPixels,
   createBlankPixels,
@@ -24,6 +23,7 @@ import {
   parseSkinVersionDocument,
   pixelRegion,
   renderPreview,
+  renderPreviewSize,
   skinProfile,
   skinRegion,
   serializeSkinVersionDocument,
@@ -60,17 +60,19 @@ interface History {
 
 function fillRegion(
   pixels: Uint8ClampedArray,
+  atlasWidth: number,
   region: SkinRegion,
   color: readonly number[],
 ) {
   for (let y = 0; y < region.height; y += 1) {
     for (let x = 0; x < region.width; x += 1) {
-      pixels.set(color, ((region.y + y) * SKIN_SIZE + region.x + x) * 4);
+      pixels.set(color, ((region.y + y) * atlasWidth + region.x + x) * 4);
     }
   }
 }
 
 function starterPixels(profileId: SkinProfileId): Uint8ClampedArray {
+  const profile = skinProfile(profileId);
   const pixels = createBlankPixels(profileId, [195, 143, 105, 255]);
   const colors: Partial<Record<SkinPart, readonly number[]>> = {
     torso: [42, 90, 124, 255],
@@ -79,22 +81,32 @@ function starterPixels(profileId: SkinProfileId): Uint8ClampedArray {
     "right-leg": [42, 47, 65, 255],
     "left-leg": [42, 47, 65, 255],
   };
-  for (const region of skinProfile(profileId).regions) {
+  for (const region of profile.regions) {
     const color = colors[region.part];
-    if (region.layer === "base" && color) fillRegion(pixels, region, color);
+    if (region.layer === "base" && color) fillRegion(pixels, profile.width, region, color);
     if (
       region.layer === "outer"
       && ["torso", "right-arm", "left-arm"].includes(region.part)
     ) {
-      fillRegion(pixels, region, [94, 179, 171, 178]);
+      fillRegion(pixels, profile.width, region, [94, 179, 171, 178]);
     }
   }
   const face = skinRegion(profileId, "head", "base", "front");
-  for (let x = 0; x < face.width; x += 1) {
-    pixels.set([76, 49, 35, 255], (face.y * SKIN_SIZE + face.x + x) * 4);
+  for (let y = 0; y < profile.texelScale; y += 1) {
+    for (let x = 0; x < face.width; x += 1) {
+      pixels.set([76, 49, 35, 255], ((face.y + y) * profile.width + face.x + x) * 4);
+    }
   }
   for (const eyeX of [2, 5]) {
-    pixels.set([32, 39, 48, 255], ((face.y + 3) * SKIN_SIZE + face.x + eyeX) * 4);
+    for (let y = 0; y < profile.texelScale; y += 1) {
+      for (let x = 0; x < profile.texelScale; x += 1) {
+        const offset = (
+          (face.y + 3 * profile.texelScale + y) * profile.width
+          + face.x + eyeX * profile.texelScale + x
+        ) * 4;
+        pixels.set([32, 39, 48, 255], offset);
+      }
+    }
   }
   return pixels;
 }
@@ -119,7 +131,8 @@ function normalizeDraft(value: unknown): SkinDraft {
   if (!value || typeof value !== "object" || Array.isArray(value)) return fallback;
   const candidate = value as Record<string, unknown>;
   if (!isProfileId(candidate.profile) || !Array.isArray(candidate.pixels)) return fallback;
-  if (candidate.pixels.length !== SKIN_SIZE * SKIN_SIZE * 4) return fallback;
+  const dimensions = skinProfile(candidate.profile);
+  if (candidate.pixels.length !== dimensions.width * dimensions.height * 4) return fallback;
   const storedLayers = candidate.layers && typeof candidate.layers === "object"
     ? candidate.layers as Partial<Record<SkinLayer, boolean>>
     : {};
@@ -160,12 +173,13 @@ function snapshotMatches(left: SkinSnapshot, right: SkinSnapshot): boolean {
 }
 
 function visibleAtlas(draft: SkinDraft): Uint8ClampedArray {
+  const profile = skinProfile(draft.profile);
   const output = new Uint8ClampedArray(draft.pixels);
-  for (const region of skinProfile(draft.profile).regions) {
+  for (const region of profile.regions) {
     if (draft.layers[region.layer] && draft.parts[region.part]) continue;
     for (let y = region.y; y < region.y + region.height; y += 1) {
       for (let x = region.x; x < region.x + region.width; x += 1) {
-        output.fill(0, (y * SKIN_SIZE + x) * 4, (y * SKIN_SIZE + x) * 4 + 4);
+        output.fill(0, (y * profile.width + x) * 4, (y * profile.width + x) * 4 + 4);
       }
     }
   }
@@ -201,23 +215,24 @@ function SkinVersionPreview({ record }: { record: LocalVersionRecord }) {
     () => parseSkinVersionDocument(record.documentJson),
     [record.documentJson],
   );
+  const previewSize = renderPreviewSize(version.profile);
 
   useEffect(() => {
     drawPixels(
       canvasRef.current,
       renderPreview(version.profile, version.pixels, "front", ["base", "outer"], SKIN_PARTS),
-      16,
-      32,
+      previewSize.width,
+      previewSize.height,
     );
-  }, [version]);
+  }, [previewSize.height, previewSize.width, version]);
 
   return (
     <canvas
       aria-label={`${record.name} version preview`}
       className={styles.versionSkinPreview}
-      height={32}
+      height={previewSize.height}
       ref={canvasRef}
-      width={16}
+      width={previewSize.width}
     />
   );
 }
@@ -226,6 +241,7 @@ export function HumanoidSkinEditor() {
   const [draft, setDraft] = useState<SkinDraft>(initialDraft);
   const [history, setHistory] = useState<History>({ past: [], future: [] });
   const [tool, setTool] = useState<Tool>("pencil");
+  const [interactionMode, setInteractionMode] = useState<"edit" | "orbit">("edit");
   const [coordinate, setCoordinate] = useState("64 × 64");
   const [regionLabel, setRegionLabel] = useState("Move over the atlas to inspect a UV region");
   const [notice, setNotice] = useState("Draft saved locally");
@@ -238,6 +254,8 @@ export function HumanoidSkinEditor() {
   const historyRef = useRef(history);
   const pointerActiveRef = useRef(false);
   const strokeBeforeRef = useRef<SkinSnapshot | undefined>(undefined);
+  const activeProfile = skinProfile(draft.profile);
+  const previewSize = renderPreviewSize(draft.profile);
 
   const updateDraft = useCallback((next: SkinDraft) => {
     draftRef.current = next;
@@ -268,20 +286,27 @@ export function HumanoidSkinEditor() {
   }, [draft, hydrated]);
 
   useEffect(() => {
-    drawPixels(atlasRef.current, visibleAtlas(draft), SKIN_SIZE, SKIN_SIZE);
+    const profile = skinProfile(draft.profile);
+    setCoordinate(`${profile.width} × ${profile.height}`);
+  }, [draft.profile]);
+
+  useEffect(() => {
+    const profile = skinProfile(draft.profile);
+    const size = renderPreviewSize(draft.profile);
+    drawPixels(atlasRef.current, visibleAtlas(draft), profile.width, profile.height);
     const layers = (["base", "outer"] as const).filter((layer) => draft.layers[layer]);
     const parts = SKIN_PARTS.filter((part) => draft.parts[part]);
     drawPixels(
       frontRef.current,
       renderPreview(draft.profile, draft.pixels, "front", layers, parts),
-      16,
-      32,
+      size.width,
+      size.height,
     );
     drawPixels(
       backRef.current,
       renderPreview(draft.profile, draft.pixels, "back", layers, parts),
-      16,
-      32,
+      size.width,
+      size.height,
     );
   }, [draft]);
 
@@ -366,9 +391,10 @@ export function HumanoidSkinEditor() {
 
   function pointerPixel(event: ReactPointerEvent<HTMLCanvasElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
+    const profile = skinProfile(draftRef.current.profile);
     return {
-      x: Math.max(0, Math.min(63, Math.floor((event.clientX - bounds.left) * SKIN_SIZE / bounds.width))),
-      y: Math.max(0, Math.min(63, Math.floor((event.clientY - bounds.top) * SKIN_SIZE / bounds.height))),
+      x: Math.max(0, Math.min(profile.width - 1, Math.floor((event.clientX - bounds.left) * profile.width / bounds.width))),
+      y: Math.max(0, Math.min(profile.height - 1, Math.floor((event.clientY - bounds.top) * profile.height / bounds.height))),
     };
   }
 
@@ -381,7 +407,7 @@ export function HumanoidSkinEditor() {
       region ? `${region.part} / ${region.layer} / ${region.face}` : "Outside mapped UV regions",
     );
     if (!pointerActiveRef.current || !region) return;
-    const offset = (y * SKIN_SIZE + x) * 4;
+    const offset = (y * skinProfile(current.profile).width + x) * 4;
     const color = tool === "eraser" ? [0, 0, 0, 0] as const : hexRgba(current.color);
     if (color.every((value, index) => value === current.pixels[offset + index])) return;
     const nextPixels = new Uint8ClampedArray(current.pixels);
@@ -398,7 +424,7 @@ export function HumanoidSkinEditor() {
       region ? `${region.part} / ${region.layer} / ${region.face}` : "Outside mapped UV regions",
     );
     if (!region) return;
-    const offset = (y * SKIN_SIZE + x) * 4;
+    const offset = (y * skinProfile(current.profile).width + x) * 4;
     if (tool === "picker") {
       const rgba = current.pixels.slice(offset, offset + 4);
       if (rgba[3]) {
@@ -425,7 +451,7 @@ export function HumanoidSkinEditor() {
 
   function paintFromThreeDimensions(x: number, y: number) {
     const current = draftRef.current;
-    const offset = (y * SKIN_SIZE + x) * 4;
+    const offset = (y * skinProfile(current.profile).width + x) * 4;
     if (tool === "picker") {
       const rgba = current.pixels.slice(offset, offset + 4);
       if (rgba[3]) {
@@ -448,11 +474,18 @@ export function HumanoidSkinEditor() {
   function setProfile(nextProfile: SkinProfileId) {
     const current = draftRef.current;
     if (nextProfile === current.profile) return;
+    const previousProfile = skinProfile(current.profile);
+    const selectedProfile = skinProfile(nextProfile);
+    const detailNotice = selectedProfile.texelScale < previousProfile.texelScale
+      ? "; higher-density detail was resampled to the lower-density grid"
+      : selectedProfile.texelScale > previousProfile.texelScale
+        ? "; existing pixels were expanded without inventing new detail"
+        : "";
     commitDraft({
       ...current,
       profile: nextProfile,
       pixels: convertProfile(current.pixels, current.profile, nextProfile),
-    }, `Converted draft to ${nextProfile}`);
+    }, `Converted draft to ${nextProfile}${detailNotice}`);
   }
 
   function setLayer(layer: SkinLayer, visible: boolean) {
@@ -471,18 +504,18 @@ export function HumanoidSkinEditor() {
     if (!file) return;
     try {
       const bitmap = await createImageBitmap(file);
-      if (bitmap.width !== SKIN_SIZE || bitmap.height !== SKIN_SIZE) {
+      if (bitmap.width !== bitmap.height || ![64, 128].includes(bitmap.width)) {
         bitmap.close();
-        throw new Error("Import must be a 64×64 PNG.");
+        throw new Error("Import must be a supported square PNG (64×64 or 128×128).");
       }
       const canvas = document.createElement("canvas");
-      canvas.width = SKIN_SIZE;
-      canvas.height = SKIN_SIZE;
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
       const context = canvas.getContext("2d", { willReadFrequently: true });
       if (!context) throw new Error("The browser could not read this image.");
       context.drawImage(bitmap, 0, 0);
       bitmap.close();
-      const pixels = context.getImageData(0, 0, SKIN_SIZE, SKIN_SIZE).data;
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
       const profile = detectProfile(pixels);
       const importedValidation = validatePixels(profile, pixels);
       const blockingIssue = importedValidation.issues.find((issue) => issue.severity === "error");
@@ -502,9 +535,10 @@ export function HumanoidSkinEditor() {
       return;
     }
     const canvas = document.createElement("canvas");
-    canvas.width = SKIN_SIZE;
-    canvas.height = SKIN_SIZE;
-    drawPixels(canvas, current.pixels, SKIN_SIZE, SKIN_SIZE);
+    const profile = skinProfile(current.profile);
+    canvas.width = profile.width;
+    canvas.height = profile.height;
+    drawPixels(canvas, current.pixels, profile.width, profile.height);
     canvas.toBlob((blob) => {
       if (!blob) {
         setNotice("PNG export failed");
@@ -590,19 +624,19 @@ export function HumanoidSkinEditor() {
             </div>
             <div className={styles.canvasFrame}>
               <canvas
-                aria-label="Editable 64 by 64 humanoid skin atlas"
+                aria-label={`Editable ${activeProfile.width} by ${activeProfile.height} humanoid skin atlas`}
                 className={styles.atlas}
-                height={SKIN_SIZE}
+                height={activeProfile.height}
                 onPointerCancel={finishStroke}
                 onPointerDown={startStroke}
                 onPointerLeave={() => {
-                  setCoordinate("64 × 64");
+                  setCoordinate(`${activeProfile.width} × ${activeProfile.height}`);
                   setRegionLabel("Move over the atlas to inspect a UV region");
                 }}
                 onPointerMove={inspectAndPaint}
                 onPointerUp={finishStroke}
                 ref={atlasRef}
-                width={SKIN_SIZE}
+                width={activeProfile.width}
               />
             </div>
           </section>
@@ -610,10 +644,29 @@ export function HumanoidSkinEditor() {
           <section className={styles.previewPanel}>
             <div className={styles.panelHeading}>
               <strong>3D character preview</strong>
-              <span>Drag to rotate · click to paint</span>
+              <span>{interactionMode === "edit" ? "Click to edit surface" : "Drag to orbit · scroll to zoom"}</span>
+            </div>
+            <div aria-label="3D interaction mode" className={styles.modeSwitcher} role="group">
+              <button
+                className={styles.button}
+                data-selected={interactionMode === "edit"}
+                onClick={() => setInteractionMode("edit")}
+                type="button"
+              >
+                Edit surface
+              </button>
+              <button
+                className={styles.button}
+                data-selected={interactionMode === "orbit"}
+                onClick={() => setInteractionMode("orbit")}
+                type="button"
+              >
+                Orbit view
+              </button>
             </div>
             <div className={styles.previewStack}>
               <CuboidHumanoidRenderer
+                interactionMode={interactionMode}
                 layers={draft.layers}
                 onInspect={(region, x, y) => {
                   setCoordinate(`${x}, ${y}`);
@@ -626,11 +679,11 @@ export function HumanoidSkinEditor() {
               />
               <div className={styles.miniPreviews}>
                 <figure>
-                  <canvas aria-label="Front skin preview" height={32} ref={frontRef} width={16} />
+                  <canvas aria-label="Front skin preview" height={previewSize.height} ref={frontRef} width={previewSize.width} />
                   <figcaption>Front</figcaption>
                 </figure>
                 <figure>
-                  <canvas aria-label="Back skin preview" height={32} ref={backRef} width={16} />
+                  <canvas aria-label="Back skin preview" height={previewSize.height} ref={backRef} width={previewSize.width} />
                   <figcaption>Back</figcaption>
                 </figure>
               </div>
@@ -655,6 +708,8 @@ export function HumanoidSkinEditor() {
           >
             <option value="wide-arm-64">Wide arm · 64</option>
             <option value="slim-arm-64">Slim arm · 64</option>
+            <option value="wide-arm-128">Wide arm · 128</option>
+            <option value="slim-arm-128">Slim arm · 128</option>
           </select>
         </label>
 
@@ -727,7 +782,7 @@ export function HumanoidSkinEditor() {
           documentJson={versionDocumentJson}
           documentKind="voxl.humanoid-skin/v1"
           engineId="voxl-humanoid-skin"
-          engineVersion="1.0.0"
+          engineVersion="1.1.0"
           onRestore={(record) => {
             const restored = parseSkinVersionDocument(record.documentJson);
             const current = draftRef.current;
