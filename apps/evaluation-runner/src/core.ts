@@ -10,6 +10,10 @@ import {
 import { join, relative, resolve } from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
+import type {
+  GenerationProviderCatalog,
+  GenerationProviderCatalogEntry,
+} from "@voxl/generation-provider-contracts";
 import {
   HumanoidSkinValidationError,
   decodeRgbaPng,
@@ -34,7 +38,18 @@ export interface EvaluationCase extends JsonObject {
   prompt: string;
   categories: string[];
   references: Array<JsonObject & { materializedAsset: null | { path: string; sha256: string; mimeType: string } }>;
-  revision: null | (JsonObject & { baselineAsset: null | { path: string; sha256: string } });
+  revision: null | (JsonObject & {
+    baselineAsset: null | { path: string; sha256: string };
+    editableRegions: string[];
+    protectedRegions: string[];
+    immutableRegions: string[];
+    maximumProtectedChangedTexelRate: number;
+    materializedMasks: null | {
+      editable: { path: string; sha256: string };
+      protected: { path: string; sha256: string };
+      immutable: { path: string; sha256: string };
+    };
+  });
 }
 
 export interface EvaluationSpecification {
@@ -51,7 +66,48 @@ export interface EvaluationReadiness {
   missingReferenceAssets: number;
   revisionCases: number;
   missingRevisionBaselines: number;
-  admittedProviderAdapters: number;
+  missingRevisionMaskSets: number;
+  cataloguedProviderCandidates: number;
+  pendingProviderCandidates: number;
+  provenanceAdmittedProviderCandidates: number;
+  executableProviderAdapters: number;
+  blockers: string[];
+}
+
+export interface EvaluationDryRunPlan {
+  schemaVersion: "voxl.provider-execution-plan/v1";
+  planId: string;
+  dryRun: true;
+  case: {
+    caseSetId: string;
+    caseDefinitionSha256: string;
+    rubricId: string;
+    rubricSha256: string;
+    id: string;
+    mode: "create" | "revise";
+    profile: "wide-arm-64" | "slim-arm-64";
+    normalizedPromptSha256: string;
+    referenceSha256s: Array<string | null>;
+    baselineSha256: string | null;
+    revisionPolicySha256: string | null;
+    editableMaskSha256: string | null;
+    protectedMaskSha256: string | null;
+    immutableMaskSha256: string | null;
+  };
+  providerDescriptorSha256: string;
+  provider: Readonly<GenerationProviderCatalogEntry>;
+  execution: {
+    networkRequired: boolean;
+    billingRisk: "none" | "possible";
+    networkAuthorized: false;
+    paidCallAuthorized: false;
+    networkUsed: false;
+    paidCall: false;
+    credentialsRead: false;
+    adapterInvoked: false;
+    attemptRecordWritten: false;
+  };
+  readyForExecution: false;
   blockers: string[];
 }
 
@@ -125,25 +181,117 @@ export async function loadAndValidateSpecification(repoRoot: string): Promise<Ev
   return { caseSet: typedCases, rubric: typedRubric, attemptSchema };
 }
 
-export function evaluationReadiness(specification: EvaluationSpecification): EvaluationReadiness {
+export function evaluationReadiness(
+  specification: EvaluationSpecification,
+  catalog?: GenerationProviderCatalog,
+  executableAdapterIds: readonly string[] = [],
+): EvaluationReadiness {
   const referenceCases = specification.caseSet.cases.filter((item) => item.references.length > 0);
   const missingReferences = referenceCases.flatMap((item) => item.references)
     .filter((item) => item.materializedAsset === null).length;
   const revisionCases = specification.caseSet.cases.filter((item) => item.mode === "revise");
   const missingBaselines = revisionCases.filter((item) => item.revision?.baselineAsset === null).length;
-  const blockers = [];
+  const missingMaskSets = revisionCases.filter((item) => item.revision?.materializedMasks === null).length;
+  const entries = catalog?.list() ?? [];
+  const admitted = entries.filter((entry) => entry.admissionDecision === "admitted");
+  const executable = admitted.filter((entry) => executableAdapterIds.includes(entry.descriptor.id));
+  const blockers: string[] = [];
   if (missingReferences) blockers.push(`${missingReferences} synthetic reference assets are not materialized.`);
   if (missingBaselines) blockers.push(`${missingBaselines} revision baselines are not materialized.`);
-  blockers.push("No provenance-admitted generation provider adapter is registered.");
+  if (missingMaskSets) blockers.push(`${missingMaskSets} revision mask sets are not materialized.`);
+  if (!admitted.length) blockers.push("No provider candidate has completed provenance admission.");
+  if (!executable.length) blockers.push("No provenance-admitted executable generation provider adapter is registered.");
   return {
     structurallyValid: true,
-    executionReady: false,
+    executionReady: blockers.length === 0,
     caseCount: specification.caseSet.cases.length,
     referenceBearingCases: referenceCases.length,
     missingReferenceAssets: missingReferences,
     revisionCases: revisionCases.length,
     missingRevisionBaselines: missingBaselines,
-    admittedProviderAdapters: 0,
+    missingRevisionMaskSets: missingMaskSets,
+    cataloguedProviderCandidates: entries.length,
+    pendingProviderCandidates: entries.filter((entry) => entry.admissionDecision === "pending").length,
+    provenanceAdmittedProviderCandidates: admitted.length,
+    executableProviderAdapters: executable.length,
+    blockers,
+  };
+}
+
+export function planEvaluationCase(options: {
+  specification: EvaluationSpecification;
+  catalog: GenerationProviderCatalog;
+  adapterId: string;
+  caseId: string;
+  executableAdapterIds?: readonly string[];
+}): EvaluationDryRunPlan {
+  const evaluationCase = options.specification.caseSet.cases.find((item) => item.id === options.caseId);
+  if (!evaluationCase) throw new Error("Evaluation case was not found.");
+  const provider = options.catalog.get(options.adapterId);
+  const executableAdapterIds = options.executableAdapterIds ?? [];
+  const missingReferences = evaluationCase.references.filter((item) => item.materializedAsset === null).length;
+  const missingBaseline = evaluationCase.mode === "revise" && evaluationCase.revision?.baselineAsset === null;
+  const missingMasks = evaluationCase.mode === "revise" && evaluationCase.revision?.materializedMasks === null;
+  const blockers: string[] = [];
+  if (provider.admissionDecision !== "admitted") blockers.push(`candidate-provenance-${provider.admissionDecision}`);
+  if (!provider.descriptor.supportedOperations.includes(evaluationCase.mode)) blockers.push("unsupported-operation");
+  if (missingReferences) blockers.push("missing-reference-assets");
+  if (missingBaseline) blockers.push("missing-revision-baseline");
+  if (missingMasks) blockers.push("missing-revision-masks");
+  if (!executableAdapterIds.includes(provider.descriptor.id)) blockers.push("adapter-not-registered");
+  if (provider.descriptor.networkAccess === "required") blockers.push("network-not-authorized");
+  if (provider.descriptor.billingRisk === "possible") blockers.push("paid-call-not-authorized");
+
+  const revisionPolicy = evaluationCase.revision ? {
+    editableRegions: evaluationCase.revision.editableRegions,
+    protectedRegions: evaluationCase.revision.protectedRegions,
+    immutableRegions: evaluationCase.revision.immutableRegions,
+    maximumProtectedChangedTexelRate: evaluationCase.revision.maximumProtectedChangedTexelRate,
+  } : null;
+  const casePlan = {
+    caseSetId: options.specification.caseSet.id,
+    caseDefinitionSha256: sha256(canonicalJson(evaluationCase)),
+    rubricId: options.specification.rubric.id,
+    rubricSha256: sha256(canonicalJson(options.specification.rubric)),
+    id: evaluationCase.id,
+    mode: evaluationCase.mode,
+    profile: evaluationCase.profile,
+    normalizedPromptSha256: sha256(normalizePrompt(evaluationCase.prompt)),
+    referenceSha256s: evaluationCase.references.map((item) => item.materializedAsset?.sha256 ?? null),
+    baselineSha256: evaluationCase.revision?.baselineAsset?.sha256 ?? null,
+    revisionPolicySha256: revisionPolicy ? sha256(canonicalJson(revisionPolicy)) : null,
+    editableMaskSha256: evaluationCase.revision?.materializedMasks?.editable.sha256 ?? null,
+    protectedMaskSha256: evaluationCase.revision?.materializedMasks?.protected.sha256 ?? null,
+    immutableMaskSha256: evaluationCase.revision?.materializedMasks?.immutable.sha256 ?? null,
+  };
+  const providerDescriptorSha256 = sha256(canonicalJson(provider.descriptor));
+  const planId = sha256(canonicalJson({
+    case: casePlan,
+    provider: {
+      descriptorSha256: providerDescriptorSha256,
+      configurationSha256: provider.configurationSha256,
+      provenanceDossierSha256: provider.provenanceDossierSha256,
+    },
+  }));
+  return {
+    schemaVersion: "voxl.provider-execution-plan/v1",
+    planId,
+    dryRun: true,
+    case: casePlan,
+    provider,
+    providerDescriptorSha256,
+    execution: {
+      networkRequired: provider.descriptor.networkAccess === "required",
+      billingRisk: provider.descriptor.billingRisk,
+      networkAuthorized: false,
+      paidCallAuthorized: false,
+      networkUsed: false,
+      paidCall: false,
+      credentialsRead: false,
+      adapterInvoked: false,
+      attemptRecordWritten: false,
+    },
+    readyForExecution: false,
     blockers,
   };
 }
@@ -189,6 +337,9 @@ export async function replayArtifact(options: {
   }
   if (evaluationCase.mode === "revise" && evaluationCase.revision?.baselineAsset === null) {
     throw new Error("Revision baseline must be materialized before replay.");
+  }
+  if (evaluationCase.mode === "revise" && evaluationCase.revision?.materializedMasks === null) {
+    throw new Error("Revision masks must be materialized before replay.");
   }
 
   const finalDirectory = resolve(options.outputRoot, options.attemptId);
@@ -292,8 +443,8 @@ export async function replayArtifact(options: {
       normalizedPromptSha256: sha256(normalizePrompt(evaluationCase.prompt)),
       references: evaluationCase.references.flatMap((item) => item.materializedAsset ? [item.materializedAsset.sha256] : []),
       baselineSha256: evaluationCase.revision?.baselineAsset?.sha256 ?? null,
-      editableMaskSha256: null,
-      protectedMaskSha256: null,
+      editableMaskSha256: evaluationCase.revision?.materializedMasks?.editable.sha256 ?? null,
+      protectedMaskSha256: evaluationCase.revision?.materializedMasks?.protected.sha256 ?? null,
     },
     rawOutput: artifact(rawPath, options.candidateBytes),
     normalization: { operations: normalizationOperations, policyVersion: "humanoid-replay/v1", manuallyRepaired: false },

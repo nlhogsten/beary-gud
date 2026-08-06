@@ -156,7 +156,8 @@ Skills guide the workflow; they do not weaken the evidence requirements or autho
 Phase 5 uses a separate evidence path from browser walkthroughs:
 
 - `bun run eval:check` validates the fixed case-set, rubric, and immutable-attempt schemas and reports execution-readiness blockers.
-- `bun run eval:adapters` lists provenance-admitted provider adapters. It intentionally returns an empty list until a real candidate passes admission review.
+- `bun run eval:adapters` lists sanitized managed-API candidate metadata, provenance status, and executable-adapter counts. Pending metadata is visible but does not count as admission or execution readiness.
+- `bun run eval:plan -- --adapter <id> --case <id>` produces a deterministic local-only plan bound to complete case/rubric, provider descriptor/configuration, provenance, revision-policy, and input hashes. It reads no credentials, invokes no adapter, performs no network or paid call, and writes no attempt evidence.
 - `bun run eval:replay -- --case <id> --candidate <png>` sends an existing PNG through deterministic engine validation, canonical export, hashing, and immutable evidence storage. Replay performs no inference and is excluded from provider metrics.
 
 The evaluator uses [Ajv](https://www.npmjs.com/package/ajv) for local JSON Schema 2020-12 validation and [ajv-formats](https://www.npmjs.com/package/ajv-formats) for RFC 3339 date-time validation. Attempts live under ignored `.runs/evaluations/`; a manifest detects later file mutation. Provider failures may have no raw artifact, and replay evidence records `provider: null`, `networkUsed: false`, and `paidCall: false` rather than inventing provider metadata.

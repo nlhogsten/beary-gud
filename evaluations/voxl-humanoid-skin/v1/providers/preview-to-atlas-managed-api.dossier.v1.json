@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "voxl.provider-provenance-dossier/v1",
+  "id": "preview-to-atlas-managed-api-review",
+  "version": "1.0.0",
+  "candidateId": "preview-to-atlas-managed-api",
+  "decision": "pending",
+  "reviewedAt": null,
+  "checks": {
+    "commercialUse": "pending",
+    "modelProvenance": "pending",
+    "datasetProvenance": "pending",
+    "referenceUse": "pending",
+    "retention": "pending"
+  },
+  "evidence": [],
+  "blockers": [
+    "A managed API provider and model have not been selected or reviewed."
+  ]
+}

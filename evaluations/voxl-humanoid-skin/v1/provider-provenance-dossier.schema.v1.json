@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.local/evaluations/voxl-humanoid-skin/v1/provider-provenance-dossier.schema.json",
+  "title": "VOXL provider provenance dossier v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "version", "candidateId", "decision", "reviewedAt", "checks", "evidence", "blockers"],
+  "properties": {
+    "schemaVersion": { "const": "voxl.provider-provenance-dossier/v1" },
+    "id": { "$ref": "#/$defs/id" },
+    "version": { "$ref": "#/$defs/version" },
+    "candidateId": { "$ref": "#/$defs/id" },
+    "decision": { "enum": ["pending", "admitted", "rejected"] },
+    "reviewedAt": { "type": ["string", "null"], "format": "date-time" },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commercialUse", "modelProvenance", "datasetProvenance", "referenceUse", "retention"],
+      "properties": {
+        "commercialUse": { "$ref": "#/$defs/checkStatus" },
+        "modelProvenance": { "$ref": "#/$defs/checkStatus" },
+        "datasetProvenance": { "$ref": "#/$defs/checkStatus" },
+        "referenceUse": { "$ref": "#/$defs/checkStatus" },
+        "retention": { "$ref": "#/$defs/checkStatus" }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "check", "source", "checkedAt"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "check": { "enum": ["commercialUse", "modelProvenance", "datasetProvenance", "referenceUse", "retention"] },
+          "source": { "type": "string", "minLength": 1 },
+          "checkedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$" },
+    "checkStatus": { "enum": ["pending", "approved", "rejected"] }
+  }
+}

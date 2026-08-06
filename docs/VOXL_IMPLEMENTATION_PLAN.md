@@ -1,6 +1,6 @@
 # VOXL implementation plan
 
-Status: active start-to-finish delivery plan. Phases 0–3 were completed on August 5, 2026. Phase 4 is in progress. The repository now uses Bun workspaces with independent studio, Hono server, character CLI, engine, database, and infrastructure ownership; this foundation does not mark later durable-service phases complete. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
+Status: active start-to-finish delivery plan. Phases 0–4 were completed on August 5, 2026. Phase 5 is in progress. The repository now uses Bun workspaces with independent studio, Hono server, character CLI, engine, database, and infrastructure ownership; this foundation does not mark later durable-service phases complete. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
 
 Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) for unfamiliar terms and [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) for research evidence, source links, product constraints, and the rationale for this plan.
 
@@ -57,13 +57,13 @@ Initial engines:
 
 ### Generation provider
 
-A generation provider is a replaceable compute implementation used by an engine:
+A generation provider is a replaceable creative-compute implementation used by an engine. The accepted default is a managed external API: the provider operates its accelerators and model service while VOXL sends requests and validates returned candidates.
 
 - Native host capabilities available inside Codex or another client.
-- Hosted image APIs.
-- Self-hosted checkpoints such as a preview-to-atlas model.
+- Managed image/model APIs used by the standalone product.
 - Deterministic procedural generation for tests and fallback.
-- Future fine-tuned or visual-format-specialized models.
+- Future fine-tuned or visual-format-specialized models exposed through a managed API.
+- Self-hosted checkpoints only as separately approved, opt-in research—not as a planned product fallback.
 
 Provider code must not own the durable asset schema. An engine should be able to replace a provider without invalidating saved projects.
 
@@ -217,7 +217,7 @@ Engine migrations must be explicit, reversible where practical, and tested again
 - Keep current development on localhost. Do not publish development checkpoints to ChatGPT Sites.
 - Treat the web studio, MCP tools, and optional in-chat UI as clients of the same API, identity, projects, versions, database, and object storage.
 - Manage future AWS environments with OpenTofu; do not hard-code account IDs, domains, secrets, or guessed production capacity.
-- Do not turn temporary inference experiments into production infrastructure without measured evidence.
+- Do not add model-serving or GPU infrastructure. Any exception requires a new ADR, measured evidence that managed APIs cannot meet requirements, an operations/security/cost review, and explicit approval.
 
 ## Phase 0: Baseline and decision records
 
@@ -345,7 +345,7 @@ Use one application shell while keeping format-specific editors independent.
 
 ### Goal
 
-Prove or reject an open-ended generation path before building permanent inference infrastructure.
+Prove or reject an open-ended managed-API generation path before integrating it into the product. No VOXL model-serving infrastructure is planned.
 
 ### Work
 
@@ -360,19 +360,19 @@ Prove or reject an open-ended generation path before building permanent inferenc
   - `wide-arm-64` and `slim-arm-64` profiles.
   - Localized edits with explicit preserve constraints.
 - Define scoring for prompt fidelity, reference fidelity, UV correctness, front/back consistency, pixel sharpness, edit preservation, and human preference.
-- Build a `preview-to-atlas` provider adapter for the best provenance-acceptable candidate.
-- Run it with temporary local, notebook, or rented GPU compute.
-- Test alternate canonical-preview generation paths, including native host generation where accessible and API-backed generation where needed.
-- Record cold start, warm latency, peak memory, failure rate, and compute cost.
+- Build a `preview-to-atlas` provider adapter for the best provenance-acceptable, API-accessible candidate.
+- Run the fixed experiment through managed provider APIs and, where its contract permits reproducible evaluation, native host generation.
+- Treat a downloadable checkpoint without managed API access as an optional, separately approved comparison rather than a Phase 5 requirement.
+- Record observable provider latency, failure and refusal rate, validation/acceptance rate, output quality distributions, retention/provenance risk, and actual/estimated API cost. Record accelerator memory only when the provider exposes it.
 - Perform a model and dataset provenance review before choosing a commercial candidate.
-- Keep all inference calls behind the provider interface.
+- Keep all generation calls behind the provider interface.
 
 ### Exit criteria
 
 - The full input-to-atlas experiment is reproducible from documented commands.
 - Complex references demonstrate genuinely open-ended output rather than template assembly.
 - Every candidate output passes through deterministic validation.
-- Quality and cost results identify a provider to continue, a clear fine-tuning need, or a decision to test another approach.
+- Quality and cost results identify a managed provider to continue, a clear provider-side adaptation/fine-tuning need, another API approach to test, or a decision to stop.
 - No production hosting commitment is made without passing this gate.
 
 ## Phase 6: Generative creation and localized revision
@@ -510,13 +510,13 @@ Provide host-specific workflow guidance without duplicating the engine implement
 - Representative prompts trigger the correct engine and tools.
 - The same VOXL project can be continued from web and supported chat clients.
 - Claude does not depend on nonexistent native raster generation.
-- Plugin code contains no secret model credentials or irreplaceable proprietary inference logic.
+- Plugin code contains no secret provider credentials or irreplaceable proprietary generation logic.
 
 ## Phase 11: Entitlements and web billing
 
 ### Goal
 
-Charge predictably for VOXL-hosted compute without charging for free local editing or failed jobs.
+Charge predictably for VOXL-metered managed-provider API usage without charging for free local editing or failed jobs.
 
 ### Work
 
@@ -593,24 +593,24 @@ Establish that users value open-ended generation and controlled refinement enoug
 - The selected provider meets the agreed quality, latency, and cost thresholds.
 - Users can complete the workflow without routine manual rescue.
 - The Bash-derived engine has not regressed while VOXL humanoid-skin development advanced.
-- There is sufficient demand evidence to fund production inference and support.
+- There is sufficient demand evidence to fund managed-provider API usage and support.
 
-## Phase 14: Production inference and operational hardening
+## Phase 14: Production provider operations and hardening
 
 ### Goal
 
-Turn the successful model experiment into a supportable production service.
+Turn the successful managed-provider experiment into a supportable production capability without operating model infrastructure.
 
 ### Work
 
-- Select GPU/runtime topology from measured load rather than assumptions.
-- Package model weights, dependencies, safety filters, and deterministic decoder reproducibly.
-- Add autoscaling or bounded concurrency, warm capacity policy, health checks, and graceful degradation.
+- Select managed provider(s), request policy, and CPU worker concurrency from measured load rather than assumptions.
+- Pin provider model/version and request normalization; package deterministic validators, decoders, and safety policy reproducibly.
+- Add bounded concurrency, retries, circuit breakers, health checks, and graceful degradation around provider APIs.
 - Cache only when privacy and request identity make it safe.
 - Add provider failover or a clear degraded-mode response.
 - Add budgets, cost alerts, capacity alerts, SLOs, dashboards, tracing, and on-call runbooks.
 - Test restore, rollback, data deletion, regional failure, queue backlog, and provider unavailability.
-- Load test web, MCP, job, storage, and inference paths separately.
+- Load test web, MCP, job, storage, provider-call, validation, and rendering paths separately.
 
 ### Exit criteria
 
@@ -632,7 +632,7 @@ Publish a complete product and approved conversational clients.
 - Prepare at least five positive and three negative plugin review cases.
 - Submit only after the web/MCP service is complete; public plugin guidelines do not accept a trial/demo as the finished submission.
 - Launch by region according to legal and operational readiness.
-- Monitor acquisition, activation, accepted-asset rate, retention, refunds, abuse, inference cost, and support volume.
+- Monitor acquisition, activation, accepted-asset rate, retention, refunds, abuse, provider API cost, and support volume.
 
 ### Exit criteria
 
@@ -679,7 +679,7 @@ Phase 0 baseline
 
 Phases 7 through 12 productize a validated workflow. Phases 14 and 15 scale and launch it. Phase 16 proves the broader engine platform after the first commercial engine is working.
 
-Do not build billing, public plugin submissions, multi-region inference, a public gallery, or third-party engine support before the critical path demonstrates a valuable accepted asset.
+Do not build billing, public plugin submissions, multi-region provider orchestration, a public gallery, or third-party engine support before the critical path demonstrates a valuable accepted asset.
 
 ## Cross-cutting test matrix
 

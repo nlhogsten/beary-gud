@@ -14,3 +14,4 @@ Architecture decision records capture choices that implementation must preserve.
 | [0008](0008-react-vite-studio-frontend.md) | Use one React and Vite studio frontend | Accepted; migration in progress |
 | [0009](0009-local-development-and-aws-runtime.md) | Keep development local and target an OpenTofu-managed AWS runtime | Accepted; infrastructure not yet provisioned |
 | [0010](0010-bun-workspace-and-service-boundaries.md) | Use Bun workspaces and keep runtime configuration with its owner | Accepted |
+| [0011](0011-managed-generation-apis-by-default.md) | Use managed generation APIs and keep model serving out of the accepted architecture | Accepted |

@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import {
+  GenerationProviderCatalog,
   GenerationProviderRegistry,
   defineGenerationProvider,
   invokeGenerationProvider,
   type GenerationProviderAdapter,
+  type GenerationProviderManifest,
   type GenerationProviderRequest,
+  type ProviderProvenanceDossier,
 } from "./index.ts";
 
 function adapter(overrides: Partial<GenerationProviderAdapter> = {}): GenerationProviderAdapter {
@@ -37,6 +40,48 @@ const request: GenerationProviderRequest = {
   references: [],
   controls: {},
   seed: null,
+};
+
+const manifest: GenerationProviderManifest = {
+  schemaVersion: "voxl.generation-provider-manifest/v1",
+  descriptor: {
+    id: "managed-api-candidate",
+    version: "1.0.0",
+    providerId: "managed-api-runtime",
+    modelId: "unselected-model",
+    modelVersion: "pending-selection",
+    networkAccess: "required",
+    billingRisk: "possible",
+    supportedOperations: ["create", "revise"],
+  },
+  executionClass: "managed-api",
+  computeOwnership: "provider-managed",
+  credentialMode: "external-at-execution",
+  configuration: { id: "evaluation-defaults", values: { outputMediaType: "image/png" } },
+  configurationSha256: "a".repeat(64),
+  provenanceDossier: {
+    id: "managed-api-candidate-review",
+    path: "managed-api-candidate.dossier.v1.json",
+    sha256: "b".repeat(64),
+  },
+};
+
+const pendingDossier: ProviderProvenanceDossier = {
+  schemaVersion: "voxl.provider-provenance-dossier/v1",
+  id: "managed-api-candidate-review",
+  version: "1.0.0",
+  candidateId: "managed-api-candidate",
+  decision: "pending",
+  reviewedAt: null,
+  checks: {
+    commercialUse: "pending",
+    modelProvenance: "pending",
+    datasetProvenance: "pending",
+    referenceUse: "pending",
+    retention: "pending",
+  },
+  evidence: [],
+  blockers: ["Candidate selection remains pending."],
 };
 
 describe("generation provider contracts", () => {
@@ -71,5 +116,99 @@ describe("generation provider contracts", () => {
       },
     });
     assert.doesNotMatch(JSON.stringify(result), /secret/);
+  });
+});
+
+describe("generation provider admission catalog", () => {
+  test("catalogues deeply frozen pending managed API metadata without an executable adapter", () => {
+    const catalog = new GenerationProviderCatalog();
+    const entry = catalog.register({
+      manifest,
+      dossier: pendingDossier,
+      observedConfigurationSha256: "a".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    });
+    assert.equal(entry.admissionDecision, "pending");
+    assert.equal(entry.descriptor.networkAccess, "required");
+    assert.equal(entry.descriptor.billingRisk, "possible");
+    assert.equal(Object.isFrozen(entry), true);
+    assert.equal(Object.isFrozen(entry.descriptor), true);
+    assert.deepEqual(catalog.listAdmitted(), []);
+    assert.throws(() => catalog.register({
+      manifest,
+      dossier: pendingDossier,
+      observedConfigurationSha256: "a".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    }), /already catalogued/);
+  });
+
+  test("rejects secrets, integrity mismatches, and incomplete admitted dossiers", () => {
+    const catalog = new GenerationProviderCatalog();
+    assert.throws(() => catalog.register({
+      manifest: {
+        ...manifest,
+        configuration: { id: "evaluation-defaults", values: { apiToken: "must-not-be-committed" } },
+      },
+      dossier: pendingDossier,
+      observedConfigurationSha256: "a".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    }), /cannot contain credential or secret/);
+    assert.throws(() => catalog.register({
+      manifest: {
+        ...manifest,
+        configuration: { id: "evaluation-defaults", values: { headers: { value: "public-looking" } } },
+      },
+      dossier: pendingDossier,
+      observedConfigurationSha256: "a".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    }), /cannot contain credential or secret/);
+    assert.throws(() => catalog.register({
+      manifest: {
+        ...manifest,
+        configuration: { id: "evaluation-defaults", values: { requestNote: "Bearer hidden-value" } },
+      },
+      dossier: pendingDossier,
+      observedConfigurationSha256: "a".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    }), /secret-shaped configuration values/);
+    assert.throws(() => catalog.register({
+      manifest,
+      dossier: pendingDossier,
+      observedConfigurationSha256: "0".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    }), /integrity metadata differs/);
+    assert.throws(() => catalog.register({
+      manifest,
+      dossier: { ...pendingDossier, decision: "admitted" },
+      observedConfigurationSha256: "a".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    }), /requires approved checks/);
+  });
+
+  test("admits only a fully reviewed dossier with evidence for every required check", () => {
+    const checks = Object.fromEntries(
+      Object.keys(pendingDossier.checks).map((check) => [check, "approved"]),
+    ) as ProviderProvenanceDossier["checks"];
+    const evidence = Object.keys(checks).map((check, index) => ({
+      id: `evidence-${index}`,
+      check: check as keyof typeof checks,
+      source: `compliance-record-${index}`,
+      checkedAt: "2026-08-05T00:00:00.000Z",
+    }));
+    const catalog = new GenerationProviderCatalog();
+    catalog.register({
+      manifest,
+      dossier: {
+        ...pendingDossier,
+        decision: "admitted",
+        reviewedAt: "2026-08-05T00:00:00.000Z",
+        checks,
+        evidence,
+        blockers: [],
+      },
+      observedConfigurationSha256: "a".repeat(64),
+      observedDossierSha256: "b".repeat(64),
+    });
+    assert.equal(catalog.listAdmitted().length, 1);
   });
 });

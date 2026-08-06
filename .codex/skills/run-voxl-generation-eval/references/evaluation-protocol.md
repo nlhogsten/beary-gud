@@ -11,6 +11,8 @@ Write a short experiment brief containing:
 - Protected-region threshold for localized revision.
 - Stop, continue, fine-tune, and reject conditions.
 
+Managed external APIs are the default candidate class. Do not add local, rented-GPU, or self-hosted execution as an automatic fallback. Any such comparison requires explicit approval, and product adoption requires a new ADR.
+
 Do not change the rubric after viewing provider results without versioning the evaluation.
 
 ## Case-set coverage
@@ -35,7 +37,7 @@ Store local experiment evidence under `.runs/evaluations/<run-id>/` unless the i
 - Case ID and input/reference hashes.
 - Engine ID/version, schema version, and export profile.
 - Provider adapter, provider/model version, seed, and parameters.
-- Start/end time, latency, peak memory when observable, and estimated/actual cost.
+- Start/end time, latency, memory only when observable, and estimated/actual API cost.
 - Raw provider output retained according to license and privacy policy.
 - Normalization or repair operations.
 - Candidate document/output hash.
@@ -74,3 +76,4 @@ The final report must identify:
 - Continue, fine-tune, change-provider, or stop recommendation.
 - The smallest next experiment that would reduce the decisive uncertainty.
 
+For managed APIs, record accelerator memory as unavailable rather than inventing an estimate. A provider can pass without exposing its internal hardware.

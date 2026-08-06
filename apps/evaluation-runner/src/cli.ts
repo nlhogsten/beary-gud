@@ -4,8 +4,10 @@ import { fileURLToPath } from "node:url";
 import {
   evaluationReadiness,
   loadAndValidateSpecification,
+  planEvaluationCase,
   replayArtifact,
 } from "./core.ts";
+import { loadProviderCatalog } from "./catalog.ts";
 
 const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const [command = "check", ...args] = process.argv.slice(2);
@@ -16,10 +18,28 @@ function option(name: string): string | undefined {
 }
 
 if (command === "check") {
-  const specification = await loadAndValidateSpecification(repoRoot);
-  console.log(JSON.stringify(evaluationReadiness(specification), null, 2));
+  const [specification, catalog] = await Promise.all([
+    loadAndValidateSpecification(repoRoot),
+    loadProviderCatalog(repoRoot),
+  ]);
+  console.log(JSON.stringify(evaluationReadiness(specification, catalog), null, 2));
 } else if (command === "adapters") {
-  console.log(JSON.stringify({ admittedProviderAdapters: [], count: 0 }, null, 2));
+  const catalog = await loadProviderCatalog(repoRoot);
+  console.log(JSON.stringify({
+    providerCandidates: catalog.list(),
+    cataloguedCount: catalog.list().length,
+    provenanceAdmittedCount: catalog.listAdmitted().length,
+    executableAdapterCount: 0,
+  }, null, 2));
+} else if (command === "plan") {
+  const adapterId = option("--adapter");
+  const caseId = option("--case");
+  if (!adapterId || !caseId) throw new Error("plan requires --adapter and --case.");
+  const [specification, catalog] = await Promise.all([
+    loadAndValidateSpecification(repoRoot),
+    loadProviderCatalog(repoRoot),
+  ]);
+  console.log(JSON.stringify(planEvaluationCase({ specification, catalog, adapterId, caseId }), null, 2));
 } else if (command === "replay") {
   const caseId = option("--case");
   const candidatePath = option("--candidate");

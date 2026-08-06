@@ -11,12 +11,12 @@ VOXL should be developed as a componentized AI-native asset studio with a web se
 The product does not need a custom 3D generative model to begin. Three systems that have different jobs must not be conflated:
 
 1. **Conversation and reasoning:** Codex or Claude interprets natural language and reference images, produces a structured character brief, chooses editing operations, and explains results.
-2. **Skin construction:** Deterministic code or an optional specialized image model creates a valid 64x64 RGBA texture atlas.
+2. **Skin construction:** Deterministic code, optionally supplied with creative output from a hosted provider API, creates a valid 64x64 RGBA texture atlas.
 3. **3D preview:** A conventional browser renderer wraps that 2D texture around fixed cuboid-humanoid geometry. It displays the skin; it does not invent the character.
 
 The intended VOXL humanoid-skin generator is generative-first and multimodal: text, reference images, an existing skin, masks, sketches, palettes, and future input types can condition full pixel synthesis. Structured fields such as hair color are optional control metadata, not the vocabulary or limit of creation. A procedural constructor remains useful as a test fixture and fallback, but it is not the long-term creative core.
 
-The first vertical slice does not require production GPU infrastructure, but it must evaluate a real open-ended preview-to-atlas model early. Production hosting should be designed only after that experiment establishes quality, latency, memory, and cost.
+The Phase 5 generation path is API-first. VOXL should call hosted generation and image-editing providers through replaceable adapters; it should not rent GPUs, operate model-serving infrastructure, or make a downloadable checkpoint part of the production architecture. The first vertical slice must compare API-accessible providers on quality, latency, cost, privacy, and provenance before any provider is admitted. A specialized downloadable checkpoint may remain optional comparative research, but it is not a delivery dependency.
 
 ## Target-neutral naming policy
 
@@ -99,16 +99,16 @@ Codex can:
 - Interpret a text request and convert it to structured data.
 - Run local plugin scripts that assemble, modify, validate, and export a skin.
 - Use built-in image generation with reference images. OpenAI currently states that built-in image generation uses the user's general Codex allowance.
-- Call an authenticated remote MCP service when durable accounts, storage, cross-device history, or hosted inference are needed.
+- Call an authenticated remote MCP service when durable accounts, storage, cross-device history, or VOXL-metered hosted API generation is needed.
 
-Codex does not give a third-party backend a general token that lets that backend make arbitrary model API calls against the user's ChatGPT subscription. The work has to occur inside the Codex turn through available native tools, or the external service must pay for and meter its own inference.
+Codex does not give a third-party backend a general token that lets that backend make arbitrary model API calls against the user's ChatGPT subscription. The work has to occur inside the Codex turn through available native tools, or the external service must pay for and meter its own hosted-provider API calls.
 
 This produces two different uses of the word "credit":
 
 - **OpenAI/Anthropic usage:** consumed by the user's conversation and native tools.
-- **VOXL product credits:** entitlements for compute performed on VOXL infrastructure.
+- **VOXL product credits:** entitlements for VOXL application services and external provider API usage paid by VOXL.
 
-They are separate systems. VOXL should not pretend that a user's ChatGPT or Claude subscription automatically pays VOXL's GPU bill.
+They are separate systems. VOXL should not pretend that a user's ChatGPT or Claude subscription automatically pays for API calls made by the standalone VOXL service.
 
 Relevant sources:
 
@@ -147,14 +147,15 @@ Limitations:
 
 Best use: deterministic testing, offline/manual editing, a free local tier, and fallback behavior. It is not the intended answer for open-ended high-fidelity generation.
 
-### Option B: hybrid native reasoning plus VOXL specialization
+### Option B: hybrid native reasoning plus hosted provider APIs
 
 ```text
 Codex or Claude subscription
   -> understands the request and prepares a canonical brief/preview
   -> calls VOXL MCP
 VOXL service
-  -> performs only specialized atlas construction or storage
+  -> calls a hosted generation or image-editing API when needed
+  -> performs deterministic atlas construction, validation, and storage
   -> returns a validated PNG and editor state
 ```
 
@@ -171,17 +172,17 @@ Limitations:
 
 - More infrastructure than the local proof of concept.
 - The handoff format between the host LLM and VOXL must be tightly specified.
-- High-fidelity generation may still require a GPU endpoint.
+- Quality and behavior can vary across provider APIs and must be normalized behind the adapter.
 
 Best use: the likely commercial architecture after product validation.
 
-### Option C: fully hosted VOXL generation
+### Option C: standalone VOXL generation through hosted APIs
 
 ```text
 Any web or chat client
   -> sends prompt and references to VOXL
 VOXL service
-  -> calls its own multimodal/image APIs or GPU model
+  -> calls external multimodal/image APIs through provider adapters
   -> constructs, validates, stores, and exports the skin
 ```
 
@@ -193,7 +194,7 @@ Advantages:
 
 Limitations:
 
-- Highest inference cost and operational burden.
+- Highest provider-API cost and application-service burden.
 - Requires upload privacy, retention, moderation, and abuse controls.
 - Duplicates some capabilities users already pay for in their AI subscriptions.
 
@@ -201,25 +202,25 @@ Best use: only when tests show that consistent quality is worth the additional c
 
 ## Recommended sequence
 
-Do not build production GPU infrastructure up front. Prove the experience in this order:
+Do not build or rent GPU infrastructure. Prove the experience in this order:
 
 1. Define the shared engine contract and extract the existing workflow as `transparent-character` without changing its behavior.
 2. Build a deterministic `voxl-humanoid-skin` document, validator, renderer, editor, and exporter.
 3. Create a fixed multimodal evaluation set with complex text and image references.
-4. Run a real preview-to-atlas checkpoint on a temporary local, notebook, or rented GPU and record quality, latency, memory, and cost.
-5. Connect the successful provider behind the `voxl-humanoid-skin` engine and add localized generative edits.
+4. Compare API-accessible generation and editing providers on the fixed case set and record quality, latency, cost, retention, and provenance evidence.
+5. Connect only an admitted hosted provider behind the `voxl-humanoid-skin` engine and add localized generative edits.
 6. Test the complete generation and refinement loop with users.
 7. Add durable accounts, remote MCP, and billing only after the loop is useful.
-8. Turn the experimental inference setup into a hosted service only when measured usage justifies it.
+8. Recheck provider pricing, terms, retention, provenance, and model availability before any production admission.
 
-This order protects the current product, avoids constraining VOXL to templates, and prevents the project from becoming a production GPU-infrastructure project before the model path is validated.
+This order protects the current product, avoids constraining VOXL to templates, and keeps VOXL focused on its artifact engine and application services rather than model-serving infrastructure.
 
 ## Componentized artifact-engine architecture
 
 VOXL must distinguish an **artifact engine** from a **generation provider**.
 
 - An artifact engine knows a visual format and its lifecycle: document schema, supported inputs, validation, editing, rendering, and export.
-- A generation provider supplies compute: Codex-native tools, an external API, a self-hosted preview-to-atlas model, a procedural fallback, or a future provider.
+- A generation provider supplies creative compute through Codex-native tools, an external hosted API, a procedural fallback, or a future API-accessible provider.
 - A renderer presents an engine document. It is not itself the generator.
 
 The same provider can support several engines, and one engine can choose among several providers.
@@ -239,7 +240,7 @@ Shared VOXL platform
                    \                           /
                     v                         v
                      Generation providers
-        native host / hosted model / API / procedural fallback
+          native host / hosted API / procedural fallback
 ```
 
 An engine contract should be capability-driven so future engines can omit features they do not need:
@@ -320,7 +321,23 @@ Asking a general image model to emit a finished UV atlas in one step is unreliab
 
 Native image generation is still useful for producing a canonical front/back concept preview. Codex can use a customer's native image allowance for this step where available.
 
-### Specialized preview-to-atlas model
+### Hosted-provider research snapshot
+
+Research rechecked August 5, 2026 supports an API-first Phase 5 evaluation. Provider names below are research facts, not VOXL component identities. Prices, terms, retention, model names, and feature limits are point-in-time observations that must be rechecked from primary sources before each evaluation and before any production admission. **No provider has been selected, approved, or admitted.**
+
+| Hosted candidate | Documented controls relevant to VOXL | Point-in-time price and data/provenance notes | Decisive unknowns |
+| --- | --- | --- | --- |
+| OpenAI GPT Image API | The Image API supports generation and editing; the Responses API supports conversational, multi-turn generation/editing. Current documentation shows one or more reference images, URL/base64/file inputs, and masks. `gpt-image-2` processes reference inputs at high fidelity automatically. | Output size, quality, format, compression, and supported transparency behavior are configurable. Reference inputs can raise image-token cost, and organization verification may be required. Data-control and regional eligibility must be reviewed for the intended endpoints and account before admission. [Image generation and editing](https://developers.openai.com/api/docs/guides/image-generation), [data controls](https://developers.openai.com/api/docs/guides/your-data) | Exact atlas validity, multi-view consistency, pixel-art survival after normalization, protected-region fidelity because masks are guidance rather than exact boundaries, and measured cost per accepted asset. |
+| Google Gemini 3.1 Flash Image | Text plus multiple references, including documented fidelity for up to ten objects and four characters; multi-turn editing; fixed output sizes and aspect ratios. It does not document an explicit edit-mask input. | Output equivalents were $0.045/$0.067/$0.101/$0.151 for 0.5K/1K/2K/4K before input and reasoning charges. Paid content is not used for product improvement; ordinary paid use still has limited abuse-monitoring retention unless project zero-data-retention controls are approved and stateful storage is disabled. Generated images include SynthID. [Image API](https://ai.google.dev/gemini-api/docs/image-generation), [pricing](https://ai.google.dev/gemini-api/docs/pricing), [zero-data-retention controls](https://ai.google.dev/gemini-api/docs/zdr) | Protected-region preservation without a mask, front/back consistency, and survival of pixel-art detail after normalization. |
+| Google Vertex Imagen 3 editing/customization | Masked editing plus subject, style, face-mesh, edge, and sketch controls through a hosted API. | Generation, editing, and customization were listed at $0.04 per image. Regional processing and Google Cloud governance are available; access and current model lifecycle still require verification. [Subject customization](https://cloud.google.com/vertex-ai/generative-ai/docs/image/subject-customization), [mask editing](https://cloud.google.com/vertex-ai/generative-ai/docs/image/edit-images-overview), [pricing](https://cloud.google.com/vertex-ai/generative-ai/pricing) | Project-access friction, intended-use limits, product-angle preservation, and whether its controls improve atlas acceptance. |
+| Black Forest Labs FLUX.2 hosted API | General semantic editing with up to eight API reference images, up to 4MP output, flexible aspect ratios, pose/layout guidance, and structured prompts. A separate hosted Fill endpoint accepts an image and mask. | FLUX.2 `[pro]` began at $0.03/MP for generation and $0.045/MP for editing; `[max]` began at $0.07/MP; Fill was $0.05/image. Self-serve API terms granted broad input/output use including model improvement; enterprise materials advertised zero data retention. [Editing](https://docs.bfl.ai/flux_2/flux2_image_editing), [pricing](https://docs.bfl.ai/quick_start/pricing), [API terms](https://bfl.ai/legal/flux-api-service-terms), [enterprise controls](https://bfl.ai/enterprise) | Whether commercial privacy terms are acceptable, whether a separate masked-edit endpoint preserves identity, and whether embedded provenance is available. |
+| Adobe Firefly Services | Hosted text generation with structure and style references, plus explicit grayscale masks for fill, expand, and compositing workflows. | Public per-operation pricing was not documented; access and billing were enterprise-oriented. Adobe stated that foundational Firefly is not trained on customer content; its security material described 90-day inference logging. Firefly documents Content Credentials for fully generated assets, but endpoint-specific behavior needs verification. [Structure reference](https://developer.adobe.com/firefly-services/docs/firefly-api/guides/concepts/structure-image-reference/), [style reference](https://developer.adobe.com/firefly-services/docs/firefly-api/guides/concepts/style-image-reference/), [masking](https://developer.adobe.com/firefly-services/docs/firefly-api/guides/concepts/masking/), [security fact sheet](https://www.adobe.com/content/dam/cc/en/trust-center/ungated/whitepapers/creative-cloud/adobe-firefly-fact-sheet.pdf), [Content Credentials](https://helpx.adobe.com/firefly/web/get-started/learn-the-basics/content-credentials-overview.html) | Price, startup access, API-specific provenance, and consistency when reference roles exceed one style plus one structure image. |
+| Ideogram hosted API | One-image remix in version 4; version 3 documented masked editing, multiple style-reference files, one character reference, and transparent generation. | Version 4 generation was $0.03-$0.10/image; version 3 character-reference generation was $0.10-$0.20; prompt-only editing was $0.20. API terms said inputs/outputs were not used for training except policy-flagged content, but did not state a fixed retention period and required product attribution. [API overview](https://developer.ideogram.ai/), [masked edit](https://developer.ideogram.ai/api-reference/api-reference/edit-v3), [transparent generation](https://developer.ideogram.ai/api-reference/api-reference/generate-transparent-v3), [pricing](https://ideogram.ai/api-pricing/), [API terms](https://ideogram.ai/legal/api-tos) | Current-version reference parity, fixed retention, embedded provenance, and character consistency across front/back views. |
+| Stability AI Platform API | Explicit masked or alpha-channel inpaint, erase, outpaint, background removal, object replacement, and single structure/style controls. General multi-reference composition was not documented. | Stable Image Core was $0.03, Ultra $0.08, inpaint $0.05, and style transfer $0.08. Training use could be opted out, while the public privacy policy gave no fixed retention duration. No official embedded provenance mechanism was located. [API reference](https://platform.stability.ai/docs/api-reference), [pricing](https://platform.stability.ai/pricing), [privacy policy](https://stability.ai/privacypolicy), [training opt-out](https://kb.stability.ai/knowledge-base/opt-out-of-data-training-for-platform-api) | Multi-view identity consistency, fixed retention, provenance, and whether strong masked editing compensates for limited multi-reference generation. |
+
+The smallest useful comparison is not a provider beauty contest. It is a fixed-case evaluation of concept fidelity, multi-reference/front-back consistency, deterministic atlas acceptance, protected-region difference during localized edits, latency, cost per accepted asset, and provenance/privacy risk. Research runs must use synthetic, licensed, or user-authorized references and must not consume product entitlements.
+
+### Optional specialized preview-to-atlas checkpoint research
 
 March 2026 research separates the task into:
 
@@ -328,11 +345,11 @@ March 2026 research separates the task into:
 2. Preview to a 64x64 UV atlas with a specialized image-to-image model.
 3. Deterministic downsampling and structure enforcement.
 
-The published candidate checkpoint is a 4-billion-parameter image-to-image model. Its model card labels it Apache 2.0 and describes approximately 13 GB of VRAM for the FLUX.2 Klein 4B base. It is not currently deployed by a standard Hugging Face inference provider, so production use would require a compatible custom endpoint or local GPU.
+The published candidate checkpoint is a 4-billion-parameter image-to-image model. Its model card labels it Apache 2.0 and describes approximately 13 GB of VRAM for its base. It is not currently deployed by a standard Hugging Face inference provider. That makes it optional research rather than an API-accessible production candidate.
 
 Research recheck (August 5, 2026): the paper page still describes a two-stage preview-to-atlas pipeline, and the candidate model card now identifies its `v0.6` checkpoint as a 4-billion-parameter image-to-image model aligned with the base model's standard pipeline. The specialized checkpoint still reports no hosted inference provider even though the general base model has hosted options. A base-model endpoint is therefore not evidence that the specialized decoder can be called as an API. These are capability and deployment findings only; no VOXL quality, latency, cost, or commercial-provenance gate has passed.
 
-This is the first serious candidate to evaluate behind a provider identified only by its capability, `preview-to-atlas`. It is not coupled to the engine contract and can be replaced if evaluation shows insufficient quality or unsuitable provenance.
+These findings are worth preserving because the two-stage technique may provide a useful comparison target. They do not authorize renting compute, building an endpoint, adding model-serving infrastructure, or coupling the checkpoint to the engine contract. Any future checkpoint experiment would require a separate scoped decision; Phase 5 should proceed with hosted APIs even if that experiment never occurs.
 
 Sources retained without turning third-party names into VOXL component identities:
 
@@ -431,9 +448,9 @@ Potential VOXL model:
 - Paid creation sessions purchased on the VOXL website.
 - A session includes initial candidates and a bounded number of conversational revisions rather than charging for every pixel edit.
 - Existing paid users connect the plugin through OAuth.
-- Native host-model generation reduces VOXL costs where available; hosted VOXL generation consumes a VOXL entitlement.
+- Native host-model generation reduces VOXL costs where available; standalone generation through a VOXL-paid external API consumes a VOXL entitlement.
 
-Pricing should not be fixed before measuring actual inference cost and user-perceived value.
+Pricing should not be fixed before measuring actual hosted-provider cost per accepted asset and user-perceived value.
 
 ## Competitor findings
 
@@ -514,7 +531,7 @@ packages/
   engine-transparent-character/  # current format, Bash importer, alpha exports
   engine-voxl-humanoid-skin/      # UV maps, edits, validation, PNG I/O
   provider-procedural/            # deterministic fixtures and fallback
-  provider-preview-to-atlas/      # experimental/hosted model adapter
+  provider-preview-to-atlas/      # evaluation-only hosted API adapter
 apps/
   web/                           # shared shell and engine-specific editors
   mcp/                           # authenticated engine-neutral tools and UI
@@ -523,14 +540,13 @@ plugins/
   claude/
 workers/
   jobs/                          # generation orchestration
-  inference/                     # added after provider evaluation
 ```
 
 No migration should occur until the vertical slice proves that the skin workflow is worth pursuing.
 
 ## First vertical slice
 
-The next implementation milestone should deliberately avoid accounts, billing, public MCP submission, and production GPU hosting.
+The next implementation milestone should deliberately avoid accounts, billing, public MCP submission, provider admission, and any VOXL-operated model hosting.
 
 1. Define the engine contract and registry.
 2. Wrap the current Bash-derived workflow as `transparent-character` and prove all existing validation/render tests still pass.
@@ -541,8 +557,8 @@ The next implementation milestone should deliberately avoid accounts, billing, p
 7. Click a body face and map the click to the correct texture pixel.
 8. Edit pixels in synchronized 2D and 3D views.
 9. Validate transparent and unused regions and download a valid PNG.
-10. Run a `preview-to-atlas` model experiment against complex text/image fixtures using temporary GPU compute.
-11. Connect the experimental provider to `voxl-humanoid-skin` through the engine contract.
+10. Run the fixed generation case set through API-accessible provider adapters using synthetic, licensed, or user-authorized references.
+11. Connect an evaluation-only provider adapter to `voxl-humanoid-skin` through the engine contract without admitting it to production.
 12. Ask Codex to perform an open-ended generation and a masked revision.
 13. Confirm that the result passes the neutral export-profile import smoke test and that the `transparent-character` engine remains unchanged.
 
@@ -573,10 +589,10 @@ Measure:
 
 The architecture decision should follow these results:
 
-- If the specialized decoder preserves complex references and fits acceptable cost/latency, move that provider toward hosted production.
-- If preview quality is good but atlas conversion fails, evaluate or fine-tune another specialized decoder without changing the engine contract.
+- If one or more hosted APIs preserve complex references and meet cost, latency, retention, provenance, and deterministic-validation thresholds, begin a separate provider-admission review; evaluation success alone is not admission.
+- If preview quality is good but atlas conversion fails, evaluate another API-accessible provider or deterministic normalization policy without changing the engine contract.
 - If the native host can produce a suitable canonical preview, keep that step on the user's subscription where the surface permits it.
-- If host-specific behavior causes unacceptable inconsistency, move more generation into a VOXL-hosted provider.
+- If native-host behavior causes unacceptable inconsistency, move more generation into VOXL-metered calls to an admitted external API provider.
 - If users value editing more than first-pass generation, invest in masks, versioning, and localized image editing rather than a larger template catalog.
 - If a provider fails provenance review, replace it before commercial launch even if its visual quality is strong.
 

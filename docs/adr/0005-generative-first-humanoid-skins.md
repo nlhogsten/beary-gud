@@ -14,4 +14,4 @@ A fixed trait customizer cannot express the open-ended patterns, asymmetry, refe
 
 ## Consequences
 
-The engine must evaluate real preview-to-atlas generation before production GPU infrastructure is selected. Deterministic validation and repair remain mandatory around every generative output.
+The engine must evaluate real, API-accessible preview-to-atlas generation before a provider is integrated. Deterministic validation and repair remain mandatory around every generative output. ADR 0011 keeps GPU and model-serving infrastructure outside the accepted architecture.

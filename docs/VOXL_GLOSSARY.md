@@ -63,6 +63,10 @@ The user-facing application shell: projects, files, conversation, history, job s
 
 A thin translation layer between two interfaces. An export-profile adapter turns an engine document into a profile-valid file. A provider adapter lets VOXL call a particular image model without making that model part of the engine's identity.
 
+### API
+
+Application Programming Interface. It is a documented way for one service to request work from another. VOXL can send text, reference images, and edit instructions to a managed generation API and receive image results without running that provider's models or hardware.
+
 ### Capability
 
 Something an engine or provider can do, such as create, revise, validate, render, export, accept reference images, or perform masked edits. Capability discovery lets clients ask what is supported instead of assuming every engine behaves the same way.
@@ -93,7 +97,7 @@ A neutral, named set of output constraints: dimensions, geometry, UV layout, col
 
 ### Generation provider
 
-The replaceable compute that creates or revises visual content. It might use a native chat-host image tool, an external image API, a hosted GPU model, or a procedural fallback. Providers can change without changing saved engine documents.
+The replaceable compute that creates or revises visual content. Managed external APIs are VOXL's default providers: the provider operates the model and hardware, while VOXL calls the API and validates the returned candidate. Native chat-host tools may be evaluated when available, and procedural providers remain useful for testing and fallback. Providers can change without changing saved engine documents.
 
 ### Profile-valid
 
@@ -253,11 +257,15 @@ Using an image model to synthesize open-ended visual patterns as the primary cre
 
 ### GPU
 
-Graphics Processing Unit. GPUs perform many model calculations in parallel and are commonly used to run image-generation models. VOXL can rent or host GPU compute only after experiments establish the required quality and cost.
+Graphics Processing Unit. GPUs perform many model calculations in parallel and are commonly used to run image-generation models. With a managed generation API, the API company owns and operates those GPUs; VOXL only sends requests. VOXL does not plan to rent or manage GPUs. Any future exception requires explicit approval and a new architecture decision.
 
 ### Inference
 
 Running an already-trained model to produce an output. Training creates model weights; inference uses them.
+
+### Managed generation API
+
+An external service that runs a generation model behind an API and charges per request, image, token, or another usage unit. The provider owns accelerator capacity, scaling, model serving, and low-level runtime operations. VOXL owns job orchestration, engine validation, versions, editing, export, and the customer experience.
 
 ### LLM
 
@@ -281,7 +289,7 @@ Able to work with more than one kind of input, such as text plus one or more ima
 
 ### Native host tool
 
-A capability supplied inside the user's current AI application, such as built-in image generation or file analysis. When available, it may use the user's existing host subscription rather than VOXL-hosted inference.
+A capability supplied inside the user's current AI application, such as built-in image generation or file analysis. When available and callable through a suitable tool contract, it may use the user's existing host allowance rather than VOXL-metered provider API usage.
 
 ### Negative prompt or constraint
 
@@ -401,7 +409,7 @@ An AWS service that accepts HTTP traffic and routes it to healthy application ta
 
 ### Asynchronous job
 
-A task that continues after the initial request, such as GPU generation. The client receives a job ID and checks its status instead of keeping one connection open indefinitely.
+A task that continues after the initial request, such as a managed provider API request followed by validation and rendering. The client receives a job ID and checks its status instead of keeping one connection open indefinitely.
 
 ### Credit
 
@@ -413,7 +421,7 @@ The system's record that an account is allowed to use a paid or limited capabili
 
 ### Hosted
 
-Running on infrastructure operated or paid for by VOXL or one of its service providers rather than solely on the user's machine.
+Running on remote infrastructure rather than solely on the user's machine. A managed generation API is hosted by its provider; VOXL's API and CPU workers are hosted separately and call it over the network.
 
 ### Amazon ECS and Fargate
 
@@ -526,7 +534,7 @@ The authoritative editable representation. Generated previews and exports can be
 | Model | Export profile | A model generates or analyzes content; an export profile defines deterministic geometry and file constraints. |
 | Slim arm | Slim character | VOXL uses “slim” only for narrower arm geometry, never as a character-body description. |
 | Renderer | Generator | A renderer displays existing content; a generator invents or revises content. |
-| Native host usage | VOXL credits | Host usage belongs to the user's AI subscription; VOXL credits pay for VOXL-hosted work. |
+| Native host usage | VOXL credits | Host usage belongs to the user's AI subscription; VOXL credits pay for VOXL-metered managed-provider API usage and platform work. |
 | Reference | Output | A reference conditions generation; the output is the newly created VOXL asset. |
 | Mask | Layer | A mask selects affected pixels; a layer is a visible texture surface. |
 | Version | Export | A version is durable editable history; an export is a derived file for download. |

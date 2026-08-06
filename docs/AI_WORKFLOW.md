@@ -25,11 +25,11 @@ The intended workflow separates responsibilities:
 5. The user refines the result conversationally or in that engine's editor.
 6. Validation runs before every production-ready export.
 
-An artifact engine and a generation provider are different extension points. Initial engines are `transparent-character` and `voxl-humanoid-skin`. Providers may include native host tools, a hosted model, an external API, or a procedural test/fallback provider. An engine can replace providers without changing saved documents.
+An artifact engine and a generation provider are different extension points. Initial engines are `transparent-character` and `voxl-humanoid-skin`. Managed external APIs are the default generative providers; native host tools may be evaluated when available, and procedural providers remain useful for tests and fallback behavior. An engine can replace providers without changing saved documents.
 
 The VOXL humanoid-skin generator is intended to be generative-first and open-ended. Structured attributes such as hair color are optional metadata for control and localized revision; they are not the creation vocabulary. Procedural construction is a fixture/fallback, not the long-term creative core.
 
-The first vertical slice should preserve `transparent-character`, build deterministic `voxl-humanoid-skin` import/edit/validate/render/export, and evaluate a real preview-to-atlas checkpoint using temporary GPU compute. Production GPU hosting comes only after that experiment establishes acceptable quality, latency, provenance, and cost.
+The first vertical slice preserves `transparent-character`, builds deterministic `voxl-humanoid-skin` import/edit/validate/render/export, and evaluates API-accessible `preview-to-atlas` paths. VOXL does not plan to rent or operate GPUs. A local or self-hosted checkpoint comparison is optional research that requires a separate proposal and explicit approval.
 
 All generated identifiers and user-facing references must follow the target-neutral naming policy: use visual geometry, dimensions, or capabilities (`voxl-humanoid-skin`, `wide-arm-64`, `slim-arm-64`, `cuboid-humanoid-renderer`), never an external product, platform, game, or publisher name. Put compatibility behavior behind export-profile adapters so a new target does not rename or fork an engine.
 

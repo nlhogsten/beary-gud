@@ -30,8 +30,8 @@ chat host + VOXL plugin ──────────────────�
                                            │  exports
                                            ├─ Secrets Manager: runtime secrets
                                            ├─ CloudWatch: logs, metrics, alarms
-                                           └─ ECS workers: asynchronous generation
-                                              and rendering when required
+                                           └─ ECS workers: job orchestration,
+                                              provider API calls, validation, and rendering
 ```
 
 The diagram is a direction, not a claim that these services have been provisioned. OpenTofu will manage the AWS resources once the application boundaries and an AWS environment are ready.
@@ -43,11 +43,41 @@ The diagram is a direction, not a claim that these services have been provisione
 | React/Vite studio | Full project library, generation workflow, 2D/3D editing, history, account and download experience | No; it reads and writes through the API |
 | Bun/Hono API | Authentication and authorization boundary, project/version/file APIs, job submission, signed transfers, entitlements | Coordinates durable state |
 | Visual engines | Engine-owned schemas, deterministic validation, rendering, migration, and export | Defines document meaning, not user ownership |
-| Generation providers/workers | Create or revise visual content and report measured usage | No; successful results become immutable versions through the API |
+| Managed generation providers | External APIs create or revise visual content and report measured usage | No; the provider returns candidate output |
+| VOXL workers | Orchestrate provider calls, validate and render results, and persist accepted immutable versions | No; they coordinate work through application services |
 | Remote MCP service | Presents engine-neutral VOXL operations to compatible AI hosts | No; it calls the same application services as the web API |
 | Plugin | Installs skills, MCP connection metadata, and optional host-specific UI | No; it contains no separate project store or secret inference implementation |
 | PostgreSQL | Relational metadata, ownership, immutable version records, jobs, and entitlements | Yes, for structured records |
 | Object storage | Uploaded references and generated/exported binary files | Yes, for file bytes |
+
+## How one generated skin moves through the system
+
+The engine is not a form with a finite vocabulary such as `hairColor`. It accepts an open-ended request containing natural-language instructions, arbitrary authorized reference images, an optional existing document, and optional edit/preserve masks.
+
+```text
+prompt + references + existing version/masks
+                    |
+                    v
+          VOXL CPU job worker
+       normalize request and policy
+                    |
+                    v
+       managed generation API(s)
+     provider operates model + GPUs
+                    |
+                    v
+       image or atlas candidate(s)
+                    |
+                    v
+       engine adapter + validator
+  map/normalize to exact 64x64 profile,
+  reject invalid output, render evidence
+                    |
+                    v
+       immutable VOXL asset version
+```
+
+A provider adapter may use one API request or a short API pipeline—for example, create a coherent visual concept and then transform it into a texture-atlas candidate. That is still API usage: VOXL defines and evaluates the pipeline, while the external provider operates the generative models and accelerators. Deterministic engine code handles exact dimensions, profile rules, validation, rendering, and export. Whether any API can preserve enough detail and geometry through this pipeline is the central Phase 5 experiment, not an assumed capability.
 
 ## What an in-chat editor is
 
@@ -80,7 +110,7 @@ The embedded UI should be intentionally smaller than the full studio:
 - Separate environment state is required for development/staging and production; production must not share databases, buckets, secrets, or state with local development.
 - Public ingress terminates at CloudFront and/or an Application Load Balancer. Tasks and databases run in private subnets.
 - The API and MCP routes share application services and identity policy, even if they later use separate ECS services for independent scaling.
-- GPU inference is not assumed. Provider experiments decide whether generation uses external APIs, transient compute, or dedicated workers.
+- Managed external provider APIs are the accepted default. ECS workers are CPU application workers and do not host model weights or require GPUs.
 
 ## Request examples
 
@@ -107,6 +137,6 @@ The embedded UI should be intentionally smaller than the full studio:
 - Whether CloudFront routes API traffic or the API uses a separate subdomain.
 - Queue implementation and whether workers share an image with the API.
 - Database sizing, backup retention, multi-AZ policy, and production scaling values.
-- Dedicated GPU infrastructure.
+- Any exception to the no-model-serving decision. GPU or self-hosted inference is outside the accepted architecture and requires a new ADR, measured evidence, an operations review, and explicit approval.
 
 These values must come from measured requirements and explicit environment configuration, not hard-coded guesses in the repository.

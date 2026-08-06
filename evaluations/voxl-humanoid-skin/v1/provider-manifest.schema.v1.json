@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.local/evaluations/voxl-humanoid-skin/v1/provider-manifest.schema.json",
+  "title": "VOXL managed API provider candidate manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "descriptor", "executionClass", "computeOwnership", "credentialMode", "configuration", "configurationSha256", "provenanceDossier"],
+  "properties": {
+    "schemaVersion": { "const": "voxl.generation-provider-manifest/v1" },
+    "descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "providerId", "modelId", "modelVersion", "networkAccess", "billingRisk", "supportedOperations"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "version": { "$ref": "#/$defs/version" },
+        "providerId": { "$ref": "#/$defs/id" },
+        "modelId": { "type": "string", "minLength": 1 },
+        "modelVersion": { "type": "string", "minLength": 1 },
+        "networkAccess": { "const": "required" },
+        "billingRisk": { "enum": ["none", "possible"] },
+        "supportedOperations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["create", "revise"] }
+        }
+      }
+    },
+    "executionClass": { "const": "managed-api" },
+    "computeOwnership": { "const": "provider-managed" },
+    "credentialMode": { "enum": ["none", "external-at-execution"] },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "values"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "values": {
+          "type": "object",
+          "propertyNames": { "not": { "$ref": "#/$defs/secretKeyPattern" } },
+          "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+        }
+      }
+    },
+    "configurationSha256": { "$ref": "#/$defs/sha256" },
+    "provenanceDossier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "path": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*\\.dossier\\.v1\\.json$" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "jsonValue": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "number" },
+        { "type": "string" },
+        { "type": "array", "items": { "$ref": "#/$defs/jsonValue" } },
+        {
+          "type": "object",
+          "propertyNames": { "not": { "$ref": "#/$defs/secretKeyPattern" } },
+          "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+        }
+      ]
+    },
+    "secretKeyPattern": {
+      "type": "string",
+      "pattern": "api[-_]?key|access[-_]?key|private[-_]?key|client[-_]?secret|authorization|credential|password|secret|token|bearer|cookie|session|headers?"
+    }
+  }
+}

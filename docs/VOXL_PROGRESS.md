@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Both current editors are native, lazy-loaded React modules, and the real-browser checkpoint now passes across editing, export/re-import, transparent outer-layer picking, responsive layouts, and directional 3D rotation. The repository-owned Playwright runner retains step, error, screenshot, download, report, and independent-review evidence. The next checkpoint is named local versions and side-by-side comparison.
+**Phase 5 — generative-provider research spike.** Phases 0–4 are complete. The studio, synchronized 2D/3D editor, profile-valid export, and named local versions are verified. The fixed evaluation specification, offline harness, managed-API candidate catalog, and no-call dry-run planner exist. Current work is materializing the synthetic reference/baseline assets and completing provenance review for an API-accessible candidate. VOXL does not plan to rent or manage GPUs.
 
 ## Platform and repository foundation
 
@@ -21,6 +21,7 @@ These checkpoints record the organizational/sidebar work that makes later produc
 
 - [x] Record localhost-only development and remove ChatGPT Sites from the intended workflow.
 - [x] Record the standalone React/Vite client, shared Bun/Hono API/MCP application layer, and OpenTofu-managed AWS target.
+- [x] Record managed external generation APIs as the default and exclude GPU/model-serving infrastructure unless a future ADR and explicit approval authorize an exception.
 - [x] Record that optional in-chat UI uses the same account, projects, versions, database, object storage, and APIs as the standalone studio.
 - [x] Add a resource-free OpenTofu bootstrap that does not require invented AWS identifiers.
 - [x] Adopt Bun workspaces and move runtime-specific configuration into `apps/studio`, `apps/server`, `apps/character-cli`, and `infra/db`.
@@ -164,17 +165,20 @@ Status: **in progress**
 - [x] Add an offline evaluation runner that validates the specification, reports readiness blockers, replays existing PNGs through deterministic engine validation, and stores checksummed immutable evidence.
 - [x] Keep artifact replay explicitly separate from provider/model results, network activity, paid calls, scores, latency, failure-rate, and cost aggregates.
 - [x] Recheck the preview-to-atlas paper, specialized checkpoint, base-model requirements, and current hosted-access boundary against primary sources.
+- [x] Record the API-first/no-VOXL-GPU architecture decision and research current hosted generation/editing candidates from official sources without selecting one.
+- [x] Add schemas and a metadata-only catalog for managed-API candidates with explicit provenance decisions, provider-managed compute, secret rejection, integrity hashes, and separate executable-adapter counts.
+- [x] Add deterministic `eval:plan` output that binds the complete case, rubric, provider descriptor/configuration, provenance dossier, revision policy, and materialized-input hashes while proving it reads no credentials, invokes no adapter, uses no network, makes no paid call, and writes no provider attempt evidence.
 
 ### Remaining experiment gate
 
 - [ ] Materialize and SHA-256 lock 25 synthetic reference assets used by 18 cases.
 - [ ] Materialize and SHA-256 lock four revision baselines plus editable/protected masks.
 - [ ] Complete model, dataset, commercial-use, reference-use, and retention provenance review for at least one candidate.
-- [ ] Implement and admit a real `preview-to-atlas` provider adapter only after provenance review.
-- [ ] Run the fixed experiment through temporary local, notebook, rented GPU, native-host, or API-backed compute without charging product entitlements.
-- [ ] Record cold/warm latency, memory, failure rate, validation rate, quality distributions, and actual/estimated cost.
-- [ ] Decide from measured evidence whether to continue a provider, investigate fine-tuning, change approach, or stop.
-- [ ] Complete all Phase 5 exit criteria from the implementation plan; no model or production hosting path is selected yet.
+- [ ] Implement and admit a real API-accessible `preview-to-atlas` provider adapter only after provenance review.
+- [ ] Run the fixed experiment through managed-provider APIs and reproducible host-native compute where available, without charging product entitlements.
+- [ ] Record provider latency, failure/refusal rate, validation/acceptance rate, quality distributions, retention/provenance risk, and actual/estimated API cost. Record accelerator memory only if exposed.
+- [ ] Decide from measured evidence whether to continue a managed provider, investigate provider-side adaptation/fine-tuning, change API approach, or stop.
+- [ ] Complete all Phase 5 exit criteria from the implementation plan; no provider is selected or admitted, and no GPU rental or self-hosting decision is authorized.
 
 ## Phase 6 — generative creation and localized revision
 
@@ -224,7 +228,7 @@ Status: **not started**
 
 - [ ] Complete all Phase 13 work and exit criteria from the implementation plan.
 
-## Phase 14 — production inference and operational hardening
+## Phase 14 — production provider operations and hardening
 
 Status: **not started**
 
@@ -260,4 +264,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Add named local versions and side-by-side comparison without coupling version storage to either visual engine's document schema.
+Materialize and SHA-256 lock the synthetic Phase 5 reference assets, revision baselines, and masks, then complete provenance review for the first API-accessible candidate.

@@ -13,7 +13,7 @@ A temporary frontend preview was published through ChatGPT Sites, which blurred 
 - Future production infrastructure is managed with OpenTofu.
 - The initial AWS target is a static Vite client served from S3 through CloudFront, with a Bun/Hono API and remote MCP endpoint running as containers on ECS/Fargate behind an Application Load Balancer.
 - ECR stores service images; RDS PostgreSQL stores relational state; S3 stores user files and derived binaries; Secrets Manager holds runtime secrets; CloudWatch receives logs, metrics, and alarms.
-- Asynchronous workers may run as separate ECS services or tasks. No dedicated GPU topology is selected until provider experiments establish the need.
+- Asynchronous workers may run as separate ECS services or tasks for job orchestration, managed-provider API calls, validation, rendering, and persistence. The accepted AWS target contains no GPU or model-serving topology; any exception requires a new ADR and explicit approval.
 - The standalone studio, remote MCP tools, and optional in-chat UI all use the same application services, authorization rules, PostgreSQL records, and object storage. The plugin is a client integration, not another backend.
 - The embedded MCP UI is optional and host-dependent. Every essential operation remains available through tools without custom UI.
 - Account IDs, domains, certificates, network IDs, secrets, database credentials, and production sizing are supplied per environment; none are invented in source control.
@@ -30,3 +30,5 @@ A temporary frontend preview was published through ChatGPT Sites, which blurred 
 ## Superseded interpretation
 
 ADR 0008 remains valid for the single React/Vite frontend decision. Any wording that suggested ChatGPT Sites was the intended hosted runtime is superseded by this record.
+
+ADR 0011 clarifies the generation boundary: managed provider APIs are the default, and the ECS application runtime does not serve model weights.

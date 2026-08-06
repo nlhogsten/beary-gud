@@ -23,6 +23,7 @@ Use this file as the always-on repository contract. Keep operational detail in t
 - Keep app and tool configuration with its owning workspace. The root may orchestrate but must not become an application runtime.
 - Route web, HTTP, and MCP entry points through the same authorized application services and durable project/version store.
 - Call generative compute only through a provider adapter. Provider payloads and identities must not become engine document schemas.
+- Use managed external generation APIs by default. VOXL workers orchestrate, validate, render, and persist; they do not host model weights or require GPUs. Do not add local, rented-GPU, or self-hosted inference as a fallback without a new ADR and explicit approval.
 - Deterministically validate every imported or generated result before acceptance or export.
 - Save accepted creations and revisions as immutable versions; never overwrite an accepted durable version.
 - Make asynchronous generation and paid-usage transitions idempotent. Retried client request IDs must not duplicate versions or charges.

@@ -11,10 +11,12 @@ import {
   canonicalJson,
   evaluationReadiness,
   loadAndValidateSpecification,
+  planEvaluationCase,
   replayArtifact,
   validateAttemptRecord,
   verifyAttemptManifest,
 } from "./core.ts";
+import { loadProviderCatalog } from "./catalog.ts";
 
 const repoRoot = new URL("../../../", import.meta.url).pathname;
 const temporary: string[] = [];
@@ -25,8 +27,11 @@ afterEach(async () => {
 
 describe("generation evaluation specification", () => {
   test("validates the fixed case set, rubric, schemas, and readiness blockers", async () => {
-    const specification = await loadAndValidateSpecification(repoRoot);
-    const readiness = evaluationReadiness(specification);
+    const [specification, catalog] = await Promise.all([
+      loadAndValidateSpecification(repoRoot),
+      loadProviderCatalog(repoRoot),
+    ]);
+    const readiness = evaluationReadiness(specification, catalog);
     assert.deepEqual({
       structurallyValid: readiness.structurallyValid,
       executionReady: readiness.executionReady,
@@ -34,7 +39,11 @@ describe("generation evaluation specification", () => {
       referenceBearingCases: readiness.referenceBearingCases,
       revisionCases: readiness.revisionCases,
       missingRevisionBaselines: readiness.missingRevisionBaselines,
-      admittedProviderAdapters: readiness.admittedProviderAdapters,
+      missingRevisionMaskSets: readiness.missingRevisionMaskSets,
+      cataloguedProviderCandidates: readiness.cataloguedProviderCandidates,
+      pendingProviderCandidates: readiness.pendingProviderCandidates,
+      provenanceAdmittedProviderCandidates: readiness.provenanceAdmittedProviderCandidates,
+      executableProviderAdapters: readiness.executableProviderAdapters,
     }, {
       structurallyValid: true,
       executionReady: false,
@@ -42,9 +51,14 @@ describe("generation evaluation specification", () => {
       referenceBearingCases: 18,
       revisionCases: 4,
       missingRevisionBaselines: 4,
-      admittedProviderAdapters: 0,
+      missingRevisionMaskSets: 4,
+      cataloguedProviderCandidates: 1,
+      pendingProviderCandidates: 1,
+      provenanceAdmittedProviderCandidates: 0,
+      executableProviderAdapters: 0,
     });
     assert.ok(readiness.missingReferenceAssets >= 18);
+    assert.ok(readiness.blockers.includes("No provider candidate has completed provenance admission."));
   });
 
   test("canonical JSON hashes are stable across object key order", () => {
@@ -52,6 +66,104 @@ describe("generation evaluation specification", () => {
       canonicalJson({ z: 1, a: { y: 2, x: 3 } }),
       canonicalJson({ a: { x: 3, y: 2 }, z: 1 }),
     );
+  });
+});
+
+describe("managed API dry-run planning", () => {
+  test("plans deterministically without credentials, network, billing, adapter invocation, or attempt evidence", async () => {
+    const [specification, catalog] = await Promise.all([
+      loadAndValidateSpecification(repoRoot),
+      loadProviderCatalog(repoRoot),
+    ]);
+    const originalFetch = globalThis.fetch;
+    let fetchCalls = 0;
+    globalThis.fetch = (() => {
+      fetchCalls += 1;
+      throw new Error("Dry-run planning must not use network access.");
+    }) as typeof fetch;
+    try {
+      const options = {
+        specification,
+        catalog,
+        adapterId: "preview-to-atlas-managed-api",
+        caseId: "v1-001",
+      };
+      const first = planEvaluationCase(options);
+      const second = planEvaluationCase(options);
+      assert.equal(first.planId, second.planId);
+      assert.deepEqual(first.execution, {
+        networkRequired: true,
+        billingRisk: "possible",
+        networkAuthorized: false,
+        paidCallAuthorized: false,
+        networkUsed: false,
+        paidCall: false,
+        credentialsRead: false,
+        adapterInvoked: false,
+        attemptRecordWritten: false,
+      });
+      assert.equal(first.readyForExecution, false);
+      assert.deepEqual(first.blockers, [
+        "candidate-provenance-pending",
+        "adapter-not-registered",
+        "network-not-authorized",
+        "paid-call-not-authorized",
+      ]);
+      assert.equal(first.provider.computeOwnership, "provider-managed");
+      assert.equal(first.provider.credentialMode, "external-at-execution");
+      assert.equal(fetchCalls, 0);
+      assert.doesNotMatch(JSON.stringify(first), /endpoint|api[-_]?key|authorization|password|secret|token/i);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  test("reports missing reference inputs without trying to materialize them", async () => {
+    const [specification, catalog] = await Promise.all([
+      loadAndValidateSpecification(repoRoot),
+      loadProviderCatalog(repoRoot),
+    ]);
+    const plan = planEvaluationCase({
+      specification,
+      catalog,
+      adapterId: "preview-to-atlas-managed-api",
+      caseId: "v1-007",
+    });
+    assert.ok(plan.blockers.includes("missing-reference-assets"));
+    assert.deepEqual(plan.case.referenceSha256s, [null]);
+    assert.equal(plan.execution.adapterInvoked, false);
+  });
+
+  test("binds revision policy and missing masks into the dry-run identity and blockers", async () => {
+    const [specification, catalog] = await Promise.all([
+      loadAndValidateSpecification(repoRoot),
+      loadProviderCatalog(repoRoot),
+    ]);
+    const first = planEvaluationCase({
+      specification,
+      catalog,
+      adapterId: "preview-to-atlas-managed-api",
+      caseId: "v1-027",
+    });
+    assert.ok(first.blockers.includes("missing-revision-baseline"));
+    assert.ok(first.blockers.includes("missing-revision-masks"));
+    assert.notEqual(first.case.revisionPolicySha256, null);
+    assert.equal(first.case.editableMaskSha256, null);
+    assert.match(first.providerDescriptorSha256, /^[a-f0-9]{64}$/);
+
+    const changed = structuredClone(specification);
+    const revision = changed.caseSet.cases.find((item) => item.id === "v1-027")?.revision;
+    assert.notEqual(revision, null);
+    revision!.maximumProtectedChangedTexelRate = 0.004;
+    const second = planEvaluationCase({
+      specification: changed,
+      catalog,
+      adapterId: "preview-to-atlas-managed-api",
+      caseId: "v1-027",
+    });
+    assert.notEqual(first.case.revisionPolicySha256, second.case.revisionPolicySha256);
+    assert.notEqual(first.case.caseDefinitionSha256, second.case.caseDefinitionSha256);
+    assert.notEqual(first.planId, second.planId);
   });
 });
 

@@ -10,7 +10,9 @@ The comparison must use the immutable `cases.v1.json` ordering, `rubric.v1.json`
 
 ## Candidate admission
 
-No provider or model is selected in this specification. A future candidate may enter the experiment only after its adapter boundary, model/version identity, commercial-use terms, model and dataset provenance, data-retention policy, and reference-use permissions are recorded. A candidate with unresolved commercial provenance is ineligible regardless of visual quality.
+No provider or model is selected in this specification. Managed external APIs are the default candidate class; the provider operates its models and accelerators, while VOXL records requests, validates outputs, and stores evidence. A future candidate may enter the experiment only after its adapter boundary, model/version identity, commercial-use terms, model and dataset provenance, data-retention policy, and reference-use permissions are recorded. A candidate with unresolved commercial provenance is ineligible regardless of visual quality.
+
+Native host generation may enter only when it can be invoked and measured through a reproducible provider contract. Local, notebook, rented-GPU, or self-hosted execution is not a Phase 5 requirement and requires separate explicit approval as comparative research. It cannot become product architecture without a new ADR.
 
 All committed cases are project-authored synthetic specifications. No customer content, destination branding, trademarked character, copied artwork, or third-party reference is included. Reference-bearing cases are not executable until their synthetic image assets are deterministically materialized, SHA-256 hashed, license/provenance records are completed, and the case-set lock remains identical for every candidate.
 
@@ -44,7 +46,7 @@ Hard gates apply to every candidate option:
 - Localized revision: protected-region changed-texel rate no greater than 0.5% per case and 0% change in explicitly immutable regions; requested-region fidelity median at least 4.0/5.
 - Warm latency: median no greater than 45 seconds and p95 no greater than 120 seconds.
 - Cold latency: p95 no greater than 300 seconds.
-- Peak observable accelerator memory: no greater than 24 GiB for the evaluated configuration.
+- Peak observable accelerator memory, only for a candidate that exposes it: no greater than 24 GiB for the evaluated configuration. Managed APIs record this field as `null`; hidden provider hardware is not an admission gate.
 - Estimated cost: no greater than USD 1.00 per deterministically accepted creation and USD 0.50 per accepted localized revision.
 
 All distributions include every attempt, including provider errors, refusals, invalid files, and timeouts. Automated scoring, AI visual review, and blinded human preference remain separate fields.
@@ -61,7 +63,7 @@ No provider is promoted from a small aesthetic sample, and no production hosting
 ## Future execution protocol
 
 1. Materialize and hash every synthetic reference and baseline document; freeze a case-set lock.
-2. Record admitted candidate provenance before any generation call.
+2. Record admitted candidate provenance before any generation call; evaluate API-accessible candidates first.
 3. Invoke each candidate only through a provider adapter using identical ordered inputs.
 4. Persist each immutable attempt under `.runs/evaluations/<run-id>/` using the attempt schema.
 5. Reject invalid candidates through deterministic engine validation before rendering or preference scoring.
@@ -72,7 +74,7 @@ Research runs must not charge product entitlements.
 
 ## Known pre-run gaps
 
-- Synthetic image references and baseline documents have specifications but have not been materialized or hashed.
-- No provider/model provenance dossier exists yet.
-- No evaluator or adapter implementation is part of this slice.
+- Synthetic image references, baseline documents, and deterministic editable/protected/immutable revision masks have specifications but have not been materialized or hashed.
+- The neutral managed-API candidate dossier remains pending because no provider or model has been selected or reviewed.
+- The evaluator can catalogue and dry-plan managed-API candidates, but no executable provider adapter, credential loading, network invocation, or paid-call path exists.
 - Thresholds are research commitments, not measured performance claims.

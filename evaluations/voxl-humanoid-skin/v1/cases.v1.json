@@ -244,7 +244,7 @@
       "categories": ["localized-revision", "protected-regions", "wide-arm-64", "existing-document-remix"],
       "prompt": "Change only the torso jacket from forest green to burnt orange, preserving face, hair, arms, legs, outer layer, shading values, and all one-pixel details.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with forest-green torso jacket, tan arms, navy legs, detailed face, and sparse outer collar.", "baselineAsset": null, "editableRegions": ["torso.base.all-faces"], "protectedRegions": ["head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["head.base.face", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.005},
+      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with forest-green torso jacket, tan arms, navy legs, detailed face, and sparse outer collar.", "baselineAsset": null, "editableRegions": ["torso.base.all-faces"], "protectedRegions": ["head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["head.base.face", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.005, "materializedMasks": null},
       "expectedSignals": ["torso hue changes to burnt orange", "protected and immutable texels remain within thresholds"], "honestFailureAllowed": false
     },
     {
@@ -252,7 +252,7 @@
       "categories": ["localized-revision", "protected-regions", "slim-arm-64", "asymmetry"],
       "prompt": "Add a two-pixel silver buckle to the front of the left boot only; preserve the right boot and every other texel exactly.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with asymmetric brown boots, plain left-boot front, and fully detailed clothing elsewhere.", "baselineAsset": null, "editableRegions": ["left-leg.base.front.boot"], "protectedRegions": ["right-leg.all", "head.all", "torso.all", "arms.all", "outer-layer.all"], "immutableRegions": ["right-leg.base.front.boot", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0},
+      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with asymmetric brown boots, plain left-boot front, and fully detailed clothing elsewhere.", "baselineAsset": null, "editableRegions": ["left-leg.base.front.boot"], "protectedRegions": ["right-leg.all", "head.all", "torso.all", "arms.all", "outer-layer.all"], "immutableRegions": ["right-leg.base.front.boot", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0, "materializedMasks": null},
       "expectedSignals": ["exactly one left-front boot buckle is added", "right boot and all protected pixels remain byte-identical"], "honestFailureAllowed": false
     },
     {
@@ -260,7 +260,7 @@
       "categories": ["localized-revision", "protected-regions", "wide-arm-64", "front-back-consistency", "hard-edges"],
       "prompt": "Add a crisp five-pixel teal diamond only to the rear torso; preserve front, side, top, bottom, limbs, head, and outer layer exactly.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with a solid dark torso, detailed front buttons, and no rear emblem.", "baselineAsset": null, "editableRegions": ["torso.base.rear"], "protectedRegions": ["torso.base.front", "torso.base.left", "torso.base.right", "head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["torso.base.front.buttons", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0},
+      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with a solid dark torso, detailed front buttons, and no rear emblem.", "baselineAsset": null, "editableRegions": ["torso.base.rear"], "protectedRegions": ["torso.base.front", "torso.base.left", "torso.base.right", "head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["torso.base.front.buttons", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0, "materializedMasks": null},
       "expectedSignals": ["five-pixel diamond appears on rear only", "front buttons and every protected face remain byte-identical"], "honestFailureAllowed": false
     },
     {
@@ -268,7 +268,7 @@
       "categories": ["localized-revision", "protected-regions", "slim-arm-64", "outer-layer", "transparency"],
       "prompt": "Add a partially transparent pale hood to the head outer layer only, leaving the base head, face, hair, clothing, and unused regions unchanged.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with detailed base head and clothing, empty head outer layer, and transparent unused regions.", "baselineAsset": null, "editableRegions": ["head.outer.all-faces"], "protectedRegions": ["head.base.all-faces", "torso.all", "arms.all", "legs.all"], "immutableRegions": ["head.base.front", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0},
+      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with detailed base head and clothing, empty head outer layer, and transparent unused regions.", "baselineAsset": null, "editableRegions": ["head.outer.all-faces"], "protectedRegions": ["head.base.all-faces", "torso.all", "arms.all", "legs.all"], "immutableRegions": ["head.base.front", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0, "materializedMasks": null},
       "expectedSignals": ["hood alpha is confined to head outer layer", "base head and unused regions remain byte-identical"], "honestFailureAllowed": false
     },
     {
