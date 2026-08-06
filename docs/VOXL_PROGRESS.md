@@ -123,7 +123,7 @@ Status: **complete**
 
 ## Phase 4 — shared studio shell and engine UI modules
 
-Status: **in progress**
+Status: **complete**
 
 ### Work
 
@@ -141,7 +141,7 @@ Status: **in progress**
 - [x] Add skin undo/redo, local draft persistence, PNG import, deterministic validation, and valid PNG export.
 - [x] Add repository-owned Playwright journey definitions and a review rubric for the remaining browser and visual checks.
 - [x] Execute the required Playwright journeys and independently review their captured screenshots, runtime observations, and downloads.
-- [ ] Add named local versions and side-by-side comparison.
+- [x] Add immutable named local versions, engine-owned snapshot adapters, restore, and side-by-side comparison.
 - [x] Keep the complete editor usable locally before accounts exist.
 
 ### Exit criteria
@@ -153,9 +153,28 @@ Status: **in progress**
 
 ## Phase 5 — generative-provider research spike
 
-Status: **not started**
+Status: **in progress**
 
-- [ ] Complete all Phase 5 work and exit criteria from the implementation plan.
+### Research foundation
+
+- [x] Freeze a 36-case synthetic/licensed-safe evaluation set before viewing provider output.
+- [x] Cover text-only, single/multiple reference, synthetic photo/drawing, remix, asymmetry, cross-surface pattern, outer-layer, both export profiles, localized revision, preserve constraints, and honest unsupported requests.
+- [x] Define a weighted rubric, hard gates, failure taxonomy, case schema, rubric schema, and immutable attempt schema.
+- [x] Add engine-neutral generation-provider contracts and registry behavior without installing a production provider.
+- [x] Add an offline evaluation runner that validates the specification, reports readiness blockers, replays existing PNGs through deterministic engine validation, and stores checksummed immutable evidence.
+- [x] Keep artifact replay explicitly separate from provider/model results, network activity, paid calls, scores, latency, failure-rate, and cost aggregates.
+- [x] Recheck the preview-to-atlas paper, specialized checkpoint, base-model requirements, and current hosted-access boundary against primary sources.
+
+### Remaining experiment gate
+
+- [ ] Materialize and SHA-256 lock 25 synthetic reference assets used by 18 cases.
+- [ ] Materialize and SHA-256 lock four revision baselines plus editable/protected masks.
+- [ ] Complete model, dataset, commercial-use, reference-use, and retention provenance review for at least one candidate.
+- [ ] Implement and admit a real `preview-to-atlas` provider adapter only after provenance review.
+- [ ] Run the fixed experiment through temporary local, notebook, rented GPU, native-host, or API-backed compute without charging product entitlements.
+- [ ] Record cold/warm latency, memory, failure rate, validation rate, quality distributions, and actual/estimated cost.
+- [ ] Decide from measured evidence whether to continue a provider, investigate fine-tuning, change approach, or stop.
+- [ ] Complete all Phase 5 exit criteria from the implementation plan; no model or production hosting path is selected yet.
 
 ## Phase 6 — generative creation and localized revision
 
@@ -237,6 +256,7 @@ Status: **not started**
 | 2026-08-05 | Bun workspace, Hono server, and local database foundation | `bun run check`, host and Docker localhost smoke tests, production-image boot, `bun run db:generate`, `bun run db:migrate`, four-table PostgreSQL probe, `bun audit`, `tofu fmt -check`, `tofu validate`, `bun run validate -- bear`, `bun run render -- bear`, target-brand scan | 39 tests passed; lint/types/build passed; local and container routes healthy; migration applied; high-severity advisories resolved; one moderate development-only Drizzle Kit transitive advisory remains | `0d77be9` |
 | 2026-08-05 | Native editor consolidation and synchronized 3D slice | `bun run check`, motion state/history parity tests, raycast UV mapping test, frozen install, `bun run db:generate`, `bun audit`, Docker localhost studio/API smoke tests, `tofu fmt -check`, `tofu validate`, `bun run validate -- bear`, `bun run render -- bear`, target-brand scan | 43 tests passed; iframe/static split removed; both editors lazy-load natively; 2D/3D paint state is shared; 0 vulnerabilities; real-browser WebGL orientation QA remains the next gate because no browser backend was available | `6a04a68` |
 | 2026-08-05 | Browser quality system and Phase 4 interaction sign-off | `bun run check`, four Playwright journeys, independent rubric reviews, official skill validation, `bun audit`, `tofu fmt -check`, `tofu validate`, `bun run validate -- bear`, `bun run render -- bear`, target-brand scan | 48 repository tests plus 9 runner tests passed; 84/84 final browser steps passed with 0 runtime errors; responsive, import/export, transparent-layer, synchronized editing, and directional rotation reviews passed; 0 vulnerabilities | `fc67261` |
+| 2026-08-05 | Phase 4 local versions and Phase 5 evaluation foundation | `bun run check`, `local-version-compare` desktop/mobile Playwright journey, independent rubric review, evidence audit, `bun run eval:check`, `bun run eval:adapters`, `bun audit`, `bun run db:generate`, `tofu fmt -check`, `tofu validate`, localhost studio/API probes, target-brand scan | 80 automated tests passed; 74/74 browser steps passed with 0 runtime errors; immutable compare/restore and Skin/Motion isolation passed; 36-case evaluation specification validates; 0 admitted providers, 25 reference assets and 4 revision baselines remain explicit blockers; 0 vulnerabilities | `1ef2d8a` |
 
 ## Next unchecked step
 

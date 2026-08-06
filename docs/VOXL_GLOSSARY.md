@@ -21,6 +21,14 @@ Neither engine is named after an external application, game, platform, or publis
 
 A visual thing created and saved by VOXL, such as an animated transparent character, a humanoid skin, a rendered preview, or an exported PNG. “Asset” and “artifact” are often used similarly; artifact usually emphasizes a specific generated or exported result.
 
+### Artifact replay
+
+An evaluation-harness test that takes an already existing output file and runs it through validation, canonical export, evidence rendering, and hashing. It proves that the evaluator works; it does not call a model and is not evidence of provider quality, latency, or cost.
+
+### Attempt
+
+One immutable evaluation record for one case, candidate output, and execution. It records inputs, provenance when a provider exists, timing, cost, validation, hashes, evidence files, and failure categories. A replay attempt has no provider.
+
 ### Asset
 
 A durable creative project item owned by a user. An asset can have many versions, source files, reference images, previews, and exports.
@@ -28,6 +36,10 @@ A durable creative project item owned by a user. An asset can have many versions
 ### Componentized
 
 Built from separate parts with explicit responsibilities. VOXL can add a new visual engine without forcing its file format or editor rules into existing engines.
+
+### Checksum
+
+A short value calculated from file or document contents so later code can detect whether those contents changed. VOXL uses SHA-256 for durable evaluation evidence; a local browser draft may use a smaller checksum only as a corruption check.
 
 ### External destination
 
@@ -355,6 +367,10 @@ The LLM's work of selecting and sequencing tools to accomplish a request—for e
 
 ## Service, storage, and billing terms
 
+### Ajv
+
+The JSON Schema validator used by the Phase 5 evaluation runner. It checks the fixed case set, scoring rubric, and attempt records locally before evidence is accepted.
+
 ### Bun
 
 The JavaScript and TypeScript runtime and package manager used to coordinate VOXL's workspaces and run the Hono server. Node remains temporarily required by the existing evaluation harness.
@@ -411,6 +427,10 @@ Safe to repeat without creating duplicate effects. Retrying the same generation 
 
 The ordered system that holds background tasks until a worker can process them. It supports retries, cancellation, concurrency limits, and failure handling.
 
+### JSON Schema
+
+A machine-readable set of rules for JSON structure and values. It lets the evaluator reject missing, misspelled, unsupported, or wrongly typed fields before relying on a case or attempt record.
+
 ### Local
 
 Running on the user's own machine. Local editing and deterministic validation can work without VOXL paying for remote compute.
@@ -430,6 +450,10 @@ AWS-managed PostgreSQL proposed for durable relational records such as users, pr
 ### S3
 
 Amazon Simple Storage Service, the proposed object store for uploaded references, textures, previews, exports, and possibly the built Vite client.
+
+### SHA-256
+
+A widely used cryptographic hash function. VOXL records the 64-character SHA-256 value of evaluation inputs and evidence so a manifest can detect changed or substituted bytes.
 
 ### Secrets Manager
 
