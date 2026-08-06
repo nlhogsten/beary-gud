@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify VOXL Studio"
+  short_description: "Capture evidence for studio user journeys"
+  default_prompt: "Use $verify-voxl-studio to run and review a VOXL Studio walkthrough."

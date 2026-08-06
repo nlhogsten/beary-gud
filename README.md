@@ -8,7 +8,7 @@ This repository began as a transparent pixel-character studio. It is now the imp
 
 VOXL names engines, packages, APIs, and editor modules after the visual artifact they implement—not after any external application, game, platform, or publisher. Compatibility is represented by neutral export profiles such as `wide-arm-64` and `slim-arm-64`.
 
-The existing animation workflow remains the current working product. VOXL is organized as a Bun workspace monorepo: independent applications live in `apps/`, reusable visual engines live in `packages/`, database and cloud infrastructure live in `infra/`, and the root package only coordinates them. Development is localhost-only; future production targets an OpenTofu-managed AWS runtime. Start with [the system architecture](docs/VOXL_ARCHITECTURE.md), [local development runbook](docs/LOCAL_DEVELOPMENT.md), [plain-language glossary](docs/VOXL_GLOSSARY.md), [implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), and [checked progress tracker](docs/VOXL_PROGRESS.md).
+The existing animation workflow remains the current working product. VOXL is organized as a Bun workspace monorepo: independent applications live in `apps/`, reusable visual engines live in `packages/`, database and cloud infrastructure live in `infra/`, and the root package only coordinates them. Development is localhost-only; future production targets an OpenTofu-managed AWS runtime. Start with [the system architecture](docs/VOXL_ARCHITECTURE.md), [local development runbook](docs/LOCAL_DEVELOPMENT.md), [quality and walkthrough system](docs/VOXL_QUALITY_SYSTEM.md), [plain-language glossary](docs/VOXL_GLOSSARY.md), [implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), and [checked progress tracker](docs/VOXL_PROGRESS.md).
 
 ## Start the local editor
 
@@ -24,6 +24,24 @@ Open `http://127.0.0.1:5740`. This runs the Vite studio and Bun/Hono API togethe
 Both current visual editors are native React engine modules in the shared studio shell. Run only one application with `bun run dev:studio` or `bun run dev:server`.
 
 For the complete Docker/Supabase local stack, run `bun run docker:stack:up`. This starts the database services plus separate studio and server containers. No command publishes VOXL externally.
+
+## Verify the studio
+
+Run the deterministic repository gate first:
+
+```bash
+bun run check
+```
+
+For real-browser evidence, keep the localhost studio running and execute a committed Playwright journey in another terminal:
+
+```bash
+bunx playwright install chromium # first local setup only
+bun run qa:smoke
+bun run qa:walkthrough humanoid-2d-3d
+```
+
+Walkthrough evidence is written to the gitignored `.runs/<run-id>/` directory. A passing walkthrough means its required interactions completed without actionable browser errors; it does not by itself approve visual correctness. Review the screenshots and downloads against [`apps/quality-runner/rubrics/voxl-studio-review.json`](apps/quality-runner/rubrics/voxl-studio-review.json) before closing a visual milestone. See [the quality-system guide](docs/VOXL_QUALITY_SYSTEM.md) for the four journeys, artifact format, and agent workflow.
 
 ## Make or change a character
 
@@ -47,4 +65,4 @@ bun run import-bash -- /path/to/old-animation.sh new-character
 bun run render -- new-character
 ```
 
-Read [the local development runbook](docs/LOCAL_DEVELOPMENT.md), [usage guide](docs/USAGE_GUIDE.md), [animation guide](docs/ANIMATION_GUIDE.md), [Bash migration guide](docs/BASH_MIGRATION.md), [VOXL glossary](docs/VOXL_GLOSSARY.md), [VOXL architecture](docs/VOXL_ARCHITECTURE.md), and [VOXL progress tracker](docs/VOXL_PROGRESS.md).
+Read [the local development runbook](docs/LOCAL_DEVELOPMENT.md), [quality-system guide](docs/VOXL_QUALITY_SYSTEM.md), [usage guide](docs/USAGE_GUIDE.md), [animation guide](docs/ANIMATION_GUIDE.md), [Bash migration guide](docs/BASH_MIGRATION.md), [VOXL glossary](docs/VOXL_GLOSSARY.md), [VOXL architecture](docs/VOXL_ARCHITECTURE.md), and [VOXL progress tracker](docs/VOXL_PROGRESS.md).

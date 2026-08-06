@@ -766,11 +766,8 @@
 
 @media (max-width: 900px) {
   .header {
-    grid-template-columns: 1fr auto;
-  }
-
-  .brand {
-    display: none;
+    grid-template-columns: minmax(130px, 1fr) auto auto;
+    gap: 12px;
   }
 
   .engineSwitcher {
@@ -803,12 +800,20 @@
 
 @media (max-width: 600px) {
   .header {
+    grid-template-columns: 1fr auto;
     gap: 8px;
     padding: 8px;
   }
 
-  .engineStatus {
+  .brand strong {
     display: none;
+  }
+
+  .engineSwitcher {
+    grid-column: 1 / -1;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .engineTab {
@@ -837,6 +842,14 @@
 
   .motionStageWrap {
     padding: 10px;
+  }
+
+  .track {
+    grid-template-columns: 1fr;
+  }
+
+  .ticks {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .canvasArea {

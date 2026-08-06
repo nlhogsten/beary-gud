@@ -1,0 +1,19 @@
+{
+  "name": "@voxl/quality-runner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "browsers:install": "playwright install chromium",
+    "test": "bun test src",
+    "walkthrough": "bun src/cli.ts walkthrough",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "playwright": "1.62.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "typescript": "5.9.3"
+  }
+}

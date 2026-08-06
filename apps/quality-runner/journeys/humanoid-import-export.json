@@ -1,0 +1,118 @@
+{
+  "id": "humanoid-import-export",
+  "title": "Humanoid profile and file boundaries",
+  "purpose": "Verify deterministic profile conversion, validation, a profile-valid PNG export, and re-import of that exact same-run artifact.",
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 1000 }
+  ],
+  "steps": [
+    {
+      "id": "open-studio",
+      "title": "Open the local studio",
+      "action": "navigate",
+      "path": "/",
+      "expected": "The studio loads in a fresh local browser context.",
+      "required": true
+    },
+    {
+      "id": "wait-for-skin-editor",
+      "title": "Wait for the skin editor",
+      "action": "wait",
+      "target": "label=Humanoid skin editor",
+      "expected": "The native humanoid skin editor is ready.",
+      "required": true
+    },
+    {
+      "id": "assert-wide-valid",
+      "title": "Confirm the starter wide profile",
+      "action": "assert-visible",
+      "target": "text=Valid profile",
+      "expected": "The starter wide-arm document has no blocking validation issues.",
+      "required": true
+    },
+    {
+      "id": "convert-to-slim",
+      "title": "Convert to the slim profile",
+      "action": "select",
+      "target": "label=Export profile",
+      "value": "slim-arm-64",
+      "expected": "The document converts deterministically to slim-arm-64.",
+      "required": true
+    },
+    {
+      "id": "assert-slim-conversion",
+      "title": "Confirm slim conversion",
+      "action": "assert-visible",
+      "target": "text=Converted draft to slim-arm-64",
+      "expected": "The conversion is visible in the editor status.",
+      "required": true
+    },
+    {
+      "id": "capture-slim-profile",
+      "title": "Capture slim geometry",
+      "action": "screenshot",
+      "value": "humanoid-slim-profile",
+      "expected": "Evidence shows narrower arm geometry without texture distortion.",
+      "required": true
+    },
+    {
+      "id": "convert-to-wide",
+      "title": "Convert back to the wide profile",
+      "action": "select",
+      "target": "label=Export profile",
+      "value": "wide-arm-64",
+      "expected": "The document converts deterministically back to wide-arm-64.",
+      "required": true
+    },
+    {
+      "id": "assert-import-affordance",
+      "title": "Confirm PNG import is available",
+      "action": "assert-visible",
+      "target": "role=button[name=\"Import PNG\"]",
+      "expected": "The user-facing PNG import action is visible and enabled.",
+      "required": true
+    },
+    {
+      "id": "assert-converted-valid",
+      "title": "Confirm the converted document remains valid",
+      "action": "assert-visible",
+      "target": "text=Valid profile",
+      "expected": "Round-trip profile conversion leaves no blocking validation issue.",
+      "required": true
+    },
+    {
+      "id": "download-wide-profile",
+      "title": "Download the wide-profile atlas",
+      "action": "download",
+      "target": "role=button[name=\"Download PNG\"]",
+      "value": "voxl-humanoid-skin-wide-arm-64.png",
+      "expected": "A non-empty 64 by 64 profile-valid PNG is downloaded with the expected name.",
+      "required": true
+    },
+    {
+      "id": "assert-download-status",
+      "title": "Confirm successful export",
+      "action": "assert-visible",
+      "target": "text=Profile-valid PNG downloaded",
+      "expected": "The editor confirms a validated download.",
+      "required": true
+    },
+    {
+      "id": "reimport-downloaded-profile",
+      "title": "Re-import the downloaded wide-profile atlas",
+      "action": "upload",
+      "target": "css=input[type=\"file\"]",
+      "value": "voxl-humanoid-skin-wide-arm-64.png",
+      "expected": "The hidden PNG input receives the exact file downloaded earlier in this run.",
+      "required": true
+    },
+    {
+      "id": "assert-reimport-status",
+      "title": "Confirm the downloaded atlas imports cleanly",
+      "action": "assert-visible",
+      "target": "text=Imported voxl-humanoid-skin-wide-arm-64.png as wide-arm-64",
+      "expected": "The exported atlas round-trips through validation and profile detection.",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "id": "studio-smoke",
+  "title": "Studio engine smoke test",
+  "purpose": "Confirm the standalone localhost studio loads both native React engines without leaving the application or exposing target-game branding.",
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 1000 },
+    { "name": "mobile", "width": 390, "height": 844 }
+  ],
+  "steps": [
+    {
+      "id": "open-studio",
+      "title": "Open the local studio",
+      "action": "navigate",
+      "path": "/",
+      "expected": "The VOXL Studio shell loads from localhost.",
+      "required": true
+    },
+    {
+      "id": "wait-for-skin-editor",
+      "title": "Wait for the default skin editor",
+      "action": "wait",
+      "target": "label=Humanoid skin editor",
+      "expected": "The lazy-loaded native skin editor is visible.",
+      "required": true
+    },
+    {
+      "id": "assert-studio-brand",
+      "title": "Confirm product identity",
+      "action": "assert-visible",
+      "target": "text=VOXL STUDIO",
+      "expected": "The standalone product brand is visible.",
+      "required": true
+    },
+    {
+      "id": "assert-native-editor-status",
+      "title": "Confirm native editor status",
+      "action": "assert-visible",
+      "target": "text=React editor",
+      "expected": "The selected engine is represented by a native React editor.",
+      "required": true
+    },
+    {
+      "id": "assert-atlas",
+      "title": "Confirm the editable atlas",
+      "action": "assert-visible",
+      "target": "label=Editable 64 by 64 humanoid skin atlas",
+      "expected": "The 2D atlas canvas is visible.",
+      "required": true
+    },
+    {
+      "id": "assert-three-dimensional-preview",
+      "title": "Confirm the 3D preview",
+      "action": "assert-visible",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "expected": "The WebGL character preview is visible.",
+      "required": true
+    },
+    {
+      "id": "capture-skin-engine",
+      "title": "Capture the skin engine",
+      "action": "screenshot",
+      "value": "full-page",
+      "expected": "Full-page evidence shows the complete default editor at the active viewport.",
+      "required": true
+    },
+    {
+      "id": "switch-to-motion",
+      "title": "Switch to the motion engine",
+      "action": "click",
+      "target": "role=button[name=\"Motion\"]",
+      "expected": "The engine switcher activates the transparent-character editor.",
+      "required": true
+    },
+    {
+      "id": "wait-for-motion-editor",
+      "title": "Wait for the motion editor",
+      "action": "wait",
+      "target": "label=Pixel canvas",
+      "expected": "The native motion editor is visible.",
+      "required": true
+    },
+    {
+      "id": "assert-motion-tools",
+      "title": "Confirm motion paint tools",
+      "action": "assert-visible",
+      "target": "label=Paint tools",
+      "expected": "The motion editor exposes its native paint controls.",
+      "required": true
+    },
+    {
+      "id": "assert-motion-export",
+      "title": "Confirm motion export",
+      "action": "assert-visible",
+      "target": "role=button[name=\"Export animation\"]",
+      "expected": "Animation export is available.",
+      "required": true
+    },
+    {
+      "id": "capture-motion-engine",
+      "title": "Capture the motion engine",
+      "action": "screenshot",
+      "value": "full-page",
+      "expected": "Full-page evidence shows the complete motion editor at the active viewport.",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "id": "transparent-edit-export",
+  "title": "Transparent character edit and export",
+  "purpose": "Exercise a reversible pixel edit, local history, effects, export-mode selection, and deterministic transparent PNG downloads in the native motion editor.",
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 1000 }
+  ],
+  "steps": [
+    {
+      "id": "open-studio",
+      "title": "Open the local studio",
+      "action": "navigate",
+      "path": "/",
+      "expected": "The studio loads in a fresh local browser context.",
+      "required": true
+    },
+    {
+      "id": "open-motion-editor",
+      "title": "Open the motion engine",
+      "action": "click",
+      "target": "role=button[name=\"Motion\"]",
+      "expected": "The transparent-character editor is selected.",
+      "required": true
+    },
+    {
+      "id": "wait-for-pixel-canvas",
+      "title": "Wait for the pixel canvas",
+      "action": "wait",
+      "target": "label=Pixel canvas",
+      "expected": "The starter character is ready for editing.",
+      "required": true
+    },
+    {
+      "id": "set-custom-color",
+      "title": "Choose a deterministic custom color",
+      "action": "fill",
+      "target": "label=Custom color",
+      "value": "#5eb3ab",
+      "expected": "The custom-color input contains #5eb3ab.",
+      "required": true
+    },
+    {
+      "id": "add-custom-color",
+      "title": "Add the custom color to the palette",
+      "action": "click",
+      "target": "role=button[name=\"+ Add color\"]",
+      "expected": "The custom color is selected for painting.",
+      "required": true
+    },
+    {
+      "id": "paint-first-pixel",
+      "title": "Paint the first pixel",
+      "action": "click",
+      "target": "role=button[name=\"Pixel 1, 1, transparent\"]",
+      "expected": "The editor records a painted pixel at 1,1.",
+      "required": true
+    },
+    {
+      "id": "assert-painted-status",
+      "title": "Confirm the edit was recorded",
+      "action": "assert-visible",
+      "target": "css=[role=\"status\"]:has-text(\"Painted pixel 1,1\")",
+      "expected": "The visible status and activity history report the paint operation.",
+      "required": true
+    },
+    {
+      "id": "undo-paint",
+      "title": "Undo the pixel edit",
+      "action": "click",
+      "target": "role=button[name=\"Undo\"]",
+      "expected": "The canvas returns to its prior state.",
+      "required": true
+    },
+    {
+      "id": "assert-undo-status",
+      "title": "Confirm undo",
+      "action": "assert-visible",
+      "target": "css=[role=\"status\"]:has-text(\"Undid: Painted pixel 1,1\")",
+      "expected": "The visible status and activity history report the undo.",
+      "required": true
+    },
+    {
+      "id": "redo-paint",
+      "title": "Redo the pixel edit",
+      "action": "click",
+      "target": "role=button[name=\"Redo\"]",
+      "expected": "The painted pixel returns.",
+      "required": true
+    },
+    {
+      "id": "enable-drift",
+      "title": "Enable the drift effect",
+      "action": "click",
+      "target": "text=↗ Drift",
+      "expected": "The effect reports an enabled +4 px state.",
+      "required": true
+    },
+    {
+      "id": "assert-drift-enabled",
+      "title": "Confirm the drift effect",
+      "action": "assert-visible",
+      "target": "text=+4 px",
+      "expected": "The inspector exposes the enabled drift amount.",
+      "required": true
+    },
+    {
+      "id": "choose-sprite-sheet",
+      "title": "Choose sprite-sheet export",
+      "action": "select",
+      "target": "label=Export format",
+      "value": "Sprite sheet",
+      "expected": "The export card changes to Sprite sheet.",
+      "required": true
+    },
+    {
+      "id": "capture-edited-character",
+      "title": "Capture the edited character",
+      "action": "screenshot",
+      "value": "transparent-edited-character",
+      "expected": "Evidence shows the edited canvas, enabled effect, and sprite-sheet selection.",
+      "required": true
+    },
+    {
+      "id": "download-current-frame",
+      "title": "Download the current frame",
+      "action": "download",
+      "target": "role=button[name=\"Export current frame\"]",
+      "value": "rainbow-bear-frame-000.png",
+      "expected": "A non-empty transparent PNG frame is downloaded with the expected name.",
+      "required": true
+    },
+    {
+      "id": "download-sprite-sheet",
+      "title": "Download the sprite sheet",
+      "action": "download",
+      "target": "role=button[name=\"Export animation\"]",
+      "value": "rainbow-bear-sprite-sheet.png",
+      "expected": "A non-empty four-frame PNG sprite sheet is downloaded with the expected name.",
+      "required": true
+    }
+  ]
+}

@@ -25,6 +25,7 @@ logs/*.log
 *.log
 *.pid
 *.pid.lock
+.runs/
 
 # tools and operating systems
 .DS_Store

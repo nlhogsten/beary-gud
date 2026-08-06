@@ -1,0 +1,101 @@
+{
+  "id": "voxl-studio-review",
+  "title": "VOXL Studio evidence review",
+  "version": 1,
+  "purpose": "Judge captured browser evidence independently from implementation and deterministic test results.",
+  "ratingScale": {
+    "pass": "All required evidence supports the criterion with no material defect.",
+    "fail": "Evidence shows a defect, contradicts the criterion, or is missing for a required criterion.",
+    "needs-review": "Evidence is present but ambiguous; a human or a more focused journey must decide."
+  },
+  "automaticFailureConditions": [
+    "Any uncaught page error, unhandled rejection, or console error during a required step.",
+    "Any failed same-origin request required by the journey.",
+    "Any required step that did not complete or lacks its promised artifact.",
+    "Any public product text or exported filename that names a target game or implies affiliation with one.",
+    "Any required download that is empty, has an unexpected filename, or fails deterministic format validation."
+  ],
+  "criteria": [
+    {
+      "id": "runtime-integrity",
+      "title": "Runtime integrity",
+      "required": true,
+      "evidence": ["run manifest", "page errors", "console messages", "failed requests", "step results"],
+      "pass": "There are no uncaught errors, unexpected console errors, or required-request failures, and all required steps pass."
+    },
+    {
+      "id": "target-neutral-language",
+      "title": "Target-neutral product language",
+      "required": true,
+      "evidence": ["all screenshots", "accessible text snapshot", "download filenames"],
+      "pass": "Visible product language and filenames use VOXL visual/profile terms only and contain no target-game brands or affiliation claims."
+    },
+    {
+      "id": "pixel-sharpness",
+      "title": "Pixel sharpness",
+      "required": true,
+      "evidence": ["skin engine screenshots", "motion engine screenshots", "downloaded PNG inspection"],
+      "pass": "Atlas, motion pixels, mini previews, and 3D textures have hard pixel edges with no smoothing, bleeding, half-pixel seams, or blurry scaling."
+    },
+    {
+      "id": "cuboid-face-orientation",
+      "title": "Cuboid face orientation",
+      "required": true,
+      "evidence": ["front and back mini previews", "3D preview screenshots", "focused rotated-view evidence when available"],
+      "pass": "Head, torso, arms, and legs show the correct front, back, left, right, top, and bottom atlas faces without mirroring, inversion, or part swaps."
+    },
+    {
+      "id": "outer-layer-rendering",
+      "title": "Outer-layer rendering",
+      "required": true,
+      "evidence": ["outer-layer-on screenshot", "base-only screenshot", "transparent-pixel regions"],
+      "pass": "Outer geometry is visibly separated from base geometry, transparent texels reveal the base, toggling it does not mutate document pixels, and hidden outer pixels cannot obscure base editing."
+    },
+    {
+      "id": "wide-slim-profiles",
+      "title": "Wide and slim profiles",
+      "required": true,
+      "evidence": ["wide profile screenshot", "humanoid-slim-profile screenshot", "validation status", "downloaded atlas dimensions"],
+      "pass": "Wide arms render at four units, slim arms at three units, both remain centered and correctly textured, conversion preserves valid shared regions, and exported atlases remain 64 by 64."
+    },
+    {
+      "id": "two-dimensional-three-dimensional-sync",
+      "title": "2D and 3D synchronization",
+      "required": true,
+      "evidence": ["humanoid-after-2d-paint screenshot", "3D paint step result", "atlas coordinates and status", "undo result"],
+      "pass": "A mapped 2D edit appears on the corresponding 3D surface, a 3D click changes the corresponding atlas texel, color picking agrees across views, and undo reverts the shared document."
+    },
+    {
+      "id": "accessibility",
+      "title": "Accessible controls and status",
+      "required": true,
+      "evidence": ["role and label locator results", "keyboard-focus screenshot when available", "status announcements"],
+      "pass": "Interactive controls have stable accessible names, form fields are labelled, status feedback is perceivable, and the journey does not rely on pointer-only access except where the canvas interaction itself is under test."
+    },
+    {
+      "id": "responsive-layout",
+      "title": "Responsive layout",
+      "required": true,
+      "evidence": ["desktop studio-smoke screenshots", "mobile studio-smoke screenshots"],
+      "pass": "At both viewports the engine switcher, editor, inspectors, canvas, and primary actions remain visible or intentionally scrollable without overlap, clipping, or off-screen traps."
+    },
+    {
+      "id": "download-integrity",
+      "title": "Download integrity",
+      "required": true,
+      "evidence": ["download manifest", "file names", "file sizes", "image dimensions", "PNG signature and alpha inspection"],
+      "pass": "Every expected file downloads once with the specified target-neutral name, is non-empty, decodes successfully, has expected dimensions, and preserves transparency where the format requires it."
+    },
+    {
+      "id": "import-boundary",
+      "title": "Import validation boundary",
+      "required": false,
+      "evidence": ["Import PNG affordance", "future fixture-backed upload journey", "validation messages"],
+      "pass": "A valid 64 by 64 PNG loads and detects its profile; wrong dimensions, unreadable data, and invalid transparent base pixels are rejected with actionable messages and without corrupting the current draft."
+    }
+  ],
+  "reviewOutput": {
+    "requiredFields": ["runId", "journeyId", "reviewer", "reviewedAt", "criterionRatings", "summary", "blockingFindings"],
+    "rule": "A run passes only when every required criterion applicable to its journey is rated pass and no automatic failure condition is present."
+  }
+}

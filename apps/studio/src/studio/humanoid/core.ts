@@ -113,12 +113,39 @@ export function detectProfile(pixels: Uint8ClampedArray): SkinProfileId {
 
 export function convertProfile(
   pixels: Uint8ClampedArray,
+  currentProfile: SkinProfileId,
   nextProfile: SkinProfileId,
 ): Uint8ClampedArray {
-  const output = new Uint8ClampedArray(pixels);
-  const mapped = mappedMask(nextProfile);
-  for (let pixel = 0; pixel < mapped.length; pixel += 1) {
-    if (!mapped[pixel]) output.fill(0, pixel * 4, pixel * 4 + 4);
+  if (pixels.length !== SKIN_SIZE * SKIN_SIZE * 4) {
+    throw new Error("Profile conversion requires exactly 64×64 RGBA pixels.");
+  }
+  if (currentProfile === nextProfile) return new Uint8ClampedArray(pixels);
+
+  const output = new Uint8ClampedArray(pixels.length);
+  for (const destination of skinProfile(nextProfile).regions) {
+    const source = skinRegion(
+      currentProfile,
+      destination.part,
+      destination.layer,
+      destination.face,
+    );
+    for (let y = 0; y < destination.height; y += 1) {
+      for (let x = 0; x < destination.width; x += 1) {
+        const sourceX = source.x + Math.min(
+          source.width - 1,
+          Math.floor((x * source.width) / destination.width),
+        );
+        const sourceY = source.y + Math.min(
+          source.height - 1,
+          Math.floor((y * source.height) / destination.height),
+        );
+        const sourceOffset = (sourceY * SKIN_SIZE + sourceX) * 4;
+        const destinationOffset = (
+          (destination.y + y) * SKIN_SIZE + destination.x + x
+        ) * 4;
+        output.set(pixels.subarray(sourceOffset, sourceOffset + 4), destinationOffset);
+      }
+    }
   }
   return output;
 }

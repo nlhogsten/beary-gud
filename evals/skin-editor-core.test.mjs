@@ -4,6 +4,7 @@ import {
   createBlankPixels,
   CUBOID_HUMANOID_RENDERER_ID,
   convertProfile,
+  detectProfile,
   mappedMask,
   pixelRegion,
   renderPreview,
@@ -42,9 +43,19 @@ test("profile conversion clears pixels outside the destination UV map", () => {
   const wideOnly = mappedMask("wide-arm-64").findIndex((value, index) => value && !mappedMask("slim-arm-64")[index]);
   assert.notEqual(wideOnly, -1);
   wide.set([255, 0, 0, 255], wideOnly * 4);
-  const slim = convertProfile(wide, "slim-arm-64");
+  const slim = convertProfile(wide, "wide-arm-64", "slim-arm-64");
   assert.deepEqual(Array.from(slim.slice(wideOnly * 4, wideOnly * 4 + 4)), [0, 0, 0, 0]);
   assert.equal(validatePixels("slim-arm-64", slim).ok, true);
+});
+
+test("profile conversion round-trips required base regions", () => {
+  const wide = createBlankPixels("wide-arm-64", [21, 43, 65, 255]);
+  const slim = convertProfile(wide, "wide-arm-64", "slim-arm-64");
+  const restored = convertProfile(slim, "slim-arm-64", "wide-arm-64");
+  const validation = validatePixels("wide-arm-64", restored);
+
+  assert.deepEqual(validation, { ok: true, issues: [] });
+  assert.equal(detectProfile(restored), "wide-arm-64");
 });
 
 test("browser front and back previews match deterministic engine output", () => {

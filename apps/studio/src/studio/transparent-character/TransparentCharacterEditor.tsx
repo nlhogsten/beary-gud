@@ -328,8 +328,8 @@ export function TransparentCharacterEditor() {
         <div className={styles.motionBar}>
           <span>{slugifyCharacter(character.name)} / preview / <strong>{String(frame).padStart(3, "0")}</strong></span>
           <div>
-            <button className={styles.squareButton} disabled={!history.past.length} onClick={undo} title="Undo" type="button">↶</button>
-            <button className={styles.squareButton} disabled={!history.future.length} onClick={redo} title="Redo" type="button">↷</button>
+            <button aria-label="Undo" className={styles.squareButton} disabled={!history.past.length} onClick={undo} title="Undo" type="button">↶</button>
+            <button aria-label="Redo" className={styles.squareButton} disabled={!history.future.length} onClick={redo} title="Redo" type="button">↷</button>
             <span className={styles.saved}>● Saved locally</span>
           </div>
         </div>

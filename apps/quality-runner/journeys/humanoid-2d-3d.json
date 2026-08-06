@@ -1,0 +1,267 @@
+{
+  "id": "humanoid-2d-3d",
+  "title": "Humanoid 2D and 3D editing",
+  "purpose": "Verify that atlas painting, color picking, WebGL painting, history, and layer visibility share one humanoid skin document.",
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 1000 }
+  ],
+  "steps": [
+    {
+      "id": "open-studio",
+      "title": "Open the local studio",
+      "action": "navigate",
+      "path": "/",
+      "expected": "The studio loads in a fresh local browser context.",
+      "required": true
+    },
+    {
+      "id": "select-skin-editor",
+      "title": "Select the skin engine",
+      "action": "click",
+      "target": "role=button[name=\"Skin\"]",
+      "expected": "The cuboid humanoid editor is selected.",
+      "required": true
+    },
+    {
+      "id": "wait-for-webgl",
+      "title": "Wait for the 3D preview",
+      "action": "wait",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "expected": "The WebGL canvas is visible and ready for interaction.",
+      "required": true
+    },
+    {
+      "id": "click-through-transparent-head-outer-layer",
+      "title": "Click through the transparent head outer layer",
+      "action": "canvas-click",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "value": "0.5,0.15",
+      "expected": "The raycast skips the transparent outer texel and reaches the head base front face.",
+      "required": true
+    },
+    {
+      "id": "assert-transparent-outer-layer-picking",
+      "title": "Confirm transparent outer-layer picking",
+      "action": "assert-visible",
+      "target": "text=head / base / front",
+      "expected": "The reported semantic region is head / base / front while the outer layer remains enabled.",
+      "required": true
+    },
+    {
+      "id": "set-paint-color",
+      "title": "Set a recognizable paint color",
+      "action": "fill",
+      "target": "label=Paint color",
+      "value": "#ff00ff",
+      "expected": "The pencil tool is active with magenta selected.",
+      "required": true
+    },
+    {
+      "id": "paint-head-front-atlas",
+      "title": "Paint a mapped head-front atlas pixel",
+      "action": "canvas-click",
+      "target": "label=Editable 64 by 64 humanoid skin atlas",
+      "value": "0.1640625,0.1640625",
+      "expected": "Atlas pixel 10,10 in the head/base/front region is painted.",
+      "required": true
+    },
+    {
+      "id": "assert-atlas-paint",
+      "title": "Confirm atlas painting",
+      "action": "assert-visible",
+      "target": "text=Painted skin pixel",
+      "expected": "The editor reports a completed 2D paint stroke.",
+      "required": true
+    },
+    {
+      "id": "capture-two-dimensional-sync",
+      "title": "Capture the atlas-to-preview update",
+      "action": "screenshot",
+      "value": "humanoid-after-2d-paint",
+      "expected": "Evidence shows the magenta atlas pixel reflected by the previews.",
+      "required": true
+    },
+    {
+      "id": "pick-color-from-atlas",
+      "title": "Pick the painted color from the atlas",
+      "action": "click",
+      "target": "role=button[name=\"Pick\"]",
+      "expected": "The color-picker tool is active.",
+      "required": true
+    },
+    {
+      "id": "pick-magenta-pixel",
+      "title": "Pick the newly painted pixel",
+      "action": "canvas-click",
+      "target": "label=Editable 64 by 64 humanoid skin atlas",
+      "value": "0.1640625,0.1640625",
+      "expected": "The editor picks #ff00ff and restores the pencil tool.",
+      "required": true
+    },
+    {
+      "id": "assert-picked-color",
+      "title": "Confirm color picking",
+      "action": "assert-visible",
+      "target": "text=Picked #ff00ff",
+      "expected": "The picked color is visible in the status bar.",
+      "required": true
+    },
+    {
+      "id": "paint-through-three-dimensions",
+      "title": "Paint directly on the 3D character",
+      "action": "canvas-click",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "value": "0.5,0.5",
+      "expected": "The center visible surface maps back to and paints an atlas pixel.",
+      "required": true
+    },
+    {
+      "id": "assert-three-dimensional-paint",
+      "title": "Confirm 3D painting",
+      "action": "assert-visible",
+      "target": "text=Painted skin pixel in 3D",
+      "expected": "The editor reports a completed 3D paint operation.",
+      "required": true
+    },
+    {
+      "id": "hide-outer-layer",
+      "title": "Hide the outer layer",
+      "action": "click",
+      "target": "label=Outer layer",
+      "expected": "Outer-layer geometry and atlas pixels are hidden without changing the document.",
+      "required": true
+    },
+    {
+      "id": "capture-base-only",
+      "title": "Capture the base-only view",
+      "action": "screenshot",
+      "value": "humanoid-base-layer-only",
+      "expected": "Evidence shows the base layer without outer-layer geometry.",
+      "required": true
+    },
+    {
+      "id": "restore-outer-layer",
+      "title": "Restore the outer layer",
+      "action": "click",
+      "target": "label=Outer layer",
+      "expected": "Outer-layer geometry and pixels are visible again.",
+      "required": true
+    },
+    {
+      "id": "undo-three-dimensional-paint",
+      "title": "Undo the 3D paint",
+      "action": "click",
+      "target": "role=button[name=\"Undo\"]",
+      "expected": "The most recent document edit is reverted in both views.",
+      "required": true
+    },
+    {
+      "id": "assert-undo",
+      "title": "Confirm shared history",
+      "action": "assert-visible",
+      "target": "text=Undid skin edit",
+      "expected": "The shared editor history reports the reversal.",
+      "required": true
+    },
+    {
+      "id": "rotate-three-dimensional-preview",
+      "title": "Rotate the 3D character toward its side",
+      "action": "canvas-drag",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "value": "0.7,0.4,0.3,0.4",
+      "expected": "A real horizontal pointer drag exposes a side face.",
+      "required": true
+    },
+    {
+      "id": "assert-side-drag-did-not-paint",
+      "title": "Confirm side rotation did not paint",
+      "action": "assert-visible",
+      "target": "text=Undid skin edit",
+      "expected": "The prior undo status remains unchanged after the drag, proving no paint action fired.",
+      "required": true
+    },
+    {
+      "id": "capture-rotated-preview",
+      "title": "Capture the side-facing 3D character",
+      "action": "screenshot",
+      "value": "humanoid-side-facing",
+      "expected": "Evidence shows a materially different side-facing character angle.",
+      "required": true
+    },
+    {
+      "id": "rotate-three-dimensional-preview-to-rear",
+      "title": "Rotate the 3D character toward its rear",
+      "action": "canvas-drag",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "value": "0.7,0.4,0.3,0.4",
+      "expected": "A second horizontal pointer drag exposes the rear or opposite side.",
+      "required": true
+    },
+    {
+      "id": "assert-rear-drag-did-not-paint",
+      "title": "Confirm rear rotation did not paint",
+      "action": "assert-visible",
+      "target": "text=Undid skin edit",
+      "expected": "The prior undo status remains unchanged after the second horizontal drag.",
+      "required": true
+    },
+    {
+      "id": "capture-rear-preview",
+      "title": "Capture the rear-facing 3D character",
+      "action": "screenshot",
+      "value": "humanoid-rear-facing",
+      "expected": "Evidence shows the rear or opposite side after the second horizontal drag.",
+      "required": true
+    },
+    {
+      "id": "tilt-three-dimensional-preview-to-top",
+      "title": "Tilt the 3D character to expose its top faces",
+      "action": "canvas-drag",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "value": "0.5,0.3,0.5,0.7",
+      "expected": "A downward pointer drag tilts the character far enough to expose top faces.",
+      "required": true
+    },
+    {
+      "id": "assert-top-drag-did-not-paint",
+      "title": "Confirm top rotation did not paint",
+      "action": "assert-visible",
+      "target": "text=Undid skin edit",
+      "expected": "The prior undo status remains unchanged after the top-face drag.",
+      "required": true
+    },
+    {
+      "id": "capture-top-preview",
+      "title": "Capture the exposed top faces",
+      "action": "screenshot",
+      "value": "humanoid-top-facing",
+      "expected": "Evidence clearly shows top-facing cuboid surfaces.",
+      "required": true
+    },
+    {
+      "id": "tilt-three-dimensional-preview-to-bottom",
+      "title": "Tilt the 3D character to expose its bottom faces",
+      "action": "canvas-drag",
+      "target": "label=Rotatable 3D cuboid humanoid skin preview",
+      "value": "0.5,0.7,0.5,0.2",
+      "expected": "An upward pointer drag tilts the character far enough to expose bottom faces.",
+      "required": true
+    },
+    {
+      "id": "assert-bottom-drag-did-not-paint",
+      "title": "Confirm bottom rotation did not paint",
+      "action": "assert-visible",
+      "target": "text=Undid skin edit",
+      "expected": "The prior undo status remains unchanged after the bottom-face drag.",
+      "required": true
+    },
+    {
+      "id": "capture-bottom-preview",
+      "title": "Capture the exposed bottom faces",
+      "action": "screenshot",
+      "value": "humanoid-bottom-facing",
+      "expected": "Evidence clearly shows bottom-facing cuboid surfaces.",
+      "required": true
+    }
+  ]
+}

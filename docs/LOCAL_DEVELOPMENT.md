@@ -9,11 +9,13 @@ VOXL uses the same useful platform conventions as the committed Hokudex monorepo
 | `apps/studio` | React 19, TypeScript, Vite, and engine-specific editor modules |
 | `apps/server` | Bun/Hono HTTP runtime and, later, remote MCP transport and application services |
 | `apps/character-cli` | Local transparent-character and engine-registry commands |
+| `apps/quality-runner` | Playwright journey execution, runtime observation, downloads, screenshots, and run reports |
 | `packages/engine-*` | Reusable engine contracts, schemas, validation, rendering, and exports |
 | `infra/db` | PostgreSQL schema, Drizzle migrations, database client, and local Supabase lifecycle |
 | `infra/tofu` | Future AWS infrastructure declarations |
 | `characters` | Compatibility source data for the current transparent-character engine |
 | `evals` | Cross-workspace regression and contract tests |
+| `.runs` | Gitignored local walkthrough evidence; never production source or committed fixtures |
 
 Root configuration is limited to monorepo-wide concerns: workspace orchestration, shared TypeScript and ESLint policy, environment conventions, Docker Compose, and lockfiles. Product-specific configuration must stay in its owning workspace.
 
@@ -24,6 +26,7 @@ Root configuration is limited to monorepo-wide concerns: workspace orchestration
 - FFmpeg for transparent-character MOV rendering
 - Docker Desktop for the database or containerized stack
 - OpenTofu only when validating or extending `infra/tofu`
+- Playwright Chromium for browser walkthroughs; install it once with `bunx playwright install chromium`
 
 ## Host-mode development
 
@@ -84,6 +87,8 @@ Docker is a development option, not a requirement for ordinary frontend or engin
 
 ## Verification
 
+### Deterministic gate
+
 ```bash
 bun run check
 bun run validate -- bear
@@ -91,3 +96,33 @@ bun run render -- bear
 tofu -chdir=infra/tofu fmt -check -recursive
 tofu -chdir=infra/tofu validate
 ```
+
+`bun run check` runs unit/contract tests, lint, TypeScript checks, and production builds. It deliberately does not launch a browser. Use it for deterministic code, engine, schema, and build regressions; do not treat it as evidence that a canvas, WebGL interaction, responsive layout, or download works in a real browser.
+
+### Browser walkthroughs
+
+Start the localhost applications in one terminal:
+
+```bash
+bun run dev
+```
+
+Run a journey in another terminal:
+
+```bash
+bun run qa:smoke
+bun run qa:walkthrough transparent-edit-export
+bun run qa:walkthrough humanoid-2d-3d
+bun run qa:walkthrough humanoid-import-export
+```
+
+Useful options:
+
+```bash
+bun run qa:walkthrough studio-smoke --headed
+bun run qa:walkthrough humanoid-2d-3d --base-url http://127.0.0.1:5740
+```
+
+The default destination is `http://127.0.0.1:5740`. Journeys contain only local paths and must not navigate to external services. Each viewport receives an isolated browser context. The runner captures every step, browser console/page errors, failed requests and error responses, expected downloads, and a Markdown report under `.runs/<run-id>/`.
+
+A runner result is only the interaction and runtime layer of verification. Visual approval is a separate review of the evidence against `apps/quality-runner/rubrics/voxl-studio-review.json`. Follow [the complete quality workflow](VOXL_QUALITY_SYSTEM.md) before checking a visual exit criterion in `VOXL_PROGRESS.md`.

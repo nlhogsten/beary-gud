@@ -224,10 +224,17 @@ export function CuboidHumanoidRenderer(props: RendererProps) {
       ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
       -((event.clientY - bounds.top) / bounds.height) * 2 + 1,
     ), runtime.camera);
-    const hit = runtime.raycaster.intersectObjects(runtime.meshes, false)[0];
-    const region = hit?.object.userData.region as SkinRegion | undefined;
-    if (!hit?.uv || !region) return;
-    const pixel = uvToAtlasPixel(region, hit.uv.x, hit.uv.y);
+    const hits = runtime.raycaster.intersectObjects(runtime.meshes, false);
+    const paintable = hits.find((hit) => {
+      const region = hit.object.userData.region as SkinRegion | undefined;
+      if (!hit.uv || !region) return false;
+      if (region.layer !== "outer") return true;
+      const pixel = uvToAtlasPixel(region, hit.uv.x, hit.uv.y);
+      return propsRef.current.pixels[(pixel.y * SKIN_SIZE + pixel.x) * 4 + 3] !== 0;
+    });
+    const region = paintable?.object.userData.region as SkinRegion | undefined;
+    if (!paintable?.uv || !region) return;
+    const pixel = uvToAtlasPixel(region, paintable.uv.x, paintable.uv.y);
     propsRef.current.onInspect(region, pixel.x, pixel.y);
     propsRef.current.onPaint(pixel.x, pixel.y);
   }

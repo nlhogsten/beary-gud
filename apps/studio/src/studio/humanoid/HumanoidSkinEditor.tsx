@@ -419,7 +419,7 @@ export function HumanoidSkinEditor() {
     commitDraft({
       ...current,
       profile: nextProfile,
-      pixels: convertProfile(current.pixels, nextProfile),
+      pixels: convertProfile(current.pixels, current.profile, nextProfile),
     }, `Converted draft to ${nextProfile}`);
   }
 
