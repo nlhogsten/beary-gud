@@ -56,7 +56,7 @@ test("discovers and invokes the real engine through the engine-neutral CLI", asy
     cwd: root,
     encoding: "utf8",
   }));
-  assert.deepEqual(engines.map(({ id }) => id), ["transparent-character"]);
+  assert.deepEqual(engines.map(({ id }) => id), ["transparent-character", "voxl-humanoid-skin"]);
 
   const directory = await mkdtemp(join(tmpdir(), "voxl-cli-request-"));
   context.after(() => rm(directory, { recursive: true, force: true }));

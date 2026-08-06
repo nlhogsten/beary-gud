@@ -75,6 +75,7 @@ export type RenderedArtifact = {
   mediaType: string;
   filename: string;
   sha256?: string;
+  bytes?: Uint8Array;
 };
 
 export type ExportedArtifact = RenderedArtifact & {

@@ -8,10 +8,14 @@ import {
 import {
   createTransparentCharacterEngine,
 } from "../packages/engine-transparent-character/src/index.mjs";
+import {
+  createHumanoidSkinEngine,
+} from "../packages/engine-voxl-humanoid-skin/src/index.mjs";
 
 export function createLocalEngineRegistry(options = {}) {
   return new EngineRegistry([
     createTransparentCharacterEngine(options),
+    createHumanoidSkinEngine(),
   ]);
 }
 

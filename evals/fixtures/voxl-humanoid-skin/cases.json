@@ -1,0 +1,49 @@
+[
+  {
+    "name": "valid wide profile",
+    "profile": "wide-arm-64",
+    "mutation": "none",
+    "ok": true
+  },
+  {
+    "name": "valid slim profile",
+    "profile": "slim-arm-64",
+    "mutation": "none",
+    "ok": true
+  },
+  {
+    "name": "wrong width",
+    "profile": "wide-arm-64",
+    "mutation": "wrong-width",
+    "ok": false,
+    "code": "invalid_dimensions"
+  },
+  {
+    "name": "short RGBA buffer",
+    "profile": "wide-arm-64",
+    "mutation": "short-buffer",
+    "ok": false,
+    "code": "invalid_rgba_length"
+  },
+  {
+    "name": "visible globally unused pixel",
+    "profile": "wide-arm-64",
+    "mutation": "visible-unused",
+    "ok": false,
+    "code": "visible_unused_pixels"
+  },
+  {
+    "name": "visible wide-only pixel in slim profile",
+    "profile": "slim-arm-64",
+    "mutation": "visible-wide-only",
+    "ok": false,
+    "code": "visible_unused_pixels"
+  },
+  {
+    "name": "mismatched sidecar profile",
+    "profile": "wide-arm-64",
+    "mutation": "sidecar-mismatch",
+    "ok": false,
+    "code": "sidecar_profile_mismatch"
+  }
+]

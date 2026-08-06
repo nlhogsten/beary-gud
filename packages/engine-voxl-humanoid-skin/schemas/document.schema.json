@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.invalid/schemas/humanoid-skin/document-v1.json",
+  "title": "VOXL humanoid-skin document manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "formatVersion", "profile", "texture", "sidecar"],
+  "properties": {
+    "kind": { "const": "voxl.humanoid-skin/v1" },
+    "formatVersion": { "const": 1 },
+    "profile": { "enum": ["wide-arm-64", "slim-arm-64"] },
+    "texture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "mediaType", "width", "height"],
+      "properties": {
+        "filename": { "type": "string", "minLength": 1 },
+        "mediaType": { "const": "image/png" },
+        "width": { "const": 64 },
+        "height": { "const": 64 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "sidecar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "mediaType"],
+      "properties": {
+        "filename": { "type": "string", "minLength": 1 },
+        "mediaType": { "const": "application/json" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

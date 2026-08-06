@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.invalid/schemas/humanoid-skin/sidecar-v1.json",
+  "title": "VOXL humanoid-skin sidecar",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "formatVersion", "profile", "semanticRegions", "references", "operations", "versions"],
+  "properties": {
+    "kind": { "const": "voxl.humanoid-skin.sidecar/v1" },
+    "formatVersion": { "const": 1 },
+    "profile": { "enum": ["wide-arm-64", "slim-arm-64"] },
+    "semanticRegions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": { "type": "string" },
+          "maskFileId": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "references": { "type": "array", "items": { "type": "object" } },
+    "operations": { "type": "array", "items": { "type": "object" } },
+    "versions": { "type": "array", "items": { "type": "object" } }
+  }
+}

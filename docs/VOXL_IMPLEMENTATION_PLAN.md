@@ -1,6 +1,6 @@
 # VOXL implementation plan
 
-Status: active start-to-finish delivery plan. Phases 0–2 were completed on August 5, 2026: decisions are recorded, the dependency-free registry is verified, and the original transparent-character runtime is registered without source or command migration. Phase 3 is next. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
+Status: active start-to-finish delivery plan. Phases 0–3 were completed on August 5, 2026: decisions are recorded, the registry and original transparent-character runtime are verified, and the provider-independent humanoid-skin core supports both neutral profiles, PNG round-tripping, deterministic previews, and validation. Phase 4 is next. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
 
 Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) for unfamiliar terms and [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) for research evidence, source links, product constraints, and the rationale for this plan.
 

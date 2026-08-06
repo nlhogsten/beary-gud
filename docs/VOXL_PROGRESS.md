@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 3 — deterministic `voxl-humanoid-skin` core.** Phases 0–2 are complete. The next slice defines the target-neutral 64x64 document, export profiles, and deterministic validation before adding generation or 3D rendering.
+**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. The next slice adds engine selection and loads independent editor modules while preserving the current transparent-character editor.
 
 ## Phase 0 — baseline and decisions
 
@@ -80,22 +80,48 @@ Status: **complete**
 
 ## Phase 3 — deterministic `voxl-humanoid-skin` core
 
-Status: **not started**
+Status: **complete**
 
-- [ ] Define the 64x64 RGBA document and sidecar schema.
-- [ ] Implement `wide-arm-64` and `slim-arm-64` UV maps.
-- [ ] Add base and outer-layer handling.
-- [ ] Import, validate, and round-trip valid profile documents.
-- [ ] Export byte-correct profile-valid PNGs.
-- [ ] Render deterministic front/back previews.
-- [ ] Add semantic-mask sidecars and valid/invalid fixtures.
-- [ ] Pass all Phase 3 exit criteria from the implementation plan.
+- [x] Define the 64x64 RGBA document and versioned sidecar schemas.
+- [x] Implement complete, non-overlapping `wide-arm-64` and `slim-arm-64` UV maps.
+- [x] Add base and outer-layer handling.
+- [x] Import, validate, automatically detect, and byte-exact round-trip both profiles.
+- [x] Export checksummed, non-interlaced 8-bit RGBA PNGs without smoothing.
+- [x] Render deterministic nearest-neighbor front/back previews.
+- [x] Add semantic-region sidecars and valid/invalid fixture cases.
+- [x] Reject visible unused-profile pixels with actionable issue codes.
+- [x] Register validate, render, and export without a generation provider.
+
+### Exit criteria
+
+- [x] Valid wide and slim fixtures round-trip without pixel changes.
+- [x] Invalid fixtures produce actionable validation errors.
+- [x] Exported fixtures pass an independent PNG import probe as 64x64 RGBA.
+- [x] The engine validates, renders, and exports with no generation provider.
 
 ## Phase 4 — shared studio shell and engine UI modules
 
 Status: **not started**
 
-- [ ] Complete all Phase 4 work and exit criteria from the implementation plan.
+### Work
+
+- [ ] Add engine selection to the shared studio shell.
+- [ ] Load format-specific editor modules from the registry.
+- [ ] Keep the current transparent-character editor behavior available.
+- [ ] Build the VOXL humanoid-skin 2D atlas editor.
+- [ ] Integrate a permissively licensed viewer behind `cuboid-humanoid-renderer`.
+- [ ] Map 3D face clicks to UV pixels.
+- [ ] Synchronize 2D and 3D painting.
+- [ ] Add base/outer and body-part visibility controls.
+- [ ] Add undo/redo, local versions, compare, import, validate, and export.
+- [ ] Keep the complete editor usable locally before accounts exist.
+
+### Exit criteria
+
+- [ ] Users can switch engines without state or schema leakage.
+- [ ] Both editor modules load through the shared shell.
+- [ ] A humanoid skin can be painted in synchronized 2D/3D views and exported validly.
+- [ ] Existing transparent-character drafting still works.
 
 ## Phase 5 — generative-provider research spike
 
@@ -176,7 +202,8 @@ Status: **not started**
 | 2026-08-05 | Documentation and studio checkpoint | `npm test`, `npm run lint`, `npm run build`, target-brand scan | 5 tests passed; lint/build/scan passed | `c32c119` |
 | 2026-08-05 | Phase 1 engine contracts | `npm test`, `npm run lint`, `npm run typecheck:engine-contracts`, `npm run build`, target-brand scan | 12 tests passed; lint/types/build/scan passed | `13e2451` |
 | 2026-08-05 | Phase 0 decisions and Phase 2 extraction | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, `ffprobe`, target-brand scan | 20 tests passed; legacy and registry paths passed; ProRes alpha confirmed | `8bab1ef` |
+| 2026-08-05 | Phase 3 deterministic humanoid-skin core | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, independent PNG `ffprobe`, target-brand scan | 28 tests passed; both profiles round-tripped; 64x64 RGBA import confirmed | Pending implementation commit |
 
 ## Next unchecked step
 
-Define the `voxl.humanoid-skin/v1` document and sidecar schemas, then implement deterministic `wide-arm-64` and `slim-arm-64` profile validation with valid and invalid fixtures.
+Add shared-shell engine selection and load the current transparent-character editor plus a new humanoid-skin 2D atlas module without sharing their document state.

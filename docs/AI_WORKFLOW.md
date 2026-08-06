@@ -14,7 +14,7 @@ The implementation now lives in `packages/engine-transparent-character/` and is 
 
 ## Proposed componentized VOXL workflow
 
-VOXL skin generation is not implemented by the current skill or character schema. Do not represent a fixed 64x64 cuboid-humanoid skin as the existing arbitrary palette-symbol animation grid. Do not remove or silently migrate the Bash-derived format; it remains the `transparent-character` engine with its own schema, editor capabilities, validation, renderer, and exports.
+VOXL generative skin creation is not implemented by the current skill. The deterministic `voxl-humanoid-skin` document, profiles, PNG lifecycle, validation, and front/back previews now live in `packages/engine-voxl-humanoid-skin/`. Do not represent that fixed 64x64 cuboid-humanoid skin as the existing arbitrary palette-symbol animation grid. Do not remove or silently migrate the Bash-derived format; it remains the `transparent-character` engine with its own schema, editor capabilities, validation, renderer, and exports.
 
 The intended workflow separates responsibilities:
 
