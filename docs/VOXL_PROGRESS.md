@@ -218,6 +218,7 @@ Status: **not started**
 | 2026-08-05 | Phase 3 deterministic humanoid-skin core | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, independent PNG `ffprobe`, target-brand scan | 28 tests passed; both profiles round-tripped; 64x64 RGBA import confirmed | `e4f56dc` |
 | 2026-08-05 | Phase 4 shared shell and 2D atlas slice | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, target-brand scan | 34 tests passed; both editor modules and separate storage boundaries passed; browser/package UV parity passed | `33d26c1` |
 | 2026-08-05 | React/Vite consolidation slice and Seek pilot | `npm test`, `npm run lint`, scoped React `tsc`, `npm run typecheck:voxl`, `npx vite build`, target-brand scan; Seek setup/status audit and 24 focused source tests | 36 VOXL tests passed; native React skin module compiled; Seek CLI refreshed and remaining pilot findings recorded | `c7813d0` |
+| 2026-08-05 | Local-only Vite/Express runtime and AWS architecture | `npm run check`, Vite and Express localhost smoke tests, `npm audit --omit=dev`, `tofu fmt -check`, `tofu validate`, `npm run validate -- bear`, `npm run render -- bear`, target-brand scan | 38 tests passed; lint/types/build passed; 0 production vulnerabilities; OpenTofu bootstrap valid; no AWS resources provisioned | `e24ee3f` |
 
 ## Next unchecked step
 
