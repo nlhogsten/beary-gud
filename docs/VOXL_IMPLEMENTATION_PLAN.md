@@ -1,6 +1,6 @@
 # VOXL implementation plan
 
-Status: proposed start-to-finish delivery plan. No VOXL implementation phase is complete merely because it appears in this document.
+Status: active start-to-finish delivery plan. Phase 1 began on August 5, 2026 with the dependency-free engine contracts, in-process registry, public error boundary, TypeScript declarations, and incompatible-document contract tests. No phase is complete merely because some of its work has started or appears in this document.
 
 Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) for unfamiliar terms and [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) for research evidence, source links, product constraints, and the rationale for this plan.
 
@@ -134,6 +134,7 @@ type EngineDescriptor = {
     revise: boolean;
     validate: boolean;
     render: boolean;
+    export: boolean;
     edit2d: boolean;
     edit3d: boolean;
     animate: boolean;

@@ -16,6 +16,7 @@
     "import-bash": "node scripts/studio.mjs import-bash",
     "check": "npm test",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "typecheck:engine-contracts": "tsc --noEmit --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 packages/engine-contracts/src/index.d.ts",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

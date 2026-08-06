@@ -8,7 +8,7 @@ This repository began as a transparent pixel-character studio. It is now also th
 
 VOXL names engines, packages, APIs, and editor modules after the visual artifact they implement—not after any external application, game, platform, or publisher. Compatibility is represented by neutral export profiles such as `wide-arm-64` and `slim-arm-64`.
 
-The existing animation workflow remains the current working product. VOXL is a researched direction, not an implemented feature. Start with [the plain-language VOXL glossary](docs/VOXL_GLOSSARY.md), read [the VOXL product research and architecture](docs/VOXL_PRODUCT_RESEARCH.md) for the product boundary and evidence, then use [the start-to-finish implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md) for engine contracts, delivery phases, gates, and the release definition of done.
+The existing animation workflow remains the current working product. The VOXL product experience and humanoid-skin engine are not implemented yet, but the platform foundation has started with [`@voxl/engine-contracts`](packages/engine-contracts/README.md). Start with [the plain-language VOXL glossary](docs/VOXL_GLOSSARY.md), read [the VOXL product research and architecture](docs/VOXL_PRODUCT_RESEARCH.md) for the product boundary and evidence, then use [the start-to-finish implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md) for engine contracts, delivery phases, gates, and the release definition of done.
 
 ## Start the local editor
 
