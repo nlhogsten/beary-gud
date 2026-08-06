@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import test from "node:test";
 
 const root = resolve(import.meta.dirname, "..");
-const run = (...args) => execFileSync("node", ["scripts/studio.mjs", ...args], { cwd: root, encoding: "utf8" });
+const run = (...args) => execFileSync("bun", ["apps/character-cli/src/studio.mjs", ...args], { cwd: root, encoding: "utf8" });
 
 test("validates the editable bear source", () => {
   const result = JSON.parse(run("validate", "bear"));

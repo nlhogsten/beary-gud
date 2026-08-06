@@ -13,14 +13,17 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Standard React/Vite is now the canonical localhost client, with a production-shaped local Express server and container definition. The humanoid 2D atlas editor is native React; the transparent-character editor remains temporarily mounted through its compatibility iframe. The next slice removes that remaining split before synchronized 3D editing.
+**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. The repository is now a Bun workspace monorepo: React/Vite studio, Bun/Hono server, character CLI, visual engines, local database infrastructure, and OpenTofu each have explicit owners. The humanoid 2D atlas editor is native React; the transparent-character editor remains temporarily mounted through its compatibility iframe. The next product slice removes that remaining split before synchronized 3D editing.
 
 ## Architecture direction (not implementation progress)
 
 - [x] Record localhost-only development and remove ChatGPT Sites from the intended workflow.
-- [x] Record the standalone React/Vite client, shared Express API/MCP application layer, and OpenTofu-managed AWS target.
+- [x] Record the standalone React/Vite client, shared Bun/Hono API/MCP application layer, and OpenTofu-managed AWS target.
 - [x] Record that optional in-chat UI uses the same account, projects, versions, database, object storage, and APIs as the standalone studio.
 - [x] Add a resource-free OpenTofu bootstrap that does not require invented AWS identifiers.
+- [x] Adopt Bun workspaces and move runtime-specific configuration into `apps/studio`, `apps/server`, `apps/character-cli`, and `infra/db`.
+- [x] Add Hono health/engine-discovery routes, an initial Drizzle schema and migration, isolated local Supabase configuration, and host/Docker management commands.
+- [ ] Connect authenticated server application services to the database; the current schema and local runtime are foundation only.
 - [ ] Select AWS accounts, region, DNS, certificates, remote state, environment isolation, and recovery policy.
 - [ ] Provision or deploy any AWS infrastructure.
 
@@ -115,7 +118,7 @@ Status: **in progress**
 ### Work
 
 - [ ] Migrate the verified static/iframe frontend to one React 19 + TypeScript + Vite application without storage or export regressions.
-- [x] Make standard Vite the canonical localhost development and build path, with an Express production-shaped server and container definition.
+- [x] Make standard Vite the canonical localhost development path, with a separate Bun/Hono server and container definition.
 - [x] Add a typed React engine-UI registry and port the humanoid 2D editor to canvas-based React with compatible draft persistence.
 - [x] Add engine selection to the shared studio shell.
 - [x] Load format-specific editor modules from the React engine-UI registry.

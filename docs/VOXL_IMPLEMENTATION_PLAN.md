@@ -1,6 +1,6 @@
 # VOXL implementation plan
 
-Status: active start-to-finish delivery plan. Phases 0–3 were completed on August 5, 2026: decisions are recorded, the registry and original transparent-character runtime are verified, and the provider-independent humanoid-skin core supports both neutral profiles, PNG round-tripping, deterministic previews, and validation. Phase 4 is in progress; its verified static editor slice is being consolidated into one React/Vite frontend before 3D work continues. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
+Status: active start-to-finish delivery plan. Phases 0–3 were completed on August 5, 2026. Phase 4 is in progress. The repository now uses Bun workspaces with independent studio, Hono server, character CLI, engine, database, and infrastructure ownership; this foundation does not mark later durable-service phases complete. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
 
 Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) for unfamiliar terms and [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) for research evidence, source links, product constraints, and the rationale for this plan.
 
@@ -95,7 +95,8 @@ Introduce this structure incrementally. Do not move working files until tests co
 ```text
 apps/
   studio/                         # web shell and engine UI modules
-  api/                            # Express HTTP API and remote MCP transport
+  server/                         # Bun/Hono HTTP API and remote MCP transport
+  character-cli/                  # local character and engine commands
   mcp-ui/                         # optional host-specific companion UI resources
   worker/                         # asynchronous jobs when kept separate
 
@@ -116,6 +117,7 @@ plugins/
   claude/                          # Claude skills and MCP configuration
 
 infra/
+  db/                             # Drizzle schema/migrations and local Supabase
   tofu/                            # future AWS infrastructure source of truth
 
 characters/                        # compatibility path during extraction
@@ -414,7 +416,7 @@ Move from a local prototype to a reliable multi-user service foundation.
 - Add retention and deletion states for references and generated outputs.
 - Add per-user authorization checks on every project/file/job path.
 - Instrument provider latency, failure, validation, and cost.
-- Define the Express application-service boundary once and call it from both HTTP routes and MCP handlers.
+- Define the Hono application-service boundary once and call it from both HTTP routes and MCP handlers.
 - Expand the OpenTofu bootstrap into isolated AWS environments only after account, region, DNS, state-backend, and recovery decisions are approved.
 - Target S3 for binary assets, RDS PostgreSQL for relational records, and ECS/Fargate for the API and asynchronous workers; add Secrets Manager and CloudWatch from the first shared environment.
 
@@ -440,7 +442,7 @@ Deliver the complete experience without depending on an AI-chat host.
 - Add explicit retention controls and project deletion.
 - Keep public galleries and social sharing out of scope.
 - Add accessibility, responsive behavior, keyboard editing, and failure recovery.
-- Build and deploy the standalone Vite client independently of chat hosts. The proposed AWS path is S3/CloudFront with API traffic reaching the Express service through an Application Load Balancer.
+- Build and deploy the standalone Vite client independently of chat hosts. The proposed AWS path is S3/CloudFront with API traffic reaching the Bun/Hono service through an Application Load Balancer.
 
 ### Exit criteria
 

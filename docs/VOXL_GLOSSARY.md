@@ -355,6 +355,30 @@ The LLM's work of selecting and sequencing tools to accomplish a request—for e
 
 ## Service, storage, and billing terms
 
+### Bun
+
+The JavaScript and TypeScript runtime and package manager used to coordinate VOXL's workspaces and run the Hono server. Node remains temporarily required by the existing evaluation harness.
+
+### Drizzle
+
+A TypeScript database toolkit. VOXL uses Drizzle schemas as the source for reviewed PostgreSQL migration files under `infra/db`.
+
+### Hono
+
+The small web framework used by the VOXL API server. Hono defines HTTP routes while Bun supplies the server runtime.
+
+### Monorepo
+
+One repository containing several related applications, packages, and infrastructure workspaces. VOXL's monorepo shares verification and contracts without treating every component as one deployable program.
+
+### Supabase
+
+The local development stack used to run PostgreSQL and related services in Docker. It is a development convenience; the proposed AWS production architecture still uses RDS PostgreSQL and S3 unless a later decision changes it.
+
+### Workspace
+
+An independently owned package inside the monorepo, such as `apps/studio`, `apps/server`, or `infra/db`. The root package coordinates workspaces but does not contain product-runtime configuration.
+
 ### Application Load Balancer (ALB)
 
 An AWS service that accepts HTTP traffic and routes it to healthy application tasks. The planned API/MCP service can run behind an ALB without exposing individual containers directly.
@@ -377,7 +401,7 @@ Running on infrastructure operated or paid for by VOXL or one of its service pro
 
 ### Amazon ECS and Fargate
 
-Amazon Elastic Container Service runs containerized services. Fargate supplies managed compute for those containers without VOXL operating virtual-machine hosts. The proposed Express API, MCP transport, and later job workers can run this way.
+Amazon Elastic Container Service runs containerized services. Fargate supplies managed compute for those containers without VOXL operating virtual-machine hosts. The proposed Bun/Hono API, MCP transport, and later job workers can run this way.
 
 ### Idempotent
 

@@ -8,28 +8,30 @@ This repository began as a transparent pixel-character studio. It is now the imp
 
 VOXL names engines, packages, APIs, and editor modules after the visual artifact they implement—not after any external application, game, platform, or publisher. Compatibility is represented by neutral export profiles such as `wide-arm-64` and `slim-arm-64`.
 
-The existing animation workflow remains the current working product. The platform now has [`@voxl/engine-contracts`](packages/engine-contracts/README.md), the registered [`transparent-character` engine](packages/engine-transparent-character/README.md), the deterministic [`voxl-humanoid-skin` core](packages/engine-voxl-humanoid-skin/README.md), and a React/Vite shared shell with a native humanoid 2D editor. Development is localhost-only; future production targets an OpenTofu-managed AWS runtime. Start with [the system architecture](docs/VOXL_ARCHITECTURE.md), [plain-language glossary](docs/VOXL_GLOSSARY.md), [product research](docs/VOXL_PRODUCT_RESEARCH.md), [implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), and [checked progress tracker](docs/VOXL_PROGRESS.md).
+The existing animation workflow remains the current working product. VOXL is organized as a Bun workspace monorepo: independent applications live in `apps/`, reusable visual engines live in `packages/`, database and cloud infrastructure live in `infra/`, and the root package only coordinates them. Development is localhost-only; future production targets an OpenTofu-managed AWS runtime. Start with [the system architecture](docs/VOXL_ARCHITECTURE.md), [local development runbook](docs/LOCAL_DEVELOPMENT.md), [plain-language glossary](docs/VOXL_GLOSSARY.md), [implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), and [checked progress tracker](docs/VOXL_PROGRESS.md).
 
 ## Start the local editor
 
 ```bash
 cd /Users/natehogsten/Desktop/beary-gud
-npm run dev
+bun install
+bun run env:init
+bun run dev
 ```
 
-Open `http://localhost:5173`. Vite serves the canonical React application. The native humanoid editor supports local painting, undo/redo, profile conversion, visibility controls, validation, PNG import/export, and browser draft persistence.
+Open `http://127.0.0.1:5740`. This runs the Vite studio and Bun/Hono API together on the host. The API is available at `http://127.0.0.1:5741`; Vite proxies `/api` requests to it. VOXL uses its own ports so it can run alongside Hokudex.
 
-The preserved transparent-character editor remains available inside the React shell at `/compatibility/index.html` while it is migrated from imperative browser code. To run only that older surface, use `npm run dev:compatibility` and open `http://localhost:4173`.
+The preserved transparent-character editor remains available inside the React shell at `/compatibility/index.html` while it is migrated from imperative browser code. Run only one application with `bun run dev:studio` or `bun run dev:server`.
 
-For a production-shaped local smoke test, run `npm run build` followed by `npm start`, then open `http://localhost:3000`. The Express server exposes `/api/health` and serves the built single-page application. No command publishes VOXL externally.
+For the complete Docker/Supabase local stack, run `bun run docker:stack:up`. This starts the database services plus separate studio and server containers. No command publishes VOXL externally.
 
 ## Make or change a character
 
 The local editor is for drafting. Production character data lives in `characters/<name>/`. Copy an existing character folder or create a new one, edit `character.json` and its frame files, then run:
 
 ```bash
-npm run validate -- <name>
-npm run render -- <name>
+bun run validate -- <name>
+bun run render -- <name>
 ```
 
 Production exports appear in `exports/<name>/`: a transparent PNG sequence, alpha MOV files, and a contact sheet. Import `<name>_loop_30s.mov` into Premiere for the ready-to-loop overlay. The editor's animated PNG is intended for quick previews and apps that support APNG; use the rendered MOV for Premiere.
@@ -41,8 +43,8 @@ For Codex-driven work, use the repo skill: `$transparent-character-studio`. See 
 The safe importer supports a quoted canvas/palette/offset animation format. It reads source without executing it:
 
 ```bash
-npm run import-bash -- /path/to/old-animation.sh new-character
-npm run render -- new-character
+bun run import-bash -- /path/to/old-animation.sh new-character
+bun run render -- new-character
 ```
 
-Read [the usage guide](docs/USAGE_GUIDE.md), [animation guide](docs/ANIMATION_GUIDE.md), [Bash migration guide](docs/BASH_MIGRATION.md), [VOXL glossary](docs/VOXL_GLOSSARY.md), [VOXL research](docs/VOXL_PRODUCT_RESEARCH.md), [VOXL implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), [VOXL progress tracker](docs/VOXL_PROGRESS.md), and [Seek pilot notes](docs/SEEK_PILOT_NOTES.md).
+Read [the local development runbook](docs/LOCAL_DEVELOPMENT.md), [usage guide](docs/USAGE_GUIDE.md), [animation guide](docs/ANIMATION_GUIDE.md), [Bash migration guide](docs/BASH_MIGRATION.md), [VOXL glossary](docs/VOXL_GLOSSARY.md), [VOXL architecture](docs/VOXL_ARCHITECTURE.md), and [VOXL progress tracker](docs/VOXL_PROGRESS.md).

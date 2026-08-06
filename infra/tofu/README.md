@@ -6,9 +6,9 @@ The staged implementation target is:
 
 1. Remote OpenTofu state and locking, configured outside this root before shared environments are created.
 2. A VPC spanning at least two availability zones, with public ingress subnets and private application/data subnets.
-3. ECR repositories for the Express API and later workers.
+3. ECR repositories for the Bun/Hono API and later workers.
 4. S3/CloudFront delivery for the React/Vite build.
-5. An Application Load Balancer and ECS/Fargate service for the Express API and remote MCP endpoint.
+5. An Application Load Balancer and ECS/Fargate service for the Bun/Hono API and remote MCP endpoint.
 6. RDS PostgreSQL, an asset bucket, Secrets Manager entries, and scoped IAM roles.
 7. CloudWatch log groups, metrics, alarms, dashboards, and deployment health checks.
 8. Optional queue and worker services after asynchronous workloads are measured.

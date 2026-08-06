@@ -6,10 +6,10 @@ const root = new URL("../", import.meta.url);
 
 test("Vite browser entry uses the typed React engine UI registry", async () => {
   const [page, shell, registry, viteConfig] = await Promise.all([
-    readFile(new URL("src/main.tsx", root), "utf8"),
-    readFile(new URL("src/studio/StudioShell.tsx", root), "utf8"),
-    readFile(new URL("src/studio/engine-ui-registry.ts", root), "utf8"),
-    readFile(new URL("vite.config.ts", root), "utf8"),
+    readFile(new URL("apps/studio/src/main.tsx", root), "utf8"),
+    readFile(new URL("apps/studio/src/studio/StudioShell.tsx", root), "utf8"),
+    readFile(new URL("apps/studio/src/studio/engine-ui-registry.ts", root), "utf8"),
+    readFile(new URL("apps/studio/vite.config.ts", root), "utf8"),
   ]);
   assert.match(page, /<StudioShell\s*\/>/);
   assert.doesNotMatch(page, /iframe/i);
@@ -24,8 +24,8 @@ test("Vite browser entry uses the typed React engine UI registry", async () => {
 
 test("React skin editor uses canvases, compatible persistence, and package-owned UV profiles", async () => {
   const [editor, core] = await Promise.all([
-    readFile(new URL("src/studio/humanoid/HumanoidSkinEditor.tsx", root), "utf8"),
-    readFile(new URL("src/studio/humanoid/core.ts", root), "utf8"),
+    readFile(new URL("apps/studio/src/studio/humanoid/HumanoidSkinEditor.tsx", root), "utf8"),
+    readFile(new URL("apps/studio/src/studio/humanoid/core.ts", root), "utf8"),
   ]);
   assert.match(editor, /voxl-humanoid-skin-draft-v1/);
   assert.match(editor, /<canvas/);

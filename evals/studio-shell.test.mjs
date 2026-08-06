@@ -6,9 +6,9 @@ const root = new URL("../", import.meta.url);
 
 test("shared shell loads independent editor modules and storage boundaries", async () => {
   const [html, motionModule, skinModule] = await Promise.all([
-    readFile(new URL("public/compatibility/index.html", root), "utf8"),
-    readFile(new URL("public/studio.js", root), "utf8"),
-    readFile(new URL("public/skin-editor.js", root), "utf8"),
+    readFile(new URL("apps/studio/public/compatibility/index.html", root), "utf8"),
+    readFile(new URL("apps/studio/public/studio.js", root), "utf8"),
+    readFile(new URL("apps/studio/public/skin-editor.js", root), "utf8"),
   ]);
   assert.match(html, /data-engine-panel="transparent-character"/);
   assert.match(html, /data-engine-panel="voxl-humanoid-skin"/);

@@ -1,38 +1,28 @@
 import assert from "node:assert/strict";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
-import { createStudioServer } from "../scripts/server.mjs";
 
-async function withServer(run) {
-  const server = createStudioServer();
-  await new Promise((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
-  });
-  const { port } = server.address();
-  try {
-    await run(`http://127.0.0.1:${port}`);
-  } finally {
-    await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+const root = new URL("../", import.meta.url);
+
+test("the studio workspace owns its Vite app and compatibility assets", async () => {
+  for (const path of [
+    "apps/studio/index.html",
+    "apps/studio/public/compatibility/index.html",
+    "apps/studio/public/studio.css",
+    "apps/studio/public/studio.js",
+    "apps/studio/public/skin-editor.js",
+    "apps/studio/public/skin-editor-core.js",
+  ]) {
+    await access(new URL(path, root));
   }
-}
 
-test("a missing static file returns 404 without crashing the server", async () => {
-  await withServer(async (origin) => {
-    const missing = await fetch(`${origin}/missing-file.png`);
-    assert.equal(missing.status, 404);
-    assert.equal(await missing.text(), "Not found");
-
-    const healthy = await fetch(`${origin}/api/health`);
-    assert.equal(healthy.status, 200);
-    assert.deepEqual(await healthy.json(), { ok: true });
-  });
+  const viteConfig = await readFile(new URL("apps/studio/vite.config.ts", root), "utf8");
+  assert.match(viteConfig, /"\/api"/);
+  assert.match(viteConfig, /127\.0\.0\.1:5741/);
 });
 
-test("serves the compatibility editor and its split frontend assets", async () => {
-  await withServer(async (origin) => {
-    for (const path of ["/", "/compatibility/", "/studio.css", "/studio.js", "/skin-editor.js", "/skin-editor-core.js", "/favicon.svg"]) {
-      const response = await fetch(`${origin}${path}`);
-      assert.equal(response.status, 200, path);
-    }
-  });
+test("runtime-specific configuration is not stored at repository root", async () => {
+  for (const path of ["vite.config.ts", "drizzle.config.ts", "index.html"]) {
+    await assert.rejects(access(new URL(path, root)));
+  }
 });

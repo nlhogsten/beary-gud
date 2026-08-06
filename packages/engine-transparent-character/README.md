@@ -2,7 +2,7 @@
 
 The registered VOXL engine for the repository's original Bash-derived transparent pixel-character workflow.
 
-It owns loading, deterministic validation, rasterization, PNG encoding, contact sheets, ProRes alpha rendering, safe legacy import, and the engine descriptor. [`scripts/studio.mjs`](../../scripts/studio.mjs) remains the compatibility CLI for the existing npm commands.
+It owns loading, deterministic validation, rasterization, PNG encoding, contact sheets, ProRes alpha rendering, safe legacy import, and the engine descriptor. [`apps/character-cli/src/studio.mjs`](../../apps/character-cli/src/studio.mjs) supplies the local CLI behind the root Bun aliases.
 
 The package preserves:
 

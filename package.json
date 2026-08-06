@@ -1,42 +1,57 @@
 {
-  "name": "voxl-studio",
+  "name": "voxl-platform",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "packageManager": "bun@1.3.10",
   "engines": {
+    "bun": ">=1.3.10",
     "node": ">=22.13.0"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "infra/db"
+  ],
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "vite build",
-    "start": "node scripts/serve.mjs",
-    "preview": "vite preview --host 127.0.0.1",
-    "dev:compatibility": "node scripts/server.mjs",
+    "dev": "bun run dev:host",
+    "dev:host": "bun run dev:server & bun run dev:studio",
+    "dev:server": "bun run --cwd apps/server dev",
+    "dev:studio": "bun run --cwd apps/studio dev",
+    "start:server": "bun run --cwd apps/server start",
+    "preview:studio": "bun run --cwd apps/studio preview",
+    "build": "bun run --cwd apps/server build && bun run --cwd apps/studio build",
     "test": "node --test evals/*.test.mjs",
-    "studio": "node scripts/studio.mjs",
-    "voxl": "node scripts/voxl.mjs",
-    "render": "node scripts/studio.mjs render",
-    "validate": "node scripts/studio.mjs validate",
-    "import-bash": "node scripts/studio.mjs import-bash",
-    "check": "npm test && npm run lint && npm run typecheck && npm run build",
-    "lint": "eslint . --ignore-pattern dist",
-    "typecheck": "tsc --noEmit",
-    "typecheck:voxl": "tsc --noEmit --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 packages/engine-contracts/src/index.d.ts packages/engine-transparent-character/src/index.d.ts packages/engine-voxl-humanoid-skin/src/index.d.ts"
-  },
-  "dependencies": {
-    "express": "5.1.0",
-    "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "lint": "eslint .",
+    "typecheck": "bun run --cwd apps/server typecheck && bun run --cwd apps/studio typecheck && bun run --cwd infra/db typecheck && bun run typecheck:engines",
+    "typecheck:engines": "tsc --noEmit --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 packages/engine-contracts/src/index.d.ts packages/engine-transparent-character/src/index.d.ts packages/engine-voxl-humanoid-skin/src/index.d.ts",
+    "check": "bun run test && bun run lint && bun run typecheck && bun run build",
+    "studio": "bun apps/character-cli/src/studio.mjs",
+    "voxl": "bun apps/character-cli/src/voxl.mjs",
+    "render": "bun apps/character-cli/src/studio.mjs render",
+    "validate": "bun apps/character-cli/src/studio.mjs validate",
+    "import-bash": "bun apps/character-cli/src/studio.mjs import-bash",
+    "env:init": "./scripts/env-local.sh init",
+    "db:generate": "bun run --cwd infra/db db:generate",
+    "db:migrate": "bun run --cwd infra/db db:migrate",
+    "db:reset": "bun run --cwd infra/db db:reset",
+    "supabase:start": "bun run --cwd infra/db supabase:start",
+    "supabase:stop": "bun run --cwd infra/db supabase:stop",
+    "supabase:status": "bun run --cwd infra/db supabase:status",
+    "docker:stack:up": "./scripts/docker.sh stack:up",
+    "docker:stack:down": "./scripts/docker.sh stack:down",
+    "docker:stack:restart": "./scripts/docker.sh stack:restart",
+    "docker:stack:ps": "./scripts/docker.sh stack:ps",
+    "docker:stack:logs": "./scripts/docker.sh stack:logs",
+    "docker:apps:build": "./scripts/docker.sh apps:build",
+    "docker:server:logs": "./scripts/docker.sh server:logs",
+    "docker:studio:logs": "./scripts/docker.sh studio:logs"
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
     "@types/node": "22.19.19",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "6.0.2",
     "eslint": "9.39.4",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.59.3",
-    "vite": "8.0.13"
-  },
-  "type": "module"
+    "typescript-eslint": "8.59.3"
+  }
 }

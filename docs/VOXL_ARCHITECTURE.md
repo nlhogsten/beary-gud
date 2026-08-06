@@ -1,6 +1,6 @@
 # VOXL system architecture
 
-Status: target architecture; only the local editor and engine packages exist today. AWS infrastructure, the shared API, durable storage, remote MCP, and plugin UI are not yet implemented.
+Status: active architecture. The Bun workspace layout, local studio, Hono server boundary, engine packages, initial Drizzle schema, local Supabase configuration, and OpenTofu bootstrap exist. Durable application services, authentication, AWS resources, remote MCP, workers, and plugin UI are not yet implemented.
 
 ## One product, multiple clients
 
@@ -11,8 +11,8 @@ The future Codex and Claude integrations are additional clients of the same VOXL
 ```text
 Local development
 
-React/Vite studio ── HTTP ── Express API ── local development services
-   localhost                 localhost
+React/Vite studio ── HTTP ── Bun/Hono API ── local Supabase/PostgreSQL
+   localhost                 localhost          (when started)
 
 
 Future AWS production
@@ -20,7 +20,7 @@ Future AWS production
                          ┌─ React/Vite web client
 browser ─ CloudFront ────┤  (static assets in S3)
                          │
-                         └─ ALB ─ Express API + remote MCP
+                         └─ ALB ─ Bun/Hono API + remote MCP
                                    (ECS/Fargate containers from ECR)
                                            │
 chat host + VOXL plugin ───────────────────┤
@@ -41,7 +41,7 @@ The diagram is a direction, not a claim that these services have been provisione
 | Component | Responsibility | Source of durable truth? |
 | --- | --- | --- |
 | React/Vite studio | Full project library, generation workflow, 2D/3D editing, history, account and download experience | No; it reads and writes through the API |
-| Express API | Authentication and authorization boundary, project/version/file APIs, job submission, signed transfers, entitlements | Coordinates durable state |
+| Bun/Hono API | Authentication and authorization boundary, project/version/file APIs, job submission, signed transfers, entitlements | Coordinates durable state |
 | Visual engines | Engine-owned schemas, deterministic validation, rendering, migration, and export | Defines document meaning, not user ownership |
 | Generation providers/workers | Create or revise visual content and report measured usage | No; successful results become immutable versions through the API |
 | Remote MCP service | Presents engine-neutral VOXL operations to compatible AI hosts | No; it calls the same application services as the web API |
@@ -71,6 +71,8 @@ The embedded UI should be intentionally smaller than the full studio:
 - Local files or development-only services may substitute for AWS dependencies while contracts are being built.
 - No checkpoint is automatically published to an external hosting product.
 - Tests and builds must not require AWS credentials.
+- Vite configuration belongs to `apps/studio`, Hono runtime configuration belongs to `apps/server`, and Drizzle/Supabase configuration belongs to `infra/db`.
+- Local Supabase is a development implementation of PostgreSQL, auth, and object-storage-adjacent services; it does not replace the proposed production RDS and S3 architecture.
 
 ### Future AWS environments
 

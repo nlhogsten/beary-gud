@@ -1,6 +1,6 @@
 # ADR 0007: Delay workspaces and protect compatibility migrations
 
-Status: accepted
+Status: Superseded in part by ADR 0010
 
 Date: 2026-08-05
 
@@ -14,4 +14,4 @@ Keep Node 22.13.0 as the minimum runtime. Use dependency-free local packages and
 
 ## Consequences
 
-The repository temporarily has package folders without workspace management. This is intentional and must be revisited at the stated trigger. Character migrations remain small, reversible through Git, and protected by both legacy and engine-contract tests.
+The repository temporarily used package folders without workspace management. ADR 0010 records that the trigger was reached and adopts Bun workspaces. The compatibility requirements in this record remain active: character migrations stay small, reversible through Git, and protected by legacy and engine-contract tests.

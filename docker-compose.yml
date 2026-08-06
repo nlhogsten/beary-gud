@@ -1,0 +1,53 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile.dev
+    image: voxl-server-dev
+    container_name: voxl-server
+    working_dir: /workspace
+    env_file:
+      - .env.local
+    environment:
+      HOST: 0.0.0.0
+      PORT: 5741
+    command: ["sh", "-lc", "bun install --frozen-lockfile && bun run --cwd apps/server dev"]
+    ports:
+      - "127.0.0.1:5741:5741"
+    volumes:
+      - .:/workspace
+      - voxl_server_node_modules:/workspace/node_modules
+    networks:
+      - voxl
+
+  studio:
+    build:
+      context: .
+      dockerfile: apps/studio/Dockerfile.dev
+    image: voxl-studio-dev
+    container_name: voxl-studio
+    working_dir: /workspace
+    env_file:
+      - .env.local
+    environment:
+      SERVER_URL: http://server:5741
+    command: ["sh", "-lc", "bun install --frozen-lockfile && bun run --cwd apps/studio dev --host 0.0.0.0"]
+    depends_on:
+      - server
+    ports:
+      - "127.0.0.1:5740:5740"
+    volumes:
+      - .:/workspace
+      - voxl_studio_node_modules:/workspace/node_modules
+    networks:
+      - voxl
+
+networks:
+  voxl:
+    name: voxl-dev
+
+volumes:
+  voxl_server_node_modules:
+    name: voxl-server-node_modules
+  voxl_studio_node_modules:
+    name: voxl-studio-node_modules

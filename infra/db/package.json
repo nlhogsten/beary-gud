@@ -1,0 +1,31 @@
+{
+  "name": "@voxl/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:reset": "./scripts/reset.sh",
+    "supabase:start": "./scripts/supabase.sh start",
+    "supabase:stop": "./scripts/supabase.sh stop",
+    "supabase:status": "./scripts/supabase.sh status"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "drizzle-orm": "0.45.2",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.10",
+    "supabase": "^2.58.1"
+  }
+}

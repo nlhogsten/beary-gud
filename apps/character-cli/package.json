@@ -1,0 +1,11 @@
+{
+  "name": "@voxl/character-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@voxl/engine-contracts": "workspace:*",
+    "@voxl/engine-transparent-character": "workspace:*",
+    "@voxl/engine-voxl-humanoid-skin": "workspace:*"
+  }
+}

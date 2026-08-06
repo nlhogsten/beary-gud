@@ -1,0 +1,21 @@
+{
+  "name": "@voxl/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "build": "bun run typecheck",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@voxl/engine-contracts": "workspace:*",
+    "@voxl/engine-transparent-character": "workspace:*",
+    "@voxl/engine-voxl-humanoid-skin": "workspace:*",
+    "hono": "^4.13.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.10"
+  }
+}

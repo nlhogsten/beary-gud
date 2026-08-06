@@ -10,7 +10,7 @@ Use `$transparent-character-studio` from this repository. Ask naturally, for exa
 
 Codex should create or version source data, validate it, render it, inspect the generated alpha outputs, and return the exact export paths. It must not execute pasted animation scripts.
 
-The implementation now lives in `packages/engine-transparent-character/` and is registered through the shared VOXL contracts. The existing `npm run validate`, `npm run render`, and `npm run import-bash` commands remain compatibility interfaces. Use `npm run voxl -- engines` for engine-neutral discovery.
+The implementation lives in `packages/engine-transparent-character/`; its local command adapter lives in `apps/character-cli/`. The root `bun run validate`, `bun run render`, and `bun run import-bash` aliases remain compatibility interfaces. Use `bun run voxl -- engines` for engine-neutral discovery.
 
 ## Proposed componentized VOXL workflow
 

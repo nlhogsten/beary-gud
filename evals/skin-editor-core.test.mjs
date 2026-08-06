@@ -8,7 +8,7 @@ import {
   skinMappedMask,
   skinProfile,
   validateSkinPixels,
-} from "../public/skin-editor-core.js";
+} from "../apps/studio/public/skin-editor-core.js";
 import {
   createBlankHumanoidSkinDocument,
   createMappedPixelMask,

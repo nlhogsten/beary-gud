@@ -52,7 +52,7 @@ test("discovers and validates the real engine through the shared registry", asyn
 });
 
 test("discovers and invokes the real engine through the engine-neutral CLI", async (context) => {
-  const engines = JSON.parse(execFileSync("node", ["scripts/voxl.mjs", "engines"], {
+  const engines = JSON.parse(execFileSync("bun", ["apps/character-cli/src/voxl.mjs", "engines"], {
     cwd: root,
     encoding: "utf8",
   }));
@@ -64,7 +64,7 @@ test("discovers and invokes the real engine through the engine-neutral CLI", asy
   const document = await loadCharacter("bear", { workspaceRoot: root });
   await writeFile(requestPath, JSON.stringify(document));
   const result = JSON.parse(execFileSync("node", [
-    "scripts/voxl.mjs",
+    "apps/character-cli/src/voxl.mjs",
     "invoke",
     "transparent-character",
     "validate",
@@ -78,7 +78,7 @@ test("discovers and invokes the real engine through the engine-neutral CLI", asy
 test("keeps invalid CLI request paths out of public errors", () => {
   const privatePath = "/private/secret/request.json";
   const result = spawnSync("node", [
-    "scripts/voxl.mjs",
+    "apps/character-cli/src/voxl.mjs",
     "invoke",
     "transparent-character",
     "validate",

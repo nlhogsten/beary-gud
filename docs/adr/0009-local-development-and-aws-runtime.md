@@ -11,7 +11,7 @@ A temporary frontend preview was published through ChatGPT Sites, which blurred 
 - Local studio development is localhost-only. The canonical client is the React 19, TypeScript, and Vite application.
 - ChatGPT Sites is not a VOXL development or production environment and is removed from the repository workflow.
 - Future production infrastructure is managed with OpenTofu.
-- The initial AWS target is a static Vite client served from S3 through CloudFront, with an Express API and remote MCP endpoint running as containers on ECS/Fargate behind an Application Load Balancer.
+- The initial AWS target is a static Vite client served from S3 through CloudFront, with a Bun/Hono API and remote MCP endpoint running as containers on ECS/Fargate behind an Application Load Balancer.
 - ECR stores service images; RDS PostgreSQL stores relational state; S3 stores user files and derived binaries; Secrets Manager holds runtime secrets; CloudWatch receives logs, metrics, and alarms.
 - Asynchronous workers may run as separate ECS services or tasks. No dedicated GPU topology is selected until provider experiments establish the need.
 - The standalone studio, remote MCP tools, and optional in-chat UI all use the same application services, authorization rules, PostgreSQL records, and object storage. The plugin is a client integration, not another backend.
