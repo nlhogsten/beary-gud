@@ -4,16 +4,16 @@ import test from "node:test";
 
 const root = new URL("../", import.meta.url);
 
-test("the studio workspace owns its Vite app and compatibility assets", async () => {
+test("the studio workspace owns one native Vite application", async () => {
+  await access(new URL("apps/studio/index.html", root));
   for (const path of [
-    "apps/studio/index.html",
     "apps/studio/public/compatibility/index.html",
     "apps/studio/public/studio.css",
     "apps/studio/public/studio.js",
     "apps/studio/public/skin-editor.js",
     "apps/studio/public/skin-editor-core.js",
   ]) {
-    await access(new URL(path, root));
+    await assert.rejects(access(new URL(path, root)));
   }
 
   const viteConfig = await readFile(new URL("apps/studio/vite.config.ts", root), "utf8");

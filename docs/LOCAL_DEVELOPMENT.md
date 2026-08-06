@@ -6,7 +6,7 @@ VOXL uses the same useful platform conventions as the committed Hokudex monorepo
 
 | Path | Owner |
 | --- | --- |
-| `apps/studio` | React 19, TypeScript, Vite, engine-specific editor modules, and browser compatibility assets |
+| `apps/studio` | React 19, TypeScript, Vite, and engine-specific editor modules |
 | `apps/server` | Bun/Hono HTTP runtime and, later, remote MCP transport and application services |
 | `apps/character-cli` | Local transparent-character and engine-registry commands |
 | `packages/engine-*` | Reusable engine contracts, schemas, validation, rendering, and exports |

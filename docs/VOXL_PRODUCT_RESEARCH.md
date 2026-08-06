@@ -346,6 +346,14 @@ VOXL does not need to train or generate a 3D body. The body geometry is fixed. A
 
 The implementation should place any permissively licensed viewer library behind `cuboid-humanoid-renderer`. The adapter must support base and overlay rendering, both export-profile geometries, and animations without leaking an external target name into product code. Direct painting requires raycasting that converts a clicked 3D face back to the corresponding texture pixel.
 
+Implementation checkpoint (August 5, 2026): the studio uses Three.js 0.185.1 behind that adapter. The package is MIT-licensed; VOXL owns the cuboid assembly, neutral profile geometry, per-face atlas mapping, and click-to-pixel conversion. Three.js remains a replaceable renderer dependency rather than an engine or document contract. The implementation follows the library's raycasting model, where pointer coordinates produce intersections whose UV coordinates are converted back into atlas pixels.
+
+Primary references:
+
+- [Three.js repository and MIT license](https://github.com/mrdoob/three.js)
+- [Three.js Raycaster documentation](https://threejs.org/docs/#api/en/core/Raycaster)
+- [Three.js texture constants and nearest-neighbor filtering](https://threejs.org/docs/#api/en/constants/Textures)
+
 The editor should support:
 
 - Rotate and zoom.

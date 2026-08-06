@@ -13,6 +13,9 @@
     "packages/*",
     "infra/db"
   ],
+  "overrides": {
+    "esbuild": "0.28.1"
+  },
   "scripts": {
     "dev": "bun run dev:host",
     "dev:host": "bun run dev:server & bun run dev:studio",

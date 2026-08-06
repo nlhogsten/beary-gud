@@ -17,19 +17,40 @@ test("Vite browser entry uses the typed React engine UI registry", async () => {
   assert.match(registry, /id: "voxl-humanoid-skin"/);
   assert.match(registry, /id: "transparent-character"/);
   assert.match(registry, /status: "native"/);
-  assert.match(registry, /status: "compatibility"/);
+  assert.match(registry, /lazy\(async/);
+  assert.match(registry, /Editor: HumanoidSkinEditor/);
+  assert.match(registry, /Editor: TransparentCharacterEditor/);
+  assert.doesNotMatch(registry, /compatibility|iframe/i);
   assert.match(viteConfig, /@vitejs\/plugin-react/);
   assert.doesNotMatch(viteConfig, /vinext|cloudflare|hosting\.json/i);
 });
 
-test("React skin editor uses canvases, compatible persistence, and package-owned UV profiles", async () => {
+test("React motion editor preserves local drafts and complete transparent export tools", async () => {
   const [editor, core] = await Promise.all([
+    readFile(new URL("apps/studio/src/studio/transparent-character/TransparentCharacterEditor.tsx", root), "utf8"),
+    readFile(new URL("apps/studio/src/studio/transparent-character/core.ts", root), "utf8"),
+  ]);
+  assert.match(core, /transparent-character-studio-drafts-v1/);
+  assert.match(core, /transparent-character-studio-history-v1/);
+  assert.match(core, /makeAnimatedPng/);
+  assert.match(core, /makeSpriteSheet/);
+  assert.match(editor, /Export animation/);
+  assert.match(editor, /Export current frame/);
+  assert.doesNotMatch(editor, /iframe/i);
+});
+
+test("React skin editor uses canvases, compatible persistence, and package-owned UV profiles", async () => {
+  const [editor, core, renderer] = await Promise.all([
     readFile(new URL("apps/studio/src/studio/humanoid/HumanoidSkinEditor.tsx", root), "utf8"),
     readFile(new URL("apps/studio/src/studio/humanoid/core.ts", root), "utf8"),
+    readFile(new URL("apps/studio/src/studio/humanoid/CuboidHumanoidRenderer.tsx", root), "utf8"),
   ]);
   assert.match(editor, /voxl-humanoid-skin-draft-v1/);
   assert.match(editor, /<canvas/);
   assert.doesNotMatch(editor, /\.map\(.*pixel/i);
   assert.match(core, /packages\/engine-voxl-humanoid-skin\/src\/profiles\.mjs/);
   assert.doesNotMatch(core, /function buildRegions/);
+  assert.match(editor, /CuboidHumanoidRenderer/);
+  assert.match(core, /cuboid-humanoid-renderer/);
+  assert.match(renderer, /Raycaster/);
 });

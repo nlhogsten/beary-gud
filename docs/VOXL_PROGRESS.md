@@ -13,9 +13,11 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. The repository is now a Bun workspace monorepo: React/Vite studio, Bun/Hono server, character CLI, visual engines, local database infrastructure, and OpenTofu each have explicit owners. The humanoid 2D atlas editor is native React; the transparent-character editor remains temporarily mounted through its compatibility iframe. The next product slice removes that remaining split before synchronized 3D editing.
+**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Both current editors are native, lazy-loaded React modules; the old iframe/static frontend and duplicated browser core are removed. The humanoid editor now includes a target-neutral Three.js adapter with rotatable 3D preview, raycast-to-atlas mapping, and shared 2D/3D paint state. The next checkpoint is real-browser texture-orientation and click-mapping QA, followed by named local versions and comparison.
 
-## Architecture direction (not implementation progress)
+## Platform and repository foundation
+
+These checkpoints record the organizational/sidebar work that makes later product work independently maintainable. They are implementation progress, but they do not by themselves complete a user-facing product phase.
 
 - [x] Record localhost-only development and remove ChatGPT Sites from the intended workflow.
 - [x] Record the standalone React/Vite client, shared Bun/Hono API/MCP application layer, and OpenTofu-managed AWS target.
@@ -23,6 +25,9 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 - [x] Add a resource-free OpenTofu bootstrap that does not require invented AWS identifiers.
 - [x] Adopt Bun workspaces and move runtime-specific configuration into `apps/studio`, `apps/server`, `apps/character-cli`, and `infra/db`.
 - [x] Add Hono health/engine-discovery routes, an initial Drizzle schema and migration, isolated local Supabase configuration, and host/Docker management commands.
+- [x] Keep the repository root limited to shared orchestration while each app, engine package, database package, and infrastructure target owns its runtime configuration.
+- [x] Verify the host and Docker localhost workflows, the first four-table migration, and a production Bun/Hono image running as a non-root user.
+- [x] Upgrade exposed high-severity toolchain dependencies, pin the remaining Drizzle Kit loader chain to the audited esbuild release, and reach a zero-vulnerability `bun audit`.
 - [ ] Connect authenticated server application services to the database; the current schema and local runtime are foundation only.
 - [ ] Select AWS accounts, region, DNS, certificates, remote state, environment isolation, and recovery policy.
 - [ ] Provision or deploy any AWS infrastructure.
@@ -117,16 +122,16 @@ Status: **in progress**
 
 ### Work
 
-- [ ] Migrate the verified static/iframe frontend to one React 19 + TypeScript + Vite application without storage or export regressions.
+- [x] Migrate the verified static/iframe frontend to one React 19 + TypeScript + Vite application without storage or export regressions.
 - [x] Make standard Vite the canonical localhost development path, with a separate Bun/Hono server and container definition.
 - [x] Add a typed React engine-UI registry and port the humanoid 2D editor to canvas-based React with compatible draft persistence.
 - [x] Add engine selection to the shared studio shell.
 - [x] Load format-specific editor modules from the React engine-UI registry.
 - [x] Keep the current transparent-character editor behavior available.
 - [x] Build the VOXL humanoid-skin 2D atlas editor.
-- [ ] Integrate a permissively licensed viewer behind `cuboid-humanoid-renderer`.
-- [ ] Map 3D face clicks to UV pixels.
-- [ ] Synchronize 2D and 3D painting.
+- [x] Integrate a permissively licensed viewer behind `cuboid-humanoid-renderer`.
+- [x] Map 3D face clicks to UV pixels.
+- [x] Synchronize 2D and 3D painting through the same draft buffer, tools, visibility state, and undo history.
 - [x] Add base/outer and body-part visibility controls.
 - [x] Add skin undo/redo, local draft persistence, PNG import, deterministic validation, and valid PNG export.
 - [ ] Add named local versions and side-by-side comparison.
@@ -137,7 +142,7 @@ Status: **in progress**
 - [x] Users can switch engines without state or schema leakage.
 - [x] Both editor modules load through the shared shell.
 - [ ] A humanoid skin can be painted in synchronized 2D/3D views and exported validly.
-- [ ] Existing transparent-character drafting still works.
+- [x] Existing transparent-character drafting still works.
 
 ## Phase 5 — generative-provider research spike
 
@@ -226,4 +231,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Port the transparent-character compatibility editor into its registered React module, remove the iframe/static split after parity tests, then integrate the target-neutral 3D renderer.
+Complete real-browser QA for 3D face orientation, transparent outer-layer clicks, rotation, and direct painting; then add named local versions and side-by-side comparison.

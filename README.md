@@ -21,7 +21,7 @@ bun run dev
 
 Open `http://127.0.0.1:5740`. This runs the Vite studio and Bun/Hono API together on the host. The API is available at `http://127.0.0.1:5741`; Vite proxies `/api` requests to it. VOXL uses its own ports so it can run alongside Hokudex.
 
-The preserved transparent-character editor remains available inside the React shell at `/compatibility/index.html` while it is migrated from imperative browser code. Run only one application with `bun run dev:studio` or `bun run dev:server`.
+Both current visual editors are native React engine modules in the shared studio shell. Run only one application with `bun run dev:studio` or `bun run dev:server`.
 
 For the complete Docker/Supabase local stack, run `bun run docker:stack:up`. This starts the database services plus separate studio and server containers. No command publishes VOXL externally.
 

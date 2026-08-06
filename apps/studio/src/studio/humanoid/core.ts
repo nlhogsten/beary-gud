@@ -13,6 +13,7 @@ import {
 
 export const SKIN_SIZE = TEXTURE_WIDTH;
 export const SKIN_PROFILE_IDS = HUMANOID_SKIN_PROFILE_IDS;
+export const CUBOID_HUMANOID_RENDERER_ID = "cuboid-humanoid-renderer";
 export type SkinProfileId = HumanoidSkinProfileId;
 
 export const SKIN_PARTS = [
@@ -131,6 +132,13 @@ export function pixelRegion(
     x >= region.x && x < region.x + region.width
       && y >= region.y && y < region.y + region.height
   ));
+}
+
+export function uvToAtlasPixel(region: SkinRegion, u: number, v: number) {
+  return {
+    x: region.x + Math.min(region.width - 1, Math.max(0, Math.floor(u * region.width))),
+    y: region.y + Math.min(region.height - 1, Math.max(0, Math.floor((1 - v) * region.height))),
+  };
 }
 
 function blend(

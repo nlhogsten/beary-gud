@@ -10,6 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import styles from "../StudioShell.module.css";
+import { CuboidHumanoidRenderer } from "./CuboidHumanoidRenderer";
 import {
   SKIN_PARTS,
   SKIN_PROFILE_IDS,
@@ -390,6 +391,28 @@ export function HumanoidSkinEditor() {
     setNotice(tool === "eraser" ? "Erased skin pixel" : "Painted skin pixel");
   }
 
+  function paintFromThreeDimensions(x: number, y: number) {
+    const current = draftRef.current;
+    const offset = (y * SKIN_SIZE + x) * 4;
+    if (tool === "picker") {
+      const rgba = current.pixels.slice(offset, offset + 4);
+      if (rgba[3]) {
+        updateDraft({ ...current, color: rgbaHex(rgba) });
+        setNotice(`Picked ${rgbaHex(rgba)} from 3D preview`);
+      }
+      setTool("pencil");
+      return;
+    }
+    const color = tool === "eraser" ? [0, 0, 0, 0] as const : hexRgba(current.color);
+    if (color.every((value, index) => value === current.pixels[offset + index])) return;
+    const before = snapshot(current);
+    const pixels = new Uint8ClampedArray(current.pixels);
+    pixels.set(color, offset);
+    updateDraft({ ...current, pixels });
+    recordSnapshot(before);
+    setNotice(tool === "eraser" ? "Erased skin pixel in 3D" : "Painted skin pixel in 3D");
+  }
+
   function setProfile(nextProfile: SkinProfileId) {
     const current = draftRef.current;
     if (nextProfile === current.profile) return;
@@ -550,30 +573,31 @@ export function HumanoidSkinEditor() {
 
           <section className={styles.previewPanel}>
             <div className={styles.panelHeading}>
-              <strong>Character preview</strong>
-              <span>Front / back</span>
+              <strong>3D character preview</strong>
+              <span>Drag to rotate · click to paint</span>
             </div>
-            <div className={styles.previews}>
-              <figure>
-                <canvas
-                  aria-label="Front skin preview"
-                  className={styles.previewCanvas}
-                  height={32}
-                  ref={frontRef}
-                  width={16}
-                />
-                <figcaption>Front</figcaption>
-              </figure>
-              <figure>
-                <canvas
-                  aria-label="Back skin preview"
-                  className={styles.previewCanvas}
-                  height={32}
-                  ref={backRef}
-                  width={16}
-                />
-                <figcaption>Back</figcaption>
-              </figure>
+            <div className={styles.previewStack}>
+              <CuboidHumanoidRenderer
+                layers={draft.layers}
+                onInspect={(region, x, y) => {
+                  setCoordinate(`${x}, ${y}`);
+                  setRegionLabel(`${region.part} / ${region.layer} / ${region.face}`);
+                }}
+                onPaint={paintFromThreeDimensions}
+                parts={draft.parts}
+                pixels={draft.pixels}
+                profile={draft.profile}
+              />
+              <div className={styles.miniPreviews}>
+                <figure>
+                  <canvas aria-label="Front skin preview" height={32} ref={frontRef} width={16} />
+                  <figcaption>Front</figcaption>
+                </figure>
+                <figure>
+                  <canvas aria-label="Back skin preview" height={32} ref={backRef} width={16} />
+                  <figcaption>Back</figcaption>
+                </figure>
+              </div>
             </div>
           </section>
         </div>

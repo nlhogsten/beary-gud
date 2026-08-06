@@ -1,14 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  createBlankSkinPixels,
-  convertSkinProfile,
+  createBlankPixels,
+  CUBOID_HUMANOID_RENDERER_ID,
+  convertProfile,
+  mappedMask,
   pixelRegion,
-  renderSkinPreviewPixels,
-  skinMappedMask,
+  renderPreview,
   skinProfile,
-  validateSkinPixels,
-} from "../apps/studio/public/skin-editor-core.js";
+  validatePixels,
+  uvToAtlasPixel,
+} from "../apps/studio/src/studio/humanoid/core.ts";
 import {
   createBlankHumanoidSkinDocument,
   createMappedPixelMask,
@@ -22,13 +24,13 @@ test("browser UV profiles exactly mirror the package engine", () => {
     const engine = getHumanoidSkinProfile(profileId);
     assert.equal(browser.armWidth, engine.armWidth);
     assert.deepEqual(browser.regions, engine.regions);
-    assert.deepEqual(skinMappedMask(profileId), createMappedPixelMask(profileId));
+    assert.deepEqual(mappedMask(profileId), createMappedPixelMask(profileId));
   }
 });
 
 test("blank drafts validate and atlas coordinates resolve to semantic regions", () => {
-  const pixels = createBlankSkinPixels("wide-arm-64");
-  assert.equal(validateSkinPixels("wide-arm-64", pixels).ok, true);
+  const pixels = createBlankPixels("wide-arm-64");
+  assert.equal(validatePixels("wide-arm-64", pixels).ok, true);
   assert.deepEqual(pixelRegion("wide-arm-64", 8, 8), {
     part: "head", layer: "base", face: "front", x: 8, y: 8, width: 8, height: 8,
   });
@@ -36,31 +38,37 @@ test("blank drafts validate and atlas coordinates resolve to semantic regions", 
 });
 
 test("profile conversion clears pixels outside the destination UV map", () => {
-  const wide = createBlankSkinPixels("wide-arm-64");
-  const wideOnly = skinMappedMask("wide-arm-64").findIndex((value, index) => value && !skinMappedMask("slim-arm-64")[index]);
+  const wide = createBlankPixels("wide-arm-64");
+  const wideOnly = mappedMask("wide-arm-64").findIndex((value, index) => value && !mappedMask("slim-arm-64")[index]);
   assert.notEqual(wideOnly, -1);
   wide.set([255, 0, 0, 255], wideOnly * 4);
-  const slim = convertSkinProfile(wide, "slim-arm-64");
+  const slim = convertProfile(wide, "slim-arm-64");
   assert.deepEqual(Array.from(slim.slice(wideOnly * 4, wideOnly * 4 + 4)), [0, 0, 0, 0]);
-  assert.equal(validateSkinPixels("slim-arm-64", slim).ok, true);
+  assert.equal(validatePixels("slim-arm-64", slim).ok, true);
 });
 
 test("browser front and back previews match deterministic engine output", () => {
   for (const view of ["front", "back"]) {
     const document = createBlankHumanoidSkinDocument("wide-arm-64", { baseColor: [12, 34, 56, 255] });
-    const browser = renderSkinPreviewPixels(document.profile, document.pixels, { view });
+    const browserPixels = renderPreview(document.profile, document.pixels, view, ["base", "outer"], ["head", "torso", "right-arm", "left-arm", "right-leg", "left-leg"]);
     const engine = renderHumanoidSkinPreview(document, { view, scale: 1 });
-    assert.equal(browser.width, engine.width);
-    assert.equal(browser.height, engine.height);
-    assert.deepEqual(Array.from(browser.pixels), Array.from(engine.pixels));
+    assert.equal(16, engine.width);
+    assert.equal(32, engine.height);
+    assert.deepEqual(Array.from(browserPixels), Array.from(engine.pixels));
   }
 });
 
 test("preview visibility controls are presentation-only", () => {
-  const pixels = createBlankSkinPixels("wide-arm-64", [90, 100, 110, 255]);
-  const hiddenHead = renderSkinPreviewPixels("wide-arm-64", pixels, {
-    parts: ["torso", "right-arm", "left-arm", "right-leg", "left-leg"],
-  });
-  assert.equal(hiddenHead.pixels.slice(0, 16 * 8 * 4).some(Boolean), false);
-  assert.equal(validateSkinPixels("wide-arm-64", pixels).ok, true);
+  const pixels = createBlankPixels("wide-arm-64", [90, 100, 110, 255]);
+  const hiddenHead = renderPreview("wide-arm-64", pixels, "front", ["base", "outer"], ["torso", "right-arm", "left-arm", "right-leg", "left-leg"]);
+  assert.equal(hiddenHead.slice(0, 16 * 8 * 4).some(Boolean), false);
+  assert.equal(validatePixels("wide-arm-64", pixels).ok, true);
+});
+
+test("3D renderer maps raycast UVs back to target-neutral atlas pixels", () => {
+  assert.equal(CUBOID_HUMANOID_RENDERER_ID, "cuboid-humanoid-renderer");
+  const face = pixelRegion("wide-arm-64", 8, 8);
+  assert.ok(face);
+  assert.deepEqual(uvToAtlasPixel(face, 0, 1), { x: 8, y: 8 });
+  assert.deepEqual(uvToAtlasPixel(face, 0.999, 0.001), { x: 15, y: 15 });
 });

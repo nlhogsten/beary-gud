@@ -8,6 +8,11 @@ export default defineConfig(({ mode }) => {
   const serverUrl = env.SERVER_URL ?? "http://127.0.0.1:5741";
 
   return {
+    build: {
+      // The deferred WebGL editor is 537 kB minified (135 kB gzip). Keep it
+      // outside the initial shell while enforcing a narrow budget for it.
+      chunkSizeWarningLimit: 550,
+    },
     envDir: "../..",
     plugins: [react()],
     server: {

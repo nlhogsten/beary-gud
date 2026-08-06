@@ -1,6 +1,14 @@
-import type { ComponentType } from "react";
-import { HumanoidSkinEditor } from "./humanoid/HumanoidSkinEditor";
-import { TransparentCharacterCompatibility } from "./TransparentCharacterCompatibility";
+import { lazy, type ComponentType } from "react";
+
+const HumanoidSkinEditor = lazy(async () => {
+  const module = await import("./humanoid/HumanoidSkinEditor");
+  return { default: module.HumanoidSkinEditor };
+});
+
+const TransparentCharacterEditor = lazy(async () => {
+  const module = await import("./transparent-character/TransparentCharacterEditor");
+  return { default: module.TransparentCharacterEditor };
+});
 
 export type EngineUiId = "voxl-humanoid-skin" | "transparent-character";
 
@@ -8,7 +16,7 @@ export interface EngineUiRegistration {
   id: EngineUiId;
   label: string;
   description: string;
-  status: "native" | "compatibility";
+  status: "native";
   Editor: ComponentType;
 }
 
@@ -24,8 +32,8 @@ export const ENGINE_UI_REGISTRY: readonly EngineUiRegistration[] = [
     id: "transparent-character",
     label: "Motion",
     description: "Transparent character",
-    status: "compatibility",
-    Editor: TransparentCharacterCompatibility,
+    status: "native",
+    Editor: TransparentCharacterEditor,
   },
 ];
 

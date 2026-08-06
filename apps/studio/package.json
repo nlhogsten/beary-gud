@@ -12,11 +12,13 @@
   "dependencies": {
     "@voxl/engine-voxl-humanoid-skin": "workspace:*",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "three": "0.185.1"
   },
   "devDependencies": {
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "@types/three": "0.185.4",
     "@vitejs/plugin-react": "6.0.5",
     "vite": "8.2.0"
   }

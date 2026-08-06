@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { ENGINE_UI_REGISTRY, engineUi, type EngineUiId } from "./engine-ui-registry";
 import styles from "./StudioShell.module.css";
 
@@ -52,11 +52,13 @@ export function StudioShell() {
         </nav>
         <div className={styles.engineStatus}>
           <span className={styles.statusBadge} data-status={activeEngine.status}>
-            {activeEngine.status === "native" ? "React editor" : "Compatibility"}
+            React editor
           </span>
         </div>
       </header>
-      <ActiveEditor />
+      <Suspense fallback={<div className={styles.editorLoading}>Loading editor…</div>}>
+        <ActiveEditor />
+      </Suspense>
     </main>
   );
 }
