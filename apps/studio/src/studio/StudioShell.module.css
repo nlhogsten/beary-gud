@@ -721,6 +721,134 @@
   font-size: 10px;
 }
 
+.versionPanel {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.versionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.versionHelp,
+.versionEmpty,
+.versionStatus {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.versionPanel .field {
+  margin: 0;
+}
+
+.versionPanel .field input {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  background: #0a0f15;
+}
+
+.versionStatus {
+  min-height: 15px;
+  color: var(--accent-strong);
+}
+
+.versionList {
+  display: grid;
+  gap: 8px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.versionList li {
+  display: grid;
+  gap: 7px;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel);
+}
+
+.versionList li > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.versionList small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.versionActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.versionComparison {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #3c4c5f;
+  border-radius: 8px;
+  background: #0a0f15;
+  font-size: 10px;
+}
+
+.versionComparison > span {
+  color: var(--accent-strong);
+}
+
+.versionPreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.versionPreviewGrid figure {
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 7px 3px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  background: #111821;
+}
+
+.versionSkinPreview {
+  width: 24px;
+  height: 48px;
+  image-rendering: pixelated;
+}
+
+.versionMotionPreview {
+  width: min(100%, 100px);
+  height: auto;
+  image-rendering: pixelated;
+}
+
 .activitySection {
   margin-top: 24px;
   padding-top: 18px;

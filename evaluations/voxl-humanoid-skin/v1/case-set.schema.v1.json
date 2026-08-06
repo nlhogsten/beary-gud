@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.local/evaluations/voxl-humanoid-skin/v1/case-set.schema.json",
+  "title": "VOXL humanoid-skin evaluation case set v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "engineId", "documentKind", "licensePolicy", "requiredCategories", "cases"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "const": "voxl-humanoid-skin-cases/v1" },
+    "version": { "const": 1 },
+    "engineId": { "const": "voxl-humanoid-skin" },
+    "documentKind": { "const": "voxl.humanoid-skin/v1" },
+    "licensePolicy": { "type": "string", "minLength": 1 },
+    "requiredCategories": {
+      "type": "array",
+      "minItems": 15,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/category" }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 30,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "category": {
+      "enum": [
+        "text-only",
+        "single-reference",
+        "multiple-reference",
+        "photo-reference",
+        "drawing-reference",
+        "front-back-consistency",
+        "transparency",
+        "dense-pattern",
+        "hard-edges",
+        "low-contrast",
+        "asymmetry",
+        "difficult-silhouette",
+        "existing-document-remix",
+        "outer-layer",
+        "cross-surface-pattern",
+        "wide-arm-64",
+        "slim-arm-64",
+        "localized-revision",
+        "protected-regions",
+        "unsupported-request"
+      ]
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "mediaKind", "syntheticSpecification", "provenance", "materializedAsset"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "role": { "enum": ["content", "style", "palette", "front-view", "rear-view", "detail", "silhouette"] },
+        "mediaKind": { "enum": ["synthetic-photo", "synthetic-drawing", "synthetic-palette", "synthetic-atlas", "synthetic-mask"] },
+        "syntheticSpecification": { "type": "string", "minLength": 12 },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["origin", "rights", "thirdPartyContent"],
+          "properties": {
+            "origin": { "const": "project-authored-synthetic" },
+            "rights": { "const": "evaluation-use-approved" },
+            "thirdPartyContent": { "const": false }
+          }
+        },
+        "materializedAsset": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "sha256", "mimeType"],
+              "properties": {
+                "path": { "type": "string", "minLength": 1 },
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "mimeType": { "enum": ["image/png", "image/jpeg"] }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baselineSpecification", "baselineAsset", "editableRegions", "protectedRegions", "immutableRegions", "maximumProtectedChangedTexelRate"],
+      "properties": {
+        "baselineSpecification": { "type": "string", "minLength": 12 },
+        "baselineAsset": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "sha256"],
+              "properties": {
+                "path": { "type": "string", "minLength": 1 },
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          ]
+        },
+        "editableRegions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "protectedRegions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "immutableRegions": { "type": "array", "items": { "type": "string" } },
+        "maximumProtectedChangedTexelRate": { "type": "number", "minimum": 0, "maximum": 0.005 }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "mode", "profile", "difficulty", "categories", "prompt", "references", "revision", "expectedSignals", "honestFailureAllowed"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^v1-[0-9]{3}$" },
+        "title": { "type": "string", "minLength": 4 },
+        "mode": { "enum": ["create", "revise"] },
+        "profile": { "enum": ["wide-arm-64", "slim-arm-64"] },
+        "difficulty": { "enum": ["baseline", "intermediate", "stress", "unsupported"] },
+        "categories": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "$ref": "#/$defs/category" } },
+        "prompt": { "type": "string", "minLength": 20 },
+        "references": { "type": "array", "items": { "$ref": "#/$defs/reference" } },
+        "revision": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/revision" }] },
+        "expectedSignals": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 3 } },
+        "honestFailureAllowed": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "revise" } } },
+          "then": { "properties": { "revision": { "$ref": "#/$defs/revision" } } },
+          "else": { "properties": { "revision": { "type": "null" } } }
+        }
+      ]
+    }
+  }
+}

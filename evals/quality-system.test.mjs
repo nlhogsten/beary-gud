@@ -27,6 +27,7 @@ test("browser journeys are valid, semantic, and target-neutral", async () => {
   assert.deepEqual(filenames, [
     "humanoid-2d-3d.json",
     "humanoid-import-export.json",
+    "local-version-compare.json",
     "studio-smoke.json",
     "transparent-edit-export.json",
   ]);
@@ -34,11 +35,14 @@ test("browser journeys are valid, semantic, and target-neutral", async () => {
   const supportedActions = new Set([
     "navigate",
     "click",
+    "press",
     "fill",
     "select",
     "wait",
     "screenshot",
     "assert-visible",
+    "assert-hidden",
+    "assert-page-contained",
     "canvas-click",
     "canvas-drag",
     "download",

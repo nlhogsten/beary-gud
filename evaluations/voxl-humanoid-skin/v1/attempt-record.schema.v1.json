@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.local/evaluations/voxl-humanoid-skin/v1/attempt-record.schema.json",
+  "title": "Immutable VOXL generation attempt record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "attemptId", "case", "engine", "execution", "outcome", "provider", "timing", "cost", "inputs", "rawOutput", "normalization", "candidate", "validation", "evidence", "scores", "failureCategories"],
+  "properties": {
+    "schemaVersion": { "const": "voxl.generation-attempt/v1" },
+    "attemptId": { "type": "string", "minLength": 1 },
+    "case": {
+      "type": "object",
+      "required": ["id", "caseSetId", "caseDefinitionSha256", "ordinal"],
+      "properties": {
+        "id": { "type": "string" },
+        "caseSetId": { "const": "voxl-humanoid-skin-cases/v1" },
+        "caseDefinitionSha256": { "$ref": "#/$defs/sha256" },
+        "ordinal": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "engine": {
+      "type": "object",
+      "required": ["id", "version", "documentSchema", "exportProfile"],
+      "properties": {
+        "id": { "const": "voxl-humanoid-skin" },
+        "version": { "type": "string" },
+        "documentSchema": { "const": "voxl.humanoid-skin/v1" },
+        "exportProfile": { "enum": ["wide-arm-64", "slim-arm-64"] }
+      },
+      "additionalProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "required": ["kind", "networkUsed", "paidCall", "timingScope"],
+      "properties": {
+        "kind": { "enum": ["artifact-replay", "provider"] },
+        "networkUsed": { "type": "boolean" },
+        "paidCall": { "type": "boolean" },
+        "timingScope": { "enum": ["harness", "provider"] }
+      },
+      "additionalProperties": false
+    },
+    "outcome": {
+      "type": "object",
+      "required": ["status", "errorCode", "message"],
+      "properties": {
+        "status": { "enum": ["succeeded", "failed", "refused", "timed-out", "unsupported"] },
+        "errorCode": { "type": ["string", "null"] },
+        "message": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "provider": { "oneOf": [{ "type": "null" }, {
+      "type": "object",
+      "required": ["adapterId", "adapterVersion", "providerId", "modelId", "modelVersion", "configurationSha256", "seed", "provenanceReviewId"],
+      "properties": {
+        "adapterId": { "type": "string" },
+        "adapterVersion": { "type": "string" },
+        "providerId": { "type": "string" },
+        "modelId": { "type": "string" },
+        "modelVersion": { "type": "string" },
+        "configurationSha256": { "$ref": "#/$defs/sha256" },
+        "seed": { "type": ["integer", "null"] },
+        "provenanceReviewId": { "type": "string" }
+      },
+      "additionalProperties": false
+    }] },
+    "timing": {
+      "type": "object",
+      "required": ["startedAt", "finishedAt", "latencyMilliseconds", "coldStart", "peakMemoryBytes"],
+      "properties": {
+        "startedAt": { "type": "string", "format": "date-time" },
+        "finishedAt": { "type": "string", "format": "date-time" },
+        "latencyMilliseconds": { "type": "integer", "minimum": 0 },
+        "coldStart": { "type": "boolean" },
+        "peakMemoryBytes": { "type": ["integer", "null"], "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "cost": {
+      "type": "object",
+      "required": ["currency", "estimated", "actual"],
+      "properties": {
+        "currency": { "const": "USD" },
+        "estimated": { "type": ["number", "null"], "minimum": 0 },
+        "actual": { "type": ["number", "null"], "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["normalizedPromptSha256", "references", "baselineSha256", "editableMaskSha256", "protectedMaskSha256"],
+      "properties": {
+        "normalizedPromptSha256": { "$ref": "#/$defs/sha256" },
+        "references": { "type": "array", "items": { "$ref": "#/$defs/sha256" } },
+        "baselineSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "editableMaskSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "protectedMaskSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
+      },
+      "additionalProperties": false
+    },
+    "rawOutput": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+    "normalization": {
+      "type": "object",
+      "required": ["operations", "policyVersion", "manuallyRepaired"],
+      "properties": {
+        "operations": { "type": "array", "items": { "type": "string" } },
+        "policyVersion": { "type": "string" },
+        "manuallyRepaired": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "candidate": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+    "validation": {
+      "type": "object",
+      "required": ["passed", "validAtFirstOutput", "validAfterNormalization", "issueCodes"],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "validAtFirstOutput": { "type": "boolean" },
+        "validAfterNormalization": { "type": "boolean" },
+        "issueCodes": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["atlas", "front", "rear", "left", "right", "top", "bottom"],
+      "properties": {
+        "atlas": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "front": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "rear": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "left": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "right": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "top": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "bottom": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] }
+      },
+      "additionalProperties": false
+    },
+    "scores": {
+      "type": "object",
+      "required": ["automated", "aiVisualReview", "humanRubric", "humanPreference", "reviewerNotes"],
+      "properties": {
+        "automated": { "type": ["object", "null"] },
+        "aiVisualReview": { "type": ["object", "null"] },
+        "humanRubric": { "type": ["object", "null"] },
+        "humanPreference": { "type": ["object", "null"] },
+        "reviewerNotes": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "failureCategories": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+  },
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "required": ["execution"],
+        "properties": {
+          "execution": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": { "kind": { "const": "artifact-replay" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution": {
+            "type": "object",
+            "properties": {
+              "networkUsed": { "const": false },
+              "paidCall": { "const": false },
+              "timingScope": { "const": "harness" }
+            }
+          },
+          "provider": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "execution": {
+            "type": "object",
+            "properties": { "timingScope": { "const": "provider" } }
+          },
+          "provider": { "$ref": "#/$defs/provider" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "provider": {
+      "type": "object",
+      "required": ["adapterId", "adapterVersion", "providerId", "modelId", "modelVersion", "configurationSha256", "seed", "provenanceReviewId"],
+      "properties": {
+        "adapterId": { "type": "string" },
+        "adapterVersion": { "type": "string" },
+        "providerId": { "type": "string" },
+        "modelId": { "type": "string" },
+        "modelVersion": { "type": "string" },
+        "configurationSha256": { "$ref": "#/$defs/sha256" },
+        "seed": { "type": ["integer", "null"] },
+        "provenanceReviewId": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes", "retention"],
+      "properties": {
+        "path": { "type": "string" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "retention": { "enum": ["retain", "redacted", "discarded-by-policy"] }
+      }
+    }
+  }
+}

@@ -45,3 +45,47 @@ describe("canvas-drag journey schema", () => {
     );
   });
 });
+
+describe("visibility and containment journey schema", () => {
+  test("accepts an explicit hidden assertion", () => {
+    const journey = parseJourney(dragJourney({
+      action: "assert-hidden",
+      target: "text=Skin version",
+      value: undefined,
+    }));
+    assert.equal(journey.steps[0]?.action, "assert-hidden");
+  });
+
+  test("requires a target for hidden assertions", () => {
+    assert.throws(
+      () => parseJourney(dragJourney({
+        action: "assert-hidden",
+        target: undefined,
+        value: undefined,
+      })),
+      /assert-hidden requires target/,
+    );
+  });
+
+  test("accepts page containment without a target or value", () => {
+    const journey = parseJourney(dragJourney({
+      action: "assert-page-contained",
+      target: undefined,
+      value: undefined,
+    }));
+    assert.equal(journey.steps[0]?.action, "assert-page-contained");
+  });
+
+  test("requires both a target and key for keyboard activation", () => {
+    const journey = parseJourney(dragJourney({
+      action: "press",
+      target: "role=button[name=\"Restore Baseline\"]",
+      value: "Enter",
+    }));
+    assert.equal(journey.steps[0]?.action, "press");
+    assert.throws(
+      () => parseJourney(dragJourney({ action: "press", value: undefined })),
+      /press requires value/,
+    );
+  });
+});

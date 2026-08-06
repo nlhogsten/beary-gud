@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.local/evaluations/voxl-humanoid-skin/v1/rubric.schema.json",
+  "title": "VOXL humanoid-skin evaluation rubric v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "id", "version", "scoreScale", "invalidCandidatePolicy", "dimensions", "automatedMetrics", "operationalMetrics", "preferenceProtocol", "failureCategories"],
+  "properties": {
+    "$schema": { "const": "./rubric.schema.v1.json" },
+    "id": { "const": "voxl-humanoid-skin-rubric/v1" },
+    "version": { "const": 1 },
+    "scoreScale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["1", "2", "3", "4", "5"],
+      "properties": {
+        "1": { "type": "string" }, "2": { "type": "string" }, "3": { "type": "string" },
+        "4": { "type": "string" }, "5": { "type": "string" }
+      }
+    },
+    "invalidCandidatePolicy": { "type": "string", "minLength": 20 },
+    "dimensions": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "channel", "weight", "definition", "gate"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "channel": { "enum": ["automated", "human", "human-blinded", "human-plus-automated", "automated-plus-human"] },
+          "weight": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+          "applicability": { "type": "string" },
+          "definition": { "type": "string", "minLength": 20 },
+          "gate": { "type": "object", "minProperties": 1 }
+        }
+      }
+    },
+    "automatedMetrics": { "type": "array", "minItems": 8, "uniqueItems": true, "items": { "type": "string" } },
+    "operationalMetrics": { "type": "array", "minItems": 5, "uniqueItems": true, "items": { "type": "string" } },
+    "preferenceProtocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "minimumReviewersPerPair", "tiesAllowed", "separateFromRubricScores"],
+      "properties": {
+        "method": { "type": "string", "minLength": 20 },
+        "minimumReviewersPerPair": { "type": "integer", "minimum": 3 },
+        "tiesAllowed": { "type": "boolean" },
+        "separateFromRubricScores": { "const": true }
+      }
+    },
+    "failureCategories": { "type": "array", "minItems": 10, "uniqueItems": true, "items": { "type": "string" } }
+  }
+}

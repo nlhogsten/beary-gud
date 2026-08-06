@@ -1,0 +1,23 @@
+{
+  "name": "@voxl/evaluation-runner",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "bun src/cli.ts check",
+    "adapters": "bun src/cli.ts adapters",
+    "replay": "bun src/cli.ts replay",
+    "test": "bun test src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@voxl/engine-voxl-humanoid-skin": "workspace:*",
+    "@voxl/generation-provider-contracts": "workspace:*",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "typescript": "5.9.3"
+  }
+}

@@ -11,6 +11,7 @@ import {
   parseCanvasClickPosition,
   parseCanvasDragPosition,
 } from "./coordinates.ts";
+import { pageContainmentIssue } from "./containment.ts";
 import { loadJourney } from "./journey.ts";
 import { buildReport } from "./report.ts";
 import type {
@@ -130,6 +131,12 @@ async function executeStep(
       await locatorFor(page, target).click({ timeout });
       return { observed: `Clicked ${target}.` };
     }
+    case "press": {
+      const target = requireTarget(step);
+      const key = requireValue(step);
+      await locatorFor(page, target).press(key, { timeout });
+      return { observed: `Pressed ${key} on ${target}.` };
+    }
     case "fill": {
       const target = requireTarget(step);
       await locatorFor(page, target).fill(requireValue(step), { timeout });
@@ -163,6 +170,23 @@ async function executeStep(
       const target = requireTarget(step);
       await locatorFor(page, target).waitFor({ state: "visible", timeout });
       return { observed: `${target} is visible.` };
+    }
+    case "assert-hidden": {
+      const target = requireTarget(step);
+      await locatorFor(page, target).waitFor({ state: "hidden", timeout });
+      return { observed: `${target} is hidden or absent.` };
+    }
+    case "assert-page-contained": {
+      const measurement = await page.evaluate(() => ({
+        viewportWidth: document.documentElement.clientWidth,
+        documentWidth: document.documentElement.scrollWidth,
+        bodyWidth: document.body?.scrollWidth ?? 0,
+      }));
+      const issue = pageContainmentIssue(measurement);
+      if (issue) throw new Error(issue);
+      return {
+        observed: `Page content is contained within the ${measurement.viewportWidth}px viewport.`,
+      };
     }
     case "canvas-click": {
       const target = requireTarget(step);

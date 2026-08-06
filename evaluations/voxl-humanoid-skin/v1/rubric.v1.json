@@ -1,0 +1,122 @@
+{
+  "$schema": "./rubric.schema.v1.json",
+  "id": "voxl-humanoid-skin-rubric/v1",
+  "version": 1,
+  "scoreScale": {
+    "1": "Severe failure or contradiction",
+    "2": "Major defects; request is not usable without substantial recreation",
+    "3": "Recognizable intent with material defects requiring normal editing",
+    "4": "Meets the request with only minor correctable defects",
+    "5": "Meets the request precisely with no material defect"
+  },
+  "invalidCandidatePolicy": "Run deterministic engine validation first. Invalid candidates receive validation fields and failure categories but no visual or preference score.",
+  "dimensions": [
+    {
+      "id": "prompt-fidelity",
+      "channel": "human-blinded",
+      "weight": 0.16,
+      "definition": "Requested subject, palette, materials, details, and exclusions are represented without replacing the concept with a template.",
+      "gate": { "medianMinimum": 4.0, "p10Minimum": 3.0 }
+    },
+    {
+      "id": "reference-fidelity",
+      "channel": "human-blinded",
+      "weight": 0.14,
+      "applicability": "reference-bearing cases only",
+      "definition": "Each content, style, palette, detail, and view reference influences only its declared role.",
+      "gate": { "medianMinimum": 4.0 }
+    },
+    {
+      "id": "uv-geometry-consistency",
+      "channel": "human-plus-automated",
+      "weight": 0.18,
+      "definition": "Atlas faces map to the correct head, torso, arm, and leg surfaces for the declared profile without mirroring, inversion, seams, or part swaps.",
+      "gate": { "medianMinimum": 4.25, "criticalDefectsAllowed": 0 }
+    },
+    {
+      "id": "cross-view-consistency",
+      "channel": "human-blinded",
+      "weight": 0.13,
+      "definition": "Identity, materials, continuing patterns, and asymmetric details agree across front, rear, sides, top, and bottom.",
+      "gate": { "medianMinimum": 4.0 }
+    },
+    {
+      "id": "pixel-boundary-quality",
+      "channel": "automated-plus-human",
+      "weight": 0.13,
+      "definition": "Pixel edges are deliberate and sharp; alpha, unused regions, layer boundaries, and low-contrast details remain correct.",
+      "gate": { "automatedPassRateMinimum": 0.95, "visualMedianMinimum": 4.5 }
+    },
+    {
+      "id": "surface-complexity-retention",
+      "channel": "human-blinded",
+      "weight": 0.1,
+      "definition": "Dense motifs and small details survive atlas normalization without becoming noise or losing requested structure.",
+      "gate": { "medianMinimum": 3.75 }
+    },
+    {
+      "id": "localized-revision-fidelity",
+      "channel": "automated-plus-human",
+      "weight": 0.1,
+      "applicability": "revision cases only",
+      "definition": "The requested editable region changes as instructed while protected and immutable regions remain stable.",
+      "gate": { "requestedRegionMedianMinimum": 4.0, "protectedChangedTexelRateMaximum": 0.005, "immutableChangedTexelsMaximum": 0 }
+    },
+    {
+      "id": "editability",
+      "channel": "human",
+      "weight": 0.06,
+      "definition": "The normalized result has coherent semantic regions and can be refined with ordinary pixel tools rather than recreated.",
+      "gate": { "medianMinimum": 3.75 }
+    }
+  ],
+  "automatedMetrics": [
+    "deterministicValidationPassed",
+    "validAtFirstOutput",
+    "validAfterNormalization",
+    "pngWidth",
+    "pngHeight",
+    "rgbaMode",
+    "profileDetected",
+    "unusedRegionViolations",
+    "baseTransparencyViolations",
+    "alphaBoundaryViolations",
+    "protectedChangedTexelRate",
+    "immutableChangedTexels",
+    "candidateOutputSha256"
+  ],
+  "operationalMetrics": [
+    "coldStart",
+    "latencyMilliseconds",
+    "peakMemoryBytes",
+    "estimatedCostUsd",
+    "actualCostUsd",
+    "providerErrorCategory",
+    "safetyOutcome"
+  ],
+  "preferenceProtocol": {
+    "method": "Blinded pairwise comparison among deterministically valid candidates with randomized left/right ordering",
+    "minimumReviewersPerPair": 3,
+    "tiesAllowed": true,
+    "separateFromRubricScores": true
+  },
+  "failureCategories": [
+    "provider-error",
+    "timeout",
+    "safety-refusal",
+    "unreadable-output",
+    "invalid-dimensions",
+    "invalid-alpha",
+    "invalid-profile",
+    "unused-region-content",
+    "uv-face-swap",
+    "mirrored-detail",
+    "cross-view-drift",
+    "reference-role-leakage",
+    "prompt-omission",
+    "pattern-discontinuity",
+    "protected-region-drift",
+    "provenance-risk",
+    "unsupported-request-honestly-rejected"
+  ]
+}

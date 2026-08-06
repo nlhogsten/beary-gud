@@ -1,0 +1,317 @@
+{
+  "id": "local-version-compare",
+  "title": "Local version naming, comparison, restoration, and isolation",
+  "purpose": "Verify immutable named skin snapshots, an exact one-pixel comparison, restoration into the editable draft, engine-scoped visibility, persistence across engine switches, and horizontal containment.",
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 1000 },
+    { "name": "mobile", "width": 390, "height": 844 }
+  ],
+  "steps": [
+    {
+      "id": "open-studio",
+      "title": "Open the local studio",
+      "action": "navigate",
+      "path": "/",
+      "expected": "The studio loads in a fresh local browser context.",
+      "required": true
+    },
+    {
+      "id": "wait-for-skin-editor",
+      "title": "Wait for the skin editor",
+      "action": "wait",
+      "target": "label=Humanoid skin editor",
+      "expected": "The native humanoid skin editor is ready.",
+      "required": true
+    },
+    {
+      "id": "assert-local-versions",
+      "title": "Confirm local versions are available",
+      "action": "assert-visible",
+      "target": "label=Local versions",
+      "expected": "The engine-owned local version panel is visible.",
+      "required": true
+    },
+    {
+      "id": "name-baseline",
+      "title": "Name the baseline version",
+      "action": "fill",
+      "target": "label=Version name",
+      "value": "Baseline",
+      "expected": "The version name input contains Baseline.",
+      "required": true
+    },
+    {
+      "id": "save-baseline",
+      "title": "Save the baseline version",
+      "action": "click",
+      "target": "role=button[name=\"Save version\"]",
+      "expected": "An immutable Baseline snapshot is saved.",
+      "required": true
+    },
+    {
+      "id": "assert-baseline-saved",
+      "title": "Confirm the baseline version",
+      "action": "assert-visible",
+      "target": "css=[role=\"status\"]:has-text(\"Saved version Baseline\")",
+      "expected": "The version panel reports that Baseline was saved.",
+      "required": true
+    },
+    {
+      "id": "set-edit-color",
+      "title": "Choose a recognizable edit color",
+      "action": "fill",
+      "target": "label=Paint color",
+      "value": "#ff00ff",
+      "expected": "Magenta is selected for the one-pixel revision.",
+      "required": true
+    },
+    {
+      "id": "paint-version-pixel",
+      "title": "Paint one mapped atlas pixel",
+      "action": "canvas-click",
+      "target": "label=Editable 64 by 64 humanoid skin atlas",
+      "value": "0.1640625,0.1640625",
+      "expected": "Exactly one head-front base pixel changes in the editable draft.",
+      "required": true
+    },
+    {
+      "id": "assert-version-pixel-painted",
+      "title": "Confirm the revision",
+      "action": "assert-visible",
+      "target": "text=Painted skin pixel",
+      "expected": "The editor reports the one-pixel edit.",
+      "required": true
+    },
+    {
+      "id": "name-magenta-edit",
+      "title": "Name the edited version",
+      "action": "fill",
+      "target": "label=Version name",
+      "value": "Magenta edit",
+      "expected": "The version name input contains Magenta edit.",
+      "required": true
+    },
+    {
+      "id": "save-magenta-edit",
+      "title": "Save the edited version",
+      "action": "click",
+      "target": "role=button[name=\"Save version\"]",
+      "expected": "An immutable Magenta edit snapshot is saved as a revision.",
+      "required": true
+    },
+    {
+      "id": "assert-magenta-edit-saved",
+      "title": "Confirm the edited version",
+      "action": "assert-visible",
+      "target": "css=[role=\"status\"]:has-text(\"Saved version Magenta edit\")",
+      "expected": "The version panel reports that Magenta edit was saved.",
+      "required": true
+    },
+    {
+      "id": "select-baseline-comparison",
+      "title": "Select Baseline for comparison A",
+      "action": "click",
+      "target": "role=button[name=\"Set Baseline as comparison A\"]",
+      "expected": "Baseline is selected as the left comparison version.",
+      "required": true
+    },
+    {
+      "id": "select-magenta-comparison",
+      "title": "Select Magenta edit for comparison B",
+      "action": "click",
+      "target": "role=button[name=\"Set Magenta edit as comparison B\"]",
+      "expected": "Magenta edit is selected as the right comparison version.",
+      "required": true
+    },
+    {
+      "id": "assert-comparison-visible",
+      "title": "Confirm the comparison panel",
+      "action": "assert-visible",
+      "target": "label=Version comparison",
+      "expected": "The side-by-side comparison panel is visible.",
+      "required": true
+    },
+    {
+      "id": "assert-comparison-names",
+      "title": "Confirm the selected version pair",
+      "action": "assert-visible",
+      "target": "text=Comparing Baseline with Magenta edit",
+      "expected": "The comparison identifies Baseline and Magenta edit in order.",
+      "required": true
+    },
+    {
+      "id": "assert-one-pixel-difference",
+      "title": "Confirm the exact document difference",
+      "action": "assert-visible",
+      "target": "text=1 pixel changed",
+      "expected": "The immutable documents differ by exactly one pixel.",
+      "required": true
+    },
+    {
+      "id": "restore-baseline",
+      "title": "Restore Baseline as the editable draft",
+      "action": "press",
+      "target": "role=button[name=\"Restore Baseline\"]",
+      "value": "Enter",
+      "expected": "Baseline replaces the editable draft without changing immutable versions.",
+      "required": true
+    },
+    {
+      "id": "assert-baseline-restored",
+      "title": "Confirm Baseline restoration",
+      "action": "assert-visible",
+      "target": "css=[role=\"status\"]:has-text(\"Restored Baseline as editable draft\")",
+      "expected": "The version panel reports that Baseline is now the editable draft.",
+      "required": true
+    },
+    {
+      "id": "activate-color-picker",
+      "title": "Activate the color picker",
+      "action": "press",
+      "target": "role=button[name=\"Pick\"]",
+      "value": "Enter",
+      "expected": "The color picker is active for restored-pixel verification.",
+      "required": true
+    },
+    {
+      "id": "pick-restored-pixel",
+      "title": "Pick the restored atlas pixel",
+      "action": "canvas-click",
+      "target": "label=Editable 64 by 64 humanoid skin atlas",
+      "value": "0.1640625,0.1640625",
+      "expected": "The same atlas coordinate now contains the Baseline color.",
+      "required": true
+    },
+    {
+      "id": "assert-restored-pixel-color",
+      "title": "Confirm restored document pixels",
+      "action": "assert-visible",
+      "target": "text=Picked #c38f69",
+      "expected": "The restored pixel is the original Baseline skin color rather than magenta.",
+      "required": true
+    },
+    {
+      "id": "switch-to-motion",
+      "title": "Switch to the motion engine",
+      "action": "press",
+      "target": "role=button[name=\"Motion\"]",
+      "value": "Enter",
+      "expected": "The transparent-character editor replaces the skin editor.",
+      "required": true
+    },
+    {
+      "id": "wait-for-motion",
+      "title": "Wait for the motion editor",
+      "action": "wait",
+      "target": "label=Pixel canvas",
+      "expected": "The native motion editor is ready.",
+      "required": true
+    },
+    {
+      "id": "assert-motion-local-versions",
+      "title": "Confirm Motion owns a local version panel",
+      "action": "assert-visible",
+      "target": "label=Local versions",
+      "expected": "The Motion engine exposes its own engine-scoped local version panel.",
+      "required": true
+    },
+    {
+      "id": "assert-baseline-name-hidden",
+      "title": "Confirm Baseline does not leak into Motion",
+      "action": "assert-hidden",
+      "target": "text=Baseline",
+      "expected": "The Baseline skin version name is absent from the motion engine.",
+      "required": true
+    },
+    {
+      "id": "assert-magenta-name-hidden",
+      "title": "Confirm Magenta edit does not leak into Motion",
+      "action": "assert-hidden",
+      "target": "text=Magenta edit",
+      "expected": "The Magenta edit skin version name is absent from the motion engine.",
+      "required": true
+    },
+    {
+      "id": "name-motion-checkpoint",
+      "title": "Name a Motion checkpoint",
+      "action": "fill",
+      "target": "label=Version name",
+      "value": "Motion checkpoint",
+      "expected": "The Motion version name input contains Motion checkpoint.",
+      "required": true
+    },
+    {
+      "id": "save-motion-checkpoint",
+      "title": "Save the Motion checkpoint",
+      "action": "press",
+      "target": "role=button[name=\"Save version\"]",
+      "value": "Enter",
+      "expected": "The current Motion document is saved in the Motion engine scope.",
+      "required": true
+    },
+    {
+      "id": "assert-motion-checkpoint-saved",
+      "title": "Confirm the Motion checkpoint",
+      "action": "assert-visible",
+      "target": "css=[role=\"status\"]:has-text(\"Saved version Motion checkpoint\")",
+      "expected": "Motion reports its own named version while Skin names remain hidden.",
+      "required": true
+    },
+    {
+      "id": "switch-back-to-skin",
+      "title": "Switch back to the skin engine",
+      "action": "press",
+      "target": "role=button[name=\"Skin\"]",
+      "value": "Enter",
+      "expected": "The skin editor remounts from its engine-owned state.",
+      "required": true
+    },
+    {
+      "id": "wait-for-restored-skin-editor",
+      "title": "Wait for the restored skin editor",
+      "action": "wait",
+      "target": "label=Humanoid skin editor",
+      "expected": "The native skin editor is ready after the engine switch.",
+      "required": true
+    },
+    {
+      "id": "assert-motion-checkpoint-hidden",
+      "title": "Confirm Motion checkpoint does not leak into Skin",
+      "action": "assert-hidden",
+      "target": "text=Motion checkpoint",
+      "expected": "The Motion checkpoint name is absent from the Skin engine.",
+      "required": true
+    },
+    {
+      "id": "assert-versions-rehydrated",
+      "title": "Confirm skin versions rehydrate",
+      "action": "assert-visible",
+      "target": "css=[role=\"status\"]:has-text(\"2 named versions loaded\")",
+      "expected": "Both engine-scoped skin versions reload from local storage.",
+      "required": true
+    },
+    {
+      "id": "assert-comparison-rehydrated",
+      "title": "Confirm comparison selection rehydrates",
+      "action": "assert-visible",
+      "target": "text=Comparing Baseline with Magenta edit",
+      "expected": "The default comparison pair rehydrates from the two immutable versions.",
+      "required": true
+    },
+    {
+      "id": "assert-page-contained",
+      "title": "Confirm the complete editor fits horizontally",
+      "action": "assert-page-contained",
+      "expected": "The document and body remain within the active viewport width.",
+      "required": true
+    },
+    {
+      "id": "capture-restored-version-workflow",
+      "title": "Capture the restored and isolated workflow",
+      "action": "screenshot",
+      "value": "full-page",
+      "expected": "Full-page evidence shows the restored editor, immutable versions, comparison, and mobile containment.",
+      "required": true
+    }
+  ]
+}

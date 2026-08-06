@@ -1,0 +1,317 @@
+{
+  "$schema": "./case-set.schema.v1.json",
+  "id": "voxl-humanoid-skin-cases/v1",
+  "version": 1,
+  "engineId": "voxl-humanoid-skin",
+  "documentKind": "voxl.humanoid-skin/v1",
+  "licensePolicy": "Project-authored synthetic specifications only. Materialized assets must be evaluation-use approved, third-party-free, and SHA-256 locked before execution.",
+  "requiredCategories": [
+    "text-only", "single-reference", "multiple-reference", "photo-reference", "drawing-reference",
+    "front-back-consistency", "transparency", "dense-pattern", "hard-edges", "low-contrast",
+    "asymmetry", "difficult-silhouette", "existing-document-remix", "outer-layer", "cross-surface-pattern",
+    "wide-arm-64", "slim-arm-64", "localized-revision", "protected-regions", "unsupported-request"
+  ],
+  "cases": [
+    {
+      "id": "v1-001", "title": "Moss trail sentinel", "mode": "create", "profile": "wide-arm-64", "difficulty": "baseline",
+      "categories": ["text-only", "wide-arm-64", "hard-edges"],
+      "prompt": "Create a forest trail sentinel with a moss-green coat, square copper clasps, dark bark boots, and a calm freckled face; keep every edge crisp.",
+      "references": [], "revision": null,
+      "expectedSignals": ["copper clasps remain discrete squares", "coat and boots occupy coherent semantic regions"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-002", "title": "Dusk archive navigator", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["text-only", "slim-arm-64", "low-contrast"],
+      "prompt": "Create a quiet archive navigator in charcoal, muted plum, and deep navy with a subtle compass stitched across the torso and sleeves.",
+      "references": [], "revision": null,
+      "expectedSignals": ["low-contrast compass remains readable", "slim arms remain centered and correctly textured"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-003", "title": "Glasshouse caretaker", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
+      "categories": ["text-only", "wide-arm-64", "transparency", "outer-layer"],
+      "prompt": "Create a glasshouse caretaker with a leaf-green base outfit and a partially transparent rain cape on the outer layer; the face and hands must remain unobscured.",
+      "references": [], "revision": null,
+      "expectedSignals": ["cape alpha is limited to outer-layer geometry", "transparent texels reveal intact base clothing"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-004", "title": "Ceramic tide courier", "mode": "create", "profile": "slim-arm-64", "difficulty": "baseline",
+      "categories": ["text-only", "slim-arm-64", "hard-edges", "front-back-consistency"],
+      "prompt": "Create a ceramic tide courier with white and cobalt panels, a continuous angular wave around the torso, and a small rear parcel emblem.",
+      "references": [], "revision": null,
+      "expectedSignals": ["angular wave joins at side boundaries", "rear parcel emblem does not appear on the front"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-005", "title": "Quilted map keeper", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["text-only", "wide-arm-64", "dense-pattern", "cross-surface-pattern", "front-back-consistency"],
+      "prompt": "Create a quilted map keeper whose coat carries a dense but orderly route map continuing from front to both sides and rear, with distinct red waypoint pixels.",
+      "references": [], "revision": null,
+      "expectedSignals": ["route lines continue across every torso face", "waypoints remain isolated from route lines"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-006", "title": "Comet-side mechanic", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["text-only", "slim-arm-64", "asymmetry"],
+      "prompt": "Create a compact mechanic with one orange glove on the left hand, one steel glove on the right, and a comet-shaped patch only on the right shoulder.",
+      "references": [], "revision": null,
+      "expectedSignals": ["left and right glove colors are not mirrored", "comet patch appears on right shoulder only"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-007", "title": "Raincoat portrait translation", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
+      "categories": ["single-reference", "photo-reference", "wide-arm-64"],
+      "prompt": "Translate the subject's teal raincoat, warm complexion, and short dark curls into a clean cuboid humanoid texture while preserving a friendly neutral expression.",
+      "references": [{
+        "id": "v1-007-portrait", "role": "content", "mediaKind": "synthetic-photo",
+        "syntheticSpecification": "Studio portrait of an invented adult wearing a teal raincoat against a plain gray background; no logos, text, or real-person likeness.",
+        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
+      }],
+      "revision": null, "expectedSignals": ["teal raincoat dominates clothing", "curl silhouette reads without photographic smoothing"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-008", "title": "Workshop apron portrait", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["single-reference", "photo-reference", "slim-arm-64", "asymmetry"],
+      "prompt": "Use the synthetic portrait for clothing and palette: preserve the ochre apron, blue shirt, and single pencil tucked on the subject's left side.",
+      "references": [{
+        "id": "v1-008-portrait", "role": "content", "mediaKind": "synthetic-photo",
+        "syntheticSpecification": "Invented workshop portrait with an ochre apron, blue shirt, and one red pencil on the wearer's left; neutral backdrop and no brand marks.",
+        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
+      }],
+      "revision": null, "expectedSignals": ["pencil remains on wearer-left only", "slim sleeve geometry is preserved"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-009", "title": "Moth robe drawing", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
+      "categories": ["single-reference", "drawing-reference", "wide-arm-64", "outer-layer"],
+      "prompt": "Adapt the invented moth-robe sketch into a cuboid humanoid texture, using the outer layer for the short shoulder mantle without extending the base silhouette.",
+      "references": [{
+        "id": "v1-009-sketch", "role": "content", "mediaKind": "synthetic-drawing",
+        "syntheticSpecification": "Project-authored ink sketch of a generic cream-and-brown moth robe with eye-spot shoulder mantle; no borrowed character or artist style.",
+        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
+      }],
+      "revision": null, "expectedSignals": ["mantle is represented on the outer layer", "eye spots remain symmetric while robe shading stays pixel-sharp"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-010", "title": "Angular flight suit drawing", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["single-reference", "drawing-reference", "slim-arm-64", "hard-edges", "front-back-consistency"],
+      "prompt": "Translate the angular flight-suit drawing exactly enough that the chest chevron continues around both shoulders and resolves into a rear diamond.",
+      "references": [{
+        "id": "v1-010-suit", "role": "content", "mediaKind": "synthetic-drawing",
+        "syntheticSpecification": "Original vector-like drawing of a generic rust, cream, and black flight suit with chest chevron and rear diamond; no insignia or text.",
+        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
+      }],
+      "revision": null, "expectedSignals": ["front chevron joins shoulder faces", "rear diamond is centered and not mirrored"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-011", "title": "Broad hat silhouette portrait", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["single-reference", "photo-reference", "wide-arm-64", "difficult-silhouette", "outer-layer"],
+      "prompt": "Capture the visual identity of the broad square sun hat and layered desert clothing using only valid base and outer cuboid surfaces; simplify honestly where geometry cannot protrude.",
+      "references": [{
+        "id": "v1-011-hat", "role": "silhouette", "mediaKind": "synthetic-photo",
+        "syntheticSpecification": "Synthetic mannequin portrait with an exaggerated square sun hat and layered sand-colored garments; entirely invented and free of marks.",
+        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
+      }],
+      "revision": null, "expectedSignals": ["hat identity is suggested without invalid geometry", "outer pixels do not hide the face"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-012", "title": "Fog palette uniform", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["single-reference", "slim-arm-64", "low-contrast"],
+      "prompt": "Create a layered field uniform using only the supplied fog palette, keeping collar, belt, cuffs, and boots distinguishable through value grouping.",
+      "references": [{
+        "id": "v1-012-palette", "role": "palette", "mediaKind": "synthetic-palette",
+        "syntheticSpecification": "Six project-authored muted swatches spanning blue-gray, green-gray, and soft charcoal with deliberately close luminance values.",
+        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
+      }],
+      "revision": null, "expectedSignals": ["all colors come from the supplied palette", "garment boundaries remain readable at low contrast"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-013", "title": "Botanical field researcher", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["multiple-reference", "photo-reference", "drawing-reference", "wide-arm-64", "dense-pattern"],
+      "prompt": "Use the portrait only for clothing structure and the botanical drawing only for surface motifs; create a field researcher with dense leaf annotations on the coat.",
+      "references": [
+        {"id": "v1-013-portrait", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Invented studio portrait of a generic field researcher in a long olive coat with plain accessories and no identifying marks.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
+        {"id": "v1-013-botanical", "role": "style", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original diagram sheet of invented leaves, veins, and seed pods drawn as blocky two-tone motifs without text.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+      ],
+      "revision": null, "expectedSignals": ["coat structure follows content reference", "leaf motifs follow drawing without replacing garment structure"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-014", "title": "Coral survey diver", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["multiple-reference", "photo-reference", "slim-arm-64", "asymmetry"],
+      "prompt": "Use the suit portrait for construction and the palette reference for color; retain the single gauge on the left wrist and one bright ankle band on the right.",
+      "references": [
+        {"id": "v1-014-suit", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic mannequin in a generic fitted survey suit with one left wrist gauge and no logos or real equipment design.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
+        {"id": "v1-014-palette", "role": "palette", "mediaKind": "synthetic-palette", "syntheticSpecification": "Original palette of coral orange, sea green, dark teal, warm gray, and one bright yellow accent.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+      ],
+      "revision": null, "expectedSignals": ["gauge and ankle band retain their declared sides", "all major colors come from the palette reference"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-015", "title": "Paper lantern steward", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["multiple-reference", "drawing-reference", "wide-arm-64", "transparency", "outer-layer"],
+      "prompt": "Combine the garment construction drawing with the lantern-light study; use sparse translucent outer-layer pixels to suggest a glowing shoulder veil while preserving a dark base robe.",
+      "references": [
+        {"id": "v1-015-garment", "role": "content", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original flat garment diagram of a dark robe with square cuffs and a short shoulder veil, without cultural insignia or text.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
+        {"id": "v1-015-light", "role": "style", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Project-authored abstract study of amber light bands fading into dark violet, rendered as discrete pixel blocks.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+      ],
+      "revision": null, "expectedSignals": ["outer veil uses valid alpha without base holes", "robe construction remains distinct from lighting style"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-016", "title": "Kite ridge messenger", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["multiple-reference", "photo-reference", "drawing-reference", "slim-arm-64", "difficult-silhouette"],
+      "prompt": "Use the messenger portrait for body clothing and the kite drawing only as a silhouette cue for a compact head covering; do not invent geometry beyond valid cuboids.",
+      "references": [
+        {"id": "v1-016-messenger", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Invented messenger mannequin wearing a maroon jacket, tan trousers, and simple boots against a neutral background.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
+        {"id": "v1-016-kite", "role": "silhouette", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original angular kite silhouette made from two offset diamonds and short tails, with no text or external design reference.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+      ],
+      "revision": null, "expectedSignals": ["head covering suggests angular kite without protrusion", "clothing content remains independent from silhouette reference"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-017", "title": "Two-view harbor warden", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["multiple-reference", "photo-reference", "front-back-consistency", "wide-arm-64", "cross-surface-pattern"],
+      "prompt": "Reconcile the synthetic front and rear views into one harbor warden: preserve the front double clasp, rear wave emblem, and rope stripe continuing around both sides.",
+      "references": [
+        {"id": "v1-017-front", "role": "front-view", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic front mannequin view of a navy coat with two brass clasps and a cream rope stripe exiting both sides.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
+        {"id": "v1-017-rear", "role": "rear-view", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic rear view of the same invented coat with centered teal wave emblem and matching rope stripe entry points.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+      ],
+      "revision": null, "expectedSignals": ["front clasps and rear emblem occupy correct faces", "rope stripe joins both side seams"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-018", "title": "Ink wash climber", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["multiple-reference", "photo-reference", "drawing-reference", "slim-arm-64", "low-contrast"],
+      "prompt": "Use the climber portrait for garment layout and the abstract ink wash only for muted shading; keep face, straps, and boots legible at low contrast.",
+      "references": [
+        {"id": "v1-018-climber", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic adult mannequin in generic layered climbing clothes and plain straps, with no real gear brands or logos.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
+        {"id": "v1-018-wash", "role": "style", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original abstract gray-green ink blocks with three close luminance levels and no recognizable artist style.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+      ],
+      "revision": null, "expectedSignals": ["garment layout follows portrait", "ink styling does not erase functional boundaries"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-019", "title": "Riverline front and rear", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["multiple-reference", "drawing-reference", "front-back-consistency", "wide-arm-64", "cross-surface-pattern"],
+      "prompt": "Build one coherent riverline uniform from the paired front and rear diagrams; the blue river must wrap clockwise without reversing or mirroring at either side.",
+      "references": [
+        {"id": "v1-019-front", "role": "front-view", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original flat front diagram showing a blue river entering the torso at lower left and leaving at upper right.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
+        {"id": "v1-019-rear", "role": "rear-view", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original matching rear diagram showing the same river crossing behind a centered white bridge motif.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+      ],
+      "revision": null, "expectedSignals": ["river direction stays clockwise", "bridge appears on rear only"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-020", "title": "Checker sash continuity", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["text-only", "slim-arm-64", "dense-pattern", "front-back-consistency", "cross-surface-pattern"],
+      "prompt": "Create a gray traveler with a two-pixel black-and-white checker sash that begins on the left shoulder, crosses the chest, continues around the right side, and ends at the rear left hip.",
+      "references": [], "revision": null,
+      "expectedSignals": ["checker phase stays aligned across face boundaries", "sash path ends at rear left hip"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-021", "title": "Directional glove test", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
+      "categories": ["text-only", "wide-arm-64", "asymmetry", "front-back-consistency"],
+      "prompt": "Create a survey worker with a red left glove marked by one white rear-hand pixel and a blue right glove marked by two yellow front-hand pixels.",
+      "references": [], "revision": null,
+      "expectedSignals": ["left and right hands remain distinct", "front and rear hand details occupy the requested faces"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-022", "title": "Rear-only constellation", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["text-only", "slim-arm-64", "asymmetry", "dense-pattern", "front-back-consistency"],
+      "prompt": "Create a plain midnight coat from the front and a seven-point gold constellation only across the rear torso and rear right sleeve; keep all front surfaces unmarked.",
+      "references": [], "revision": null,
+      "expectedSignals": ["constellation never leaks to front surfaces", "seven gold points remain countable"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-023", "title": "Copper fixture remix", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
+      "categories": ["single-reference", "existing-document-remix", "wide-arm-64", "hard-edges"],
+      "prompt": "Remix the synthetic baseline atlas into a copper-and-verdigris workshop uniform while retaining its face, body-part boundaries, and one-pixel belt buckle layout.",
+      "references": [{"id": "v1-023-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic project fixture: valid wide-arm cuboid humanoid atlas with neutral face, gray workshop uniform, and isolated one-pixel belt buckles.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
+      "revision": null, "expectedSignals": ["baseline face and buckle topology remain recognizable", "new copper palette does not alter profile validity"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-024", "title": "Winter fixture remix", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["single-reference", "existing-document-remix", "slim-arm-64", "outer-layer"],
+      "prompt": "Remix the synthetic slim-arm baseline into a winter courier with a pale outer-layer collar and snow-specked boots while preserving the original asymmetrical face.",
+      "references": [{"id": "v1-024-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic project fixture: valid slim-arm atlas with asymmetrical face pixels, plain blue clothing, empty outer layer, and transparent unused regions.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
+      "revision": null, "expectedSignals": ["asymmetrical face is preserved", "new collar stays on outer layer and arm profile stays slim"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-025", "title": "Glass trim fixture remix", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["single-reference", "existing-document-remix", "wide-arm-64", "transparency", "outer-layer"],
+      "prompt": "Remix the baseline into a ceremonial coat with translucent cyan outer trim; preserve every opaque base texel and keep all unused atlas regions transparent.",
+      "references": [{"id": "v1-025-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic valid wide-arm baseline with opaque base clothing, transparent unused regions, and an entirely empty outer layer.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
+      "revision": null, "expectedSignals": ["translucent trim occupies valid outer regions", "base and unused-region alpha remain valid"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-026", "title": "Mosaic fixture remix", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["single-reference", "existing-document-remix", "slim-arm-64", "dense-pattern", "cross-surface-pattern"],
+      "prompt": "Remix the plain baseline into a red, cream, and charcoal mosaic whose repeating three-pixel rhythm continues across torso sides and rear without changing the face.",
+      "references": [{"id": "v1-026-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic valid slim-arm baseline with a plain cream face, solid charcoal clothing, and no outer-layer pixels.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
+      "revision": null, "expectedSignals": ["three-pixel rhythm continues at torso seams", "face pixels remain unchanged in identity"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-027", "title": "Localized jacket recolor", "mode": "revise", "profile": "wide-arm-64", "difficulty": "baseline",
+      "categories": ["localized-revision", "protected-regions", "wide-arm-64", "existing-document-remix"],
+      "prompt": "Change only the torso jacket from forest green to burnt orange, preserving face, hair, arms, legs, outer layer, shading values, and all one-pixel details.",
+      "references": [],
+      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with forest-green torso jacket, tan arms, navy legs, detailed face, and sparse outer collar.", "baselineAsset": null, "editableRegions": ["torso.base.all-faces"], "protectedRegions": ["head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["head.base.face", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.005},
+      "expectedSignals": ["torso hue changes to burnt orange", "protected and immutable texels remain within thresholds"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-028", "title": "Localized left boot repair", "mode": "revise", "profile": "slim-arm-64", "difficulty": "intermediate",
+      "categories": ["localized-revision", "protected-regions", "slim-arm-64", "asymmetry"],
+      "prompt": "Add a two-pixel silver buckle to the front of the left boot only; preserve the right boot and every other texel exactly.",
+      "references": [],
+      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with asymmetric brown boots, plain left-boot front, and fully detailed clothing elsewhere.", "baselineAsset": null, "editableRegions": ["left-leg.base.front.boot"], "protectedRegions": ["right-leg.all", "head.all", "torso.all", "arms.all", "outer-layer.all"], "immutableRegions": ["right-leg.base.front.boot", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0},
+      "expectedSignals": ["exactly one left-front boot buckle is added", "right boot and all protected pixels remain byte-identical"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-029", "title": "Localized rear emblem", "mode": "revise", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["localized-revision", "protected-regions", "wide-arm-64", "front-back-consistency", "hard-edges"],
+      "prompt": "Add a crisp five-pixel teal diamond only to the rear torso; preserve front, side, top, bottom, limbs, head, and outer layer exactly.",
+      "references": [],
+      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with a solid dark torso, detailed front buttons, and no rear emblem.", "baselineAsset": null, "editableRegions": ["torso.base.rear"], "protectedRegions": ["torso.base.front", "torso.base.left", "torso.base.right", "head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["torso.base.front.buttons", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0},
+      "expectedSignals": ["five-pixel diamond appears on rear only", "front buttons and every protected face remain byte-identical"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-030", "title": "Localized translucent hood", "mode": "revise", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["localized-revision", "protected-regions", "slim-arm-64", "outer-layer", "transparency"],
+      "prompt": "Add a partially transparent pale hood to the head outer layer only, leaving the base head, face, hair, clothing, and unused regions unchanged.",
+      "references": [],
+      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with detailed base head and clothing, empty head outer layer, and transparent unused regions.", "baselineAsset": null, "editableRegions": ["head.outer.all-faces"], "protectedRegions": ["head.base.all-faces", "torso.all", "arms.all", "legs.all"], "immutableRegions": ["head.base.front", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0},
+      "expectedSignals": ["hood alpha is confined to head outer layer", "base head and unused regions remain byte-identical"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-031", "title": "Antler suggestion stress", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["text-only", "wide-arm-64", "difficult-silhouette", "outer-layer"],
+      "prompt": "Create a woodland ceremonial figure whose branching antler idea is suggested only through valid head outer-layer pixels; do not emit extra geometry or conceal the face.",
+      "references": [], "revision": null,
+      "expectedSignals": ["antler identity is abstracted onto valid cuboid faces", "face remains visible and format remains valid"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-032", "title": "Unsupported floating halo", "mode": "create", "profile": "slim-arm-64", "difficulty": "unsupported",
+      "categories": ["text-only", "slim-arm-64", "difficult-silhouette", "unsupported-request"],
+      "prompt": "Create a detached glowing ring floating above the head with empty space between the ring and every valid cuboid surface; do not approximate it as painted pixels.",
+      "references": [], "revision": null,
+      "expectedSignals": ["request is rejected or limitation is reported honestly", "no invalid detached geometry is fabricated"], "honestFailureAllowed": true
+    },
+    {
+      "id": "v1-033", "title": "Unsupported readable microtext", "mode": "create", "profile": "wide-arm-64", "difficulty": "unsupported",
+      "categories": ["text-only", "wide-arm-64", "dense-pattern", "unsupported-request"],
+      "prompt": "Place a full readable forty-character sentence across a two-pixel-high belt while preserving exact spelling and punctuation at native atlas resolution.",
+      "references": [], "revision": null,
+      "expectedSignals": ["request is rejected or infeasibility is stated", "provider does not claim unreadable marks are exact text"], "honestFailureAllowed": true
+    },
+    {
+      "id": "v1-034", "title": "Low-contrast contour camouflage", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["text-only", "slim-arm-64", "low-contrast", "dense-pattern", "cross-surface-pattern"],
+      "prompt": "Create contour-line camouflage in four close green-gray values, continuing coherently over torso and limbs while keeping cuffs, hands, face, and boots distinguishable.",
+      "references": [], "revision": null,
+      "expectedSignals": ["contour pattern crosses faces without noisy breaks", "semantic boundaries remain readable at low contrast"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-035", "title": "Transparent lace mantle", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
+      "categories": ["text-only", "wide-arm-64", "transparency", "outer-layer", "dense-pattern"],
+      "prompt": "Create a dark formal outfit with a sparse transparent lace mantle across torso and arm outer layers; use a regular diamond grid and preserve the opaque base beneath it.",
+      "references": [], "revision": null,
+      "expectedSignals": ["diamond grid is regular across outer-layer seams", "base remains opaque and visible through lace openings"], "honestFailureAllowed": false
+    },
+    {
+      "id": "v1-036", "title": "Asymmetric fin silhouette", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
+      "categories": ["single-reference", "drawing-reference", "slim-arm-64", "asymmetry", "difficult-silhouette", "outer-layer"],
+      "prompt": "Translate the single offset fin concept into a valid right-side head outer-layer motif; keep the left side plain and do not generate protruding geometry.",
+      "references": [{"id": "v1-036-fin", "role": "silhouette", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original block drawing of one curved teal fin offset to the figure's right, with a plain left side and no borrowed creature design.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
+      "revision": null, "expectedSignals": ["fin cue remains on right side only", "output stays within valid cuboid outer-layer geometry"], "honestFailureAllowed": false
+    }
+  ]
+}

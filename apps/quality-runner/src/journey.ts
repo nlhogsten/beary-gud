@@ -96,9 +96,11 @@ function parseStep(value: unknown, index: number): JourneyStep {
   if (
     [
       "click",
+      "press",
       "fill",
       "select",
       "assert-visible",
+      "assert-hidden",
       "canvas-click",
       "canvas-drag",
       "download",
@@ -111,7 +113,7 @@ function parseStep(value: unknown, index: number): JourneyStep {
     throw new Error(`steps[${index}] ${step.action} requires target.`);
   }
   if (
-    ["fill", "select", "canvas-click", "canvas-drag", "upload"].includes(
+    ["press", "fill", "select", "canvas-click", "canvas-drag", "upload"].includes(
       step.action,
     ) &&
     !step.value

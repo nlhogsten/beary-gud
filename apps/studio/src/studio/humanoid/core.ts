@@ -35,6 +35,13 @@ export interface SkinIssue {
   message: string;
 }
 
+export interface SkinVersionDocument {
+  kind: "voxl.humanoid-skin/v1";
+  formatVersion: 1;
+  profile: SkinProfileId;
+  pixels: number[];
+}
+
 export function skinProfile(profileId: SkinProfileId) {
   return getHumanoidSkinProfile(profileId);
 }
@@ -109,6 +116,62 @@ export function detectProfile(pixels: Uint8ClampedArray): SkinProfileId {
     if (wide[pixel] && !slim[pixel] && pixels[pixel * 4 + 3] !== 0) return "wide-arm-64";
   }
   return "slim-arm-64";
+}
+
+export function serializeSkinVersionDocument(
+  profile: SkinProfileId,
+  pixels: Uint8ClampedArray,
+): string {
+  if (pixels.length !== SKIN_SIZE * SKIN_SIZE * 4) {
+    throw new Error("Skin version requires exactly 64×64 RGBA pixels.");
+  }
+  return JSON.stringify({
+    kind: "voxl.humanoid-skin/v1",
+    formatVersion: 1,
+    profile,
+    pixels: Array.from(pixels),
+  } satisfies SkinVersionDocument);
+}
+
+export function parseSkinVersionDocument(documentJson: string): {
+  profile: SkinProfileId;
+  pixels: Uint8ClampedArray;
+} {
+  const value: unknown = JSON.parse(documentJson);
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("Skin version document is invalid.");
+  }
+  const candidate = value as Partial<SkinVersionDocument>;
+  if (
+    candidate.kind !== "voxl.humanoid-skin/v1"
+    || candidate.formatVersion !== 1
+    || typeof candidate.profile !== "string"
+    || !(SKIN_PROFILE_IDS as readonly string[]).includes(candidate.profile)
+    || !Array.isArray(candidate.pixels)
+    || candidate.pixels.length !== SKIN_SIZE * SKIN_SIZE * 4
+    || candidate.pixels.some((channel) => !Number.isInteger(channel) || channel < 0 || channel > 255)
+  ) throw new Error("Skin version document is invalid.");
+  const profile = candidate.profile as SkinProfileId;
+  const pixels = new Uint8ClampedArray(candidate.pixels);
+  const validation = validatePixels(profile, pixels);
+  const blocking = validation.issues.find((issue) => issue.severity === "error");
+  if (blocking) throw new Error(blocking.message);
+  return { profile, pixels };
+}
+
+export function countChangedSkinPixels(leftJson: string, rightJson: string): number {
+  const left = parseSkinVersionDocument(leftJson);
+  const right = parseSkinVersionDocument(rightJson);
+  let changed = left.profile === right.profile ? 0 : 1;
+  for (let offset = 0; offset < left.pixels.length; offset += 4) {
+    if (
+      left.pixels[offset] !== right.pixels[offset]
+      || left.pixels[offset + 1] !== right.pixels[offset + 1]
+      || left.pixels[offset + 2] !== right.pixels[offset + 2]
+      || left.pixels[offset + 3] !== right.pixels[offset + 3]
+    ) changed += 1;
+  }
+  return changed;
 }
 
 export function convertProfile(

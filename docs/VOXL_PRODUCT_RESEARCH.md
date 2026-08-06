@@ -330,6 +330,8 @@ March 2026 research separates the task into:
 
 The published candidate checkpoint is a 4-billion-parameter image-to-image model. Its model card labels it Apache 2.0 and describes approximately 13 GB of VRAM for the FLUX.2 Klein 4B base. It is not currently deployed by a standard Hugging Face inference provider, so production use would require a compatible custom endpoint or local GPU.
 
+Research recheck (August 5, 2026): the paper page still describes a two-stage preview-to-atlas pipeline, and the candidate model card now identifies its `v0.6` checkpoint as a 4-billion-parameter image-to-image model aligned with the base model's standard pipeline. The specialized checkpoint still reports no hosted inference provider even though the general base model has hosted options. A base-model endpoint is therefore not evidence that the specialized decoder can be called as an API. These are capability and deployment findings only; no VOXL quality, latency, cost, or commercial-provenance gate has passed.
+
 This is the first serious candidate to evaluate behind a provider identified only by its capability, `preview-to-atlas`. It is not coupled to the engine contract and can be replaced if evaluation shows insufficient quality or unsuitable provenance.
 
 Sources retained without turning third-party names into VOXL component identities:

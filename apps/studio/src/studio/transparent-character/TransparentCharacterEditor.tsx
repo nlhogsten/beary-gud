@@ -9,6 +9,8 @@ import {
   type ChangeEvent,
 } from "react";
 import styles from "../StudioShell.module.css";
+import { LocalVersionPanel } from "../local-versions/LocalVersionPanel";
+import type { LocalVersionRecord } from "../local-versions/core";
 import {
   FRAME_COUNT,
   TRANSPARENT_DRAFT_STORAGE_KEY,
@@ -18,6 +20,8 @@ import {
   canvasBlob,
   colorFor,
   commitTransparentEdit,
+  countChangedTransparentPixels,
+  countChangedTransparentSettings,
   createCharacterCanvas,
   currentCharacter,
   initialTransparentState,
@@ -27,16 +31,46 @@ import {
   normalizeTransparentHistory,
   normalizeTransparentState,
   paintCharacterPixel,
+  parseTransparentVersionDocument,
   pixelIsHidden,
   redoTransparentEdit,
   replaceCurrentCharacter,
   slugifyCharacter,
+  serializeTransparentVersionDocument,
   undoTransparentEdit,
   type EffectId,
   type ExportMode,
   type TransparentStudioHistory,
   type TransparentStudioState,
 } from "./core";
+
+function MotionVersionPreview({ record }: { record: LocalVersionRecord }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const version = useMemo(
+    () => parseTransparentVersionDocument(record.documentJson),
+    [record.documentJson],
+  );
+
+  useEffect(() => {
+    const source = createCharacterCanvas({ ...version, name: record.name }, 0, 2);
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.imageSmoothingEnabled = false;
+    context.drawImage(source, 0, Math.floor((canvas.height - source.height) / 2));
+  }, [record.name, version]);
+
+  return (
+    <canvas
+      aria-label={`${record.name} motion version preview`}
+      className={styles.versionMotionPreview}
+      height={46}
+      ref={canvasRef}
+      width={100}
+    />
+  );
+}
 
 function loadJson(key: string): unknown {
   const value = window.localStorage.getItem(key);
@@ -95,6 +129,10 @@ export function TransparentCharacterEditor() {
   }, [history, hydrated, state]);
 
   const character = useMemo(() => currentCharacter(state), [state]);
+  const versionDocumentJson = useMemo(
+    () => serializeTransparentVersionDocument(character),
+    [character],
+  );
 
   useEffect(() => {
     if (selected !== "0" && !character.palette[selected]) setSelected("0");
@@ -437,6 +475,34 @@ export function TransparentCharacterEditor() {
           <button className={styles.primaryButton} disabled={exporting} onClick={exportAnimation} type="button">{exporting ? "Preparing…" : "Export animation"}</button>
           <button className={styles.button} disabled={exporting} onClick={exportCurrentFrame} type="button">Export current frame</button>
         </div>
+
+        <LocalVersionPanel
+          assetKey={slugifyCharacter(character.name)}
+          compareSummary={(left, right) => {
+            const pixels = countChangedTransparentPixels(left.documentJson, right.documentJson);
+            const settings = countChangedTransparentSettings(left.documentJson, right.documentJson);
+            return `${pixels} pixel${pixels === 1 ? "" : "s"} · ${settings} setting${settings === 1 ? "" : "s"} changed`;
+          }}
+          documentJson={versionDocumentJson}
+          documentKind="voxl.transparent-character/v1"
+          engineId="transparent-character"
+          engineVersion="1.0.0"
+          key={slugifyCharacter(character.name)}
+          onRestore={(record) => {
+            const restored = parseTransparentVersionDocument(record.documentJson);
+            const next = replaceCurrentCharacter(
+              stateRef.current,
+              (item) => ({ ...restored, name: item.name }),
+            );
+            updateHistory({ past: [], future: [] });
+            updateState(addActivity(next, `Restored ${record.name} as editable draft`));
+            setSelected("0");
+            setPickerMode(false);
+            setNotice(`Restored ${record.name} as editable draft`);
+          }}
+          renderPreview={(record) => <MotionVersionPreview record={record} />}
+          schemaVersion={1}
+        />
 
         <div className={styles.activitySection}>
           <div className={styles.activityHeading}>

@@ -151,6 +151,16 @@ Repository-local skills route recurring work:
 
 Skills guide the workflow; they do not weaken the evidence requirements or authorize external deployment.
 
+## Generation evaluation foundation
+
+Phase 5 uses a separate evidence path from browser walkthroughs:
+
+- `bun run eval:check` validates the fixed case-set, rubric, and immutable-attempt schemas and reports execution-readiness blockers.
+- `bun run eval:adapters` lists provenance-admitted provider adapters. It intentionally returns an empty list until a real candidate passes admission review.
+- `bun run eval:replay -- --case <id> --candidate <png>` sends an existing PNG through deterministic engine validation, canonical export, hashing, and immutable evidence storage. Replay performs no inference and is excluded from provider metrics.
+
+The evaluator uses [Ajv](https://www.npmjs.com/package/ajv) for local JSON Schema 2020-12 validation and [ajv-formats](https://www.npmjs.com/package/ajv-formats) for RFC 3339 date-time validation. Attempts live under ignored `.runs/evaluations/`; a manifest detects later file mutation. Provider failures may have no raw artifact, and replay evidence records `provider: null`, `networkUsed: false`, and `paidCall: false` rather than inventing provider metadata.
+
 ## Reading results honestly
 
 - `bun run check` passing means deterministic repository checks passed.
@@ -158,4 +168,4 @@ Skills guide the workflow; they do not weaken the evidence requirements or autho
 - A rubric review reporting `pass` means the recorded evidence supports the applicable visual criteria.
 - None of these statements implies model-generation quality, server persistence, authentication, billing, MCP behavior, or production deployment unless a journey and rubric explicitly cover that subsystem.
 
-The quality runner and four initial journeys are implemented and verified in a real localhost browser. The authoritative Phase 4 evidence includes passing desktop/mobile full-page smoke, transparent edit/export, wide/slim export/re-import, and synchronized humanoid editing with directional rotation. Independent reviews are stored beside the final run evidence; future changes must create new evidence rather than treating these runs as permanently valid.
+The quality runner and five Phase 4 journeys are implemented and verified in a real localhost browser. The authoritative evidence includes passing desktop/mobile full-page smoke, transparent edit/export, wide/slim export/re-import, synchronized humanoid editing with directional rotation, and named-version compare/restore/isolation. Independent reviews are stored beside the final run evidence; future changes must create new evidence rather than treating these runs as permanently valid.

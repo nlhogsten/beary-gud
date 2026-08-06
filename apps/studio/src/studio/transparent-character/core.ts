@@ -23,6 +23,16 @@ export interface TransparentCharacter {
   effects: CharacterEffects;
 }
 
+export interface TransparentVersionDocument {
+  kind: "voxl.transparent-character/v1";
+  formatVersion: 1;
+  lines: string[];
+  scale: number;
+  fps: number;
+  palette: Record<string, string>;
+  effects: CharacterEffects;
+}
+
 export interface ActivityEntry {
   time: string;
   message: string;
@@ -182,6 +192,95 @@ export function normalizeTransparentHistory(value: unknown): TransparentStudioHi
 
 export function currentCharacter(state: TransparentStudioState): TransparentCharacter {
   return state.characters.find((item) => item.name === state.current) ?? state.characters[0]!;
+}
+
+export function serializeTransparentVersionDocument(character: TransparentCharacter): string {
+  return JSON.stringify({
+    kind: "voxl.transparent-character/v1",
+    formatVersion: 1,
+    lines: [...character.lines],
+    scale: character.scale,
+    fps: character.fps,
+    palette: { ...character.palette },
+    effects: { ...character.effects },
+  } satisfies TransparentVersionDocument);
+}
+
+export function parseTransparentVersionDocument(documentJson: string): Omit<TransparentCharacter, "name"> {
+  const value: unknown = JSON.parse(documentJson);
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("Motion version document is invalid.");
+  }
+  const candidate = value as Partial<TransparentVersionDocument>;
+  const lines = normalizedLines(candidate.lines);
+  const paletteEntries = candidate.palette && typeof candidate.palette === "object" && !Array.isArray(candidate.palette)
+    ? Object.entries(candidate.palette)
+    : [];
+  const paletteIsValid = paletteEntries.length > 0 && paletteEntries.every(([symbol, color]) => (
+    symbol.length === 1 && symbol !== "0" && typeof color === "string" && /^#[0-9a-f]{6}$/i.test(color)
+  ));
+  const effects = candidate.effects;
+  if (
+    candidate.kind !== "voxl.transparent-character/v1"
+    || candidate.formatVersion !== 1
+    || !lines
+    || !Number.isInteger(candidate.scale)
+    || Number(candidate.scale) < 1
+    || Number(candidate.scale) > 60
+    || !Number.isInteger(candidate.fps)
+    || Number(candidate.fps) < 1
+    || Number(candidate.fps) > 60
+    || !paletteIsValid
+    || !effects
+    || typeof effects !== "object"
+    || effects.smoke === undefined
+    || effects.cycle === undefined
+    || effects.drift === undefined
+    || typeof effects.smoke !== "boolean"
+    || typeof effects.cycle !== "boolean"
+    || typeof effects.drift !== "boolean"
+  ) throw new Error("Motion version document is invalid.");
+  const palette = Object.fromEntries(paletteEntries);
+  if (lines.some((line) => [...line].some((symbol) => symbol !== "0" && !palette[symbol]))) {
+    throw new Error("Motion version uses a color that is missing from its palette.");
+  }
+  return {
+    lines: [...lines],
+    scale: Number(candidate.scale),
+    fps: Number(candidate.fps),
+    palette,
+    effects: {
+      smoke: effects.smoke,
+      cycle: effects.cycle,
+      drift: effects.drift,
+    },
+  };
+}
+
+export function countChangedTransparentPixels(leftJson: string, rightJson: string): number {
+  const left = parseTransparentVersionDocument(leftJson);
+  const right = parseTransparentVersionDocument(rightJson);
+  let changed = 0;
+  for (let y = 0; y < CANVAS_HEIGHT; y += 1) {
+    for (let x = 0; x < CANVAS_WIDTH; x += 1) {
+      if (left.lines[y]?.[x] !== right.lines[y]?.[x]) changed += 1;
+    }
+  }
+  return changed;
+}
+
+export function countChangedTransparentSettings(leftJson: string, rightJson: string): number {
+  const left = parseTransparentVersionDocument(leftJson);
+  const right = parseTransparentVersionDocument(rightJson);
+  let changed = Number(left.scale !== right.scale) + Number(left.fps !== right.fps);
+  for (const effect of ["smoke", "cycle", "drift"] as const) {
+    if (left.effects[effect] !== right.effects[effect]) changed += 1;
+  }
+  const paletteSymbols = new Set([...Object.keys(left.palette), ...Object.keys(right.palette)]);
+  for (const symbol of paletteSymbols) {
+    if (left.palette[symbol] !== right.palette[symbol]) changed += 1;
+  }
+  return changed;
 }
 
 export function blankCharacter(name: string): TransparentCharacter {

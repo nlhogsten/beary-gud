@@ -10,18 +10,23 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import styles from "../StudioShell.module.css";
+import { LocalVersionPanel } from "../local-versions/LocalVersionPanel";
+import type { LocalVersionRecord } from "../local-versions/core";
 import { CuboidHumanoidRenderer } from "./CuboidHumanoidRenderer";
 import {
   SKIN_PARTS,
   SKIN_PROFILE_IDS,
   SKIN_SIZE,
   convertProfile,
+  countChangedSkinPixels,
   createBlankPixels,
   detectProfile,
+  parseSkinVersionDocument,
   pixelRegion,
   renderPreview,
   skinProfile,
   skinRegion,
+  serializeSkinVersionDocument,
   validatePixels,
   type SkinLayer,
   type SkinPart,
@@ -188,6 +193,33 @@ function rgbaHex(rgba: Uint8ClampedArray): string {
   return `#${Array.from(rgba.slice(0, 3))
     .map((value) => value.toString(16).padStart(2, "0"))
     .join("")}`;
+}
+
+function SkinVersionPreview({ record }: { record: LocalVersionRecord }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const version = useMemo(
+    () => parseSkinVersionDocument(record.documentJson),
+    [record.documentJson],
+  );
+
+  useEffect(() => {
+    drawPixels(
+      canvasRef.current,
+      renderPreview(version.profile, version.pixels, "front", ["base", "outer"], SKIN_PARTS),
+      16,
+      32,
+    );
+  }, [version]);
+
+  return (
+    <canvas
+      aria-label={`${record.name} version preview`}
+      className={styles.versionSkinPreview}
+      height={32}
+      ref={canvasRef}
+      width={16}
+    />
+  );
 }
 
 export function HumanoidSkinEditor() {
@@ -496,6 +528,10 @@ export function HumanoidSkinEditor() {
     : warnings.length
       ? `${warnings.length} warning${warnings.length === 1 ? "" : "s"}`
       : "Valid profile";
+  const versionDocumentJson = useMemo(
+    () => serializeSkinVersionDocument(draft.profile, draft.pixels),
+    [draft.pixels, draft.profile],
+  );
 
   return (
     <div className={styles.editorLayout}>
@@ -681,6 +717,27 @@ export function HumanoidSkinEditor() {
             type="file"
           />
         </section>
+
+        <LocalVersionPanel
+          assetKey="local-skin"
+          compareSummary={(left, right) => {
+            const changed = countChangedSkinPixels(left.documentJson, right.documentJson);
+            return `${changed} pixel${changed === 1 ? "" : "s"} changed`;
+          }}
+          documentJson={versionDocumentJson}
+          documentKind="voxl.humanoid-skin/v1"
+          engineId="voxl-humanoid-skin"
+          engineVersion="1.0.0"
+          onRestore={(record) => {
+            const restored = parseSkinVersionDocument(record.documentJson);
+            const current = draftRef.current;
+            updateHistory({ past: [], future: [] });
+            updateDraft({ ...current, profile: restored.profile, pixels: restored.pixels });
+            setNotice(`Restored ${record.name} as editable draft`);
+          }}
+          renderPreview={(record) => <SkinVersionPreview record={record} />}
+          schemaVersion={1}
+        />
       </aside>
     </div>
   );

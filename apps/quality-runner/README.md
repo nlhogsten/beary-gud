@@ -51,9 +51,9 @@ user action:
 }
 ```
 
-Supported actions are `navigate`, `click`, `fill`, `select`, `wait`,
-`screenshot`, `assert-visible`, `canvas-click`, `canvas-drag`, `download`, and
-`upload`.
+Supported actions are `navigate`, `click`, `press`, `fill`, `select`, `wait`,
+`screenshot`, `assert-visible`, `assert-hidden`, `assert-page-contained`,
+`canvas-click`, `canvas-drag`, `download`, and `upload`.
 
 Targets support these semantic forms:
 
@@ -70,6 +70,12 @@ test IDs so journeys follow the accessibility surface users actually receive.
 `0.75,0.5,0.25,0.5`, and sends a real pointer-down, stepped movement, and
 pointer-up sequence. Every ratio must remain between zero and one so the
 pointer stays within the measured canvas.
+`assert-hidden` waits for a semantic target to become hidden or absent.
+`press` focuses a semantic target and sends the key named by `value`, allowing
+keyboard-accessible controls to be exercised without DOM event injection.
+`assert-page-contained` fails when the document or body scroll width exceeds
+the current viewport width, turning mobile horizontal overflow into an
+automatic failure rather than a screenshot-only judgment.
 For `download`, `value` is the required suggested filename. For `screenshot`,
 it is an optional evidence label; the special value `full-page` captures the
 full document. For `upload`, `target` identifies a file input and `value` must
