@@ -4,7 +4,7 @@
   "title": "VOXL humanoid-skin evaluation case set v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "version", "engineId", "documentKind", "licensePolicy", "requiredCategories", "cases"],
+  "required": ["id", "version", "engineId", "documentKind", "licensePolicy", "directionConvention", "requiredCategories", "cases"],
   "properties": {
     "$schema": { "type": "string" },
     "id": { "const": "voxl-humanoid-skin-cases/v1" },
@@ -12,6 +12,7 @@
     "engineId": { "const": "voxl-humanoid-skin" },
     "documentKind": { "const": "voxl.humanoid-skin/v1" },
     "licensePolicy": { "type": "string", "minLength": 1 },
+    "directionConvention": { "type": "string", "minLength": 24 },
     "requiredCategories": {
       "type": "array",
       "minItems": 15,
@@ -78,7 +79,7 @@
               "properties": {
                 "path": { "type": "string", "minLength": 1 },
                 "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-                "mimeType": { "enum": ["image/png", "image/jpeg"] }
+                "mimeType": { "const": "image/png" }
               }
             }
           ]
@@ -88,7 +89,7 @@
     "revision": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["baselineSpecification", "baselineAsset", "editableRegions", "protectedRegions", "immutableRegions", "maximumProtectedChangedTexelRate", "materializedMasks"],
+      "required": ["baselineSpecification", "baselineAsset", "protectionMode", "editableRegions", "protectedRegions", "immutableRegions", "maximumProtectedChangedTexelRate", "materializedMasks"],
       "properties": {
         "baselineSpecification": { "type": "string", "minLength": 12 },
         "baselineAsset": {
@@ -97,14 +98,16 @@
             {
               "type": "object",
               "additionalProperties": false,
-              "required": ["path", "sha256"],
+              "required": ["path", "sha256", "mimeType"],
               "properties": {
                 "path": { "type": "string", "minLength": 1 },
-                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "mimeType": { "const": "image/png" }
               }
             }
           ]
         },
+        "protectionMode": { "const": "all-mapped-except-editable" },
         "editableRegions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
         "protectedRegions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
         "immutableRegions": { "type": "array", "items": { "type": "string" } },
@@ -129,10 +132,11 @@
     "maskAsset": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["path", "sha256"],
+      "required": ["path", "sha256", "mimeType"],
       "properties": {
         "path": { "type": "string", "minLength": 1 },
-        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "mimeType": { "const": "image/png" }
       }
     },
     "case": {

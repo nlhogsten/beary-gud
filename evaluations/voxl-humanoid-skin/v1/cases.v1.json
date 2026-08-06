@@ -5,313 +5,1380 @@
   "engineId": "voxl-humanoid-skin",
   "documentKind": "voxl.humanoid-skin/v1",
   "licensePolicy": "Project-authored synthetic specifications only. Materialized assets must be evaluation-use approved, third-party-free, and SHA-256 locked before execution.",
+  "directionConvention": "Left and right always mean the subject's anatomical or wearer's side. Front and rear references depict the same subject at matched scale; rear is observed from behind, and cross-surface seam rows must align in atlas coordinates.",
   "requiredCategories": [
-    "text-only", "single-reference", "multiple-reference", "photo-reference", "drawing-reference",
-    "front-back-consistency", "transparency", "dense-pattern", "hard-edges", "low-contrast",
-    "asymmetry", "difficult-silhouette", "existing-document-remix", "outer-layer", "cross-surface-pattern",
-    "wide-arm-64", "slim-arm-64", "localized-revision", "protected-regions", "unsupported-request"
+    "text-only",
+    "single-reference",
+    "multiple-reference",
+    "photo-reference",
+    "drawing-reference",
+    "front-back-consistency",
+    "transparency",
+    "dense-pattern",
+    "hard-edges",
+    "low-contrast",
+    "asymmetry",
+    "difficult-silhouette",
+    "existing-document-remix",
+    "outer-layer",
+    "cross-surface-pattern",
+    "wide-arm-64",
+    "slim-arm-64",
+    "localized-revision",
+    "protected-regions",
+    "unsupported-request"
   ],
   "cases": [
     {
-      "id": "v1-001", "title": "Moss trail sentinel", "mode": "create", "profile": "wide-arm-64", "difficulty": "baseline",
-      "categories": ["text-only", "wide-arm-64", "hard-edges"],
+      "id": "v1-001",
+      "title": "Moss trail sentinel",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "baseline",
+      "categories": [
+        "text-only",
+        "wide-arm-64",
+        "hard-edges"
+      ],
       "prompt": "Create a forest trail sentinel with a moss-green coat, square copper clasps, dark bark boots, and a calm freckled face; keep every edge crisp.",
-      "references": [], "revision": null,
-      "expectedSignals": ["copper clasps remain discrete squares", "coat and boots occupy coherent semantic regions"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "copper clasps remain discrete squares",
+        "coat and boots occupy coherent semantic regions"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-002", "title": "Dusk archive navigator", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["text-only", "slim-arm-64", "low-contrast"],
+      "id": "v1-002",
+      "title": "Dusk archive navigator",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "text-only",
+        "slim-arm-64",
+        "low-contrast"
+      ],
       "prompt": "Create a quiet archive navigator in charcoal, muted plum, and deep navy with a subtle compass stitched across the torso and sleeves.",
-      "references": [], "revision": null,
-      "expectedSignals": ["low-contrast compass remains readable", "slim arms remain centered and correctly textured"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "low-contrast compass remains readable",
+        "slim arms remain centered and correctly textured"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-003", "title": "Glasshouse caretaker", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
-      "categories": ["text-only", "wide-arm-64", "transparency", "outer-layer"],
+      "id": "v1-003",
+      "title": "Glasshouse caretaker",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "text-only",
+        "wide-arm-64",
+        "transparency",
+        "outer-layer"
+      ],
       "prompt": "Create a glasshouse caretaker with a leaf-green base outfit and a partially transparent rain cape on the outer layer; the face and hands must remain unobscured.",
-      "references": [], "revision": null,
-      "expectedSignals": ["cape alpha is limited to outer-layer geometry", "transparent texels reveal intact base clothing"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "cape alpha is limited to outer-layer geometry and contains at least one texel with alpha from 1 through 254",
+        "transparent texels reveal intact base clothing"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-004", "title": "Ceramic tide courier", "mode": "create", "profile": "slim-arm-64", "difficulty": "baseline",
-      "categories": ["text-only", "slim-arm-64", "hard-edges", "front-back-consistency"],
+      "id": "v1-004",
+      "title": "Ceramic tide courier",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "baseline",
+      "categories": [
+        "text-only",
+        "slim-arm-64",
+        "hard-edges",
+        "front-back-consistency"
+      ],
       "prompt": "Create a ceramic tide courier with white and cobalt panels, a continuous angular wave around the torso, and a small rear parcel emblem.",
-      "references": [], "revision": null,
-      "expectedSignals": ["angular wave joins at side boundaries", "rear parcel emblem does not appear on the front"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "angular wave joins at side boundaries",
+        "rear parcel emblem does not appear on the front"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-005", "title": "Quilted map keeper", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["text-only", "wide-arm-64", "dense-pattern", "cross-surface-pattern", "front-back-consistency"],
+      "id": "v1-005",
+      "title": "Quilted map keeper",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "text-only",
+        "wide-arm-64",
+        "dense-pattern",
+        "cross-surface-pattern",
+        "front-back-consistency"
+      ],
       "prompt": "Create a quilted map keeper whose coat carries a dense but orderly route map continuing from front to both sides and rear, with distinct red waypoint pixels.",
-      "references": [], "revision": null,
-      "expectedSignals": ["route lines continue across every torso face", "waypoints remain isolated from route lines"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "route lines continue across all six torso faces, including top and bottom",
+        "waypoints remain isolated from route lines"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-006", "title": "Comet-side mechanic", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["text-only", "slim-arm-64", "asymmetry"],
+      "id": "v1-006",
+      "title": "Comet-side mechanic",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "text-only",
+        "slim-arm-64",
+        "asymmetry"
+      ],
       "prompt": "Create a compact mechanic with one orange glove on the left hand, one steel glove on the right, and a comet-shaped patch only on the right shoulder.",
-      "references": [], "revision": null,
-      "expectedSignals": ["left and right glove colors are not mirrored", "comet patch appears on right shoulder only"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "left and right glove colors are not mirrored",
+        "comet patch appears on right shoulder only"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-007", "title": "Raincoat portrait translation", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
-      "categories": ["single-reference", "photo-reference", "wide-arm-64"],
+      "id": "v1-007",
+      "title": "Raincoat portrait translation",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "single-reference",
+        "photo-reference",
+        "wide-arm-64"
+      ],
       "prompt": "Translate the subject's teal raincoat, warm complexion, and short dark curls into a clean cuboid humanoid texture while preserving a friendly neutral expression.",
-      "references": [{
-        "id": "v1-007-portrait", "role": "content", "mediaKind": "synthetic-photo",
-        "syntheticSpecification": "Studio portrait of an invented adult wearing a teal raincoat against a plain gray background; no logos, text, or real-person likeness.",
-        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
-      }],
-      "revision": null, "expectedSignals": ["teal raincoat dominates clothing", "curl silhouette reads without photographic smoothing"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-007-portrait",
+          "role": "content",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Studio portrait of an invented adult wearing a teal raincoat against a plain gray background; no logos, text, or real-person likeness.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-007-portrait.png",
+            "sha256": "05e539071744c91cea2e3d225a38c4bbf8dcb95e83813f44e2b7477321850f77",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "teal raincoat dominates clothing",
+        "curl silhouette reads without photographic smoothing"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-008", "title": "Workshop apron portrait", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["single-reference", "photo-reference", "slim-arm-64", "asymmetry"],
+      "id": "v1-008",
+      "title": "Workshop apron portrait",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "single-reference",
+        "photo-reference",
+        "slim-arm-64",
+        "asymmetry"
+      ],
       "prompt": "Use the synthetic portrait for clothing and palette: preserve the ochre apron, blue shirt, and single pencil tucked on the subject's left side.",
-      "references": [{
-        "id": "v1-008-portrait", "role": "content", "mediaKind": "synthetic-photo",
-        "syntheticSpecification": "Invented workshop portrait with an ochre apron, blue shirt, and one red pencil on the wearer's left; neutral backdrop and no brand marks.",
-        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
-      }],
-      "revision": null, "expectedSignals": ["pencil remains on wearer-left only", "slim sleeve geometry is preserved"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-008-portrait",
+          "role": "content",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Invented workshop portrait with an ochre apron, blue shirt, and one red pencil on the wearer's left; neutral backdrop and no brand marks.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-008-portrait.png",
+            "sha256": "72c7a1c04a81e5073086e2837b440733bdc0995453ad603ee6d736cc26e08475",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "pencil remains on wearer-left only",
+        "slim sleeve geometry is preserved"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-009", "title": "Moth robe drawing", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
-      "categories": ["single-reference", "drawing-reference", "wide-arm-64", "outer-layer"],
+      "id": "v1-009",
+      "title": "Moth robe drawing",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "single-reference",
+        "drawing-reference",
+        "wide-arm-64",
+        "outer-layer"
+      ],
       "prompt": "Adapt the invented moth-robe sketch into a cuboid humanoid texture, using the outer layer for the short shoulder mantle without extending the base silhouette.",
-      "references": [{
-        "id": "v1-009-sketch", "role": "content", "mediaKind": "synthetic-drawing",
-        "syntheticSpecification": "Project-authored ink sketch of a generic cream-and-brown moth robe with eye-spot shoulder mantle; no borrowed character or artist style.",
-        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
-      }],
-      "revision": null, "expectedSignals": ["mantle is represented on the outer layer", "eye spots remain symmetric while robe shading stays pixel-sharp"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-009-sketch",
+          "role": "content",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Project-authored ink sketch of a generic cream-and-brown moth robe with eye-spot shoulder mantle; no borrowed character or artist style.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-009-sketch.png",
+            "sha256": "69631081466d51e583885c0ded8c2fc4cea5057549c702a6e2690b128d597e62",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "mantle is represented on the outer layer",
+        "eye spots remain symmetric while robe shading stays pixel-sharp"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-010", "title": "Angular flight suit drawing", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["single-reference", "drawing-reference", "slim-arm-64", "hard-edges", "front-back-consistency"],
+      "id": "v1-010",
+      "title": "Angular flight suit drawing",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "single-reference",
+        "drawing-reference",
+        "slim-arm-64",
+        "hard-edges",
+        "front-back-consistency"
+      ],
       "prompt": "Translate the angular flight-suit drawing exactly enough that the chest chevron continues around both shoulders and resolves into a rear diamond.",
-      "references": [{
-        "id": "v1-010-suit", "role": "content", "mediaKind": "synthetic-drawing",
-        "syntheticSpecification": "Original vector-like drawing of a generic rust, cream, and black flight suit with chest chevron and rear diamond; no insignia or text.",
-        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
-      }],
-      "revision": null, "expectedSignals": ["front chevron joins shoulder faces", "rear diamond is centered and not mirrored"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-010-suit",
+          "role": "content",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original vector-like drawing of a generic rust, cream, and black flight suit with chest chevron and rear diamond; no insignia or text.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-010-suit.png",
+            "sha256": "8892aed288ff87a502998b290dc72b5683a48a31967d0236915a41a7ea109bc6",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "front chevron joins shoulder faces",
+        "rear diamond is centered and not mirrored"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-011", "title": "Broad hat silhouette portrait", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["single-reference", "photo-reference", "wide-arm-64", "difficult-silhouette", "outer-layer"],
+      "id": "v1-011",
+      "title": "Broad hat silhouette portrait",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "single-reference",
+        "photo-reference",
+        "wide-arm-64",
+        "difficult-silhouette",
+        "outer-layer"
+      ],
       "prompt": "Capture the visual identity of the broad square sun hat and layered desert clothing using only valid base and outer cuboid surfaces; simplify honestly where geometry cannot protrude.",
-      "references": [{
-        "id": "v1-011-hat", "role": "silhouette", "mediaKind": "synthetic-photo",
-        "syntheticSpecification": "Synthetic mannequin portrait with an exaggerated square sun hat and layered sand-colored garments; entirely invented and free of marks.",
-        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
-      }],
-      "revision": null, "expectedSignals": ["hat identity is suggested without invalid geometry", "outer pixels do not hide the face"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-011-hat",
+          "role": "silhouette",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Synthetic mannequin portrait with an exaggerated square sun hat and layered sand-colored garments; entirely invented and free of marks.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-011-hat.png",
+            "sha256": "884a5be5c63a4c84b3de26955115f8ec02e31dd49b5cfdfb5403173d36a41507",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "hat identity is suggested without invalid geometry",
+        "outer pixels do not hide the face"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-012", "title": "Fog palette uniform", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["single-reference", "slim-arm-64", "low-contrast"],
+      "id": "v1-012",
+      "title": "Fog palette uniform",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "single-reference",
+        "slim-arm-64",
+        "low-contrast"
+      ],
       "prompt": "Create a layered field uniform using only the supplied fog palette, keeping collar, belt, cuffs, and boots distinguishable through value grouping.",
-      "references": [{
-        "id": "v1-012-palette", "role": "palette", "mediaKind": "synthetic-palette",
-        "syntheticSpecification": "Six project-authored muted swatches spanning blue-gray, green-gray, and soft charcoal with deliberately close luminance values.",
-        "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null
-      }],
-      "revision": null, "expectedSignals": ["all colors come from the supplied palette", "garment boundaries remain readable at low contrast"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-012-palette",
+          "role": "palette",
+          "mediaKind": "synthetic-palette",
+          "syntheticSpecification": "Six project-authored muted swatches spanning blue-gray, green-gray, and soft charcoal with deliberately close luminance values.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-012-palette.png",
+            "sha256": "a0c5916413d328b2f2fb4f202b57db0aa44670aa625748169815dbd3d7d1339a",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "all colors come from the supplied palette",
+        "garment boundaries remain readable at low contrast"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-013", "title": "Botanical field researcher", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["multiple-reference", "photo-reference", "drawing-reference", "wide-arm-64", "dense-pattern"],
+      "id": "v1-013",
+      "title": "Botanical field researcher",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "multiple-reference",
+        "photo-reference",
+        "drawing-reference",
+        "wide-arm-64",
+        "dense-pattern"
+      ],
       "prompt": "Use the portrait only for clothing structure and the botanical drawing only for surface motifs; create a field researcher with dense leaf annotations on the coat.",
       "references": [
-        {"id": "v1-013-portrait", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Invented studio portrait of a generic field researcher in a long olive coat with plain accessories and no identifying marks.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
-        {"id": "v1-013-botanical", "role": "style", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original diagram sheet of invented leaves, veins, and seed pods drawn as blocky two-tone motifs without text.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+        {
+          "id": "v1-013-portrait",
+          "role": "content",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Invented studio portrait of a generic field researcher in a long olive coat with plain accessories and no identifying marks.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-013-portrait.png",
+            "sha256": "084eee3aace62c7384f607bc21ee6e554c5fc9cb0ff4b7f17859bc46520ad20c",
+            "mimeType": "image/png"
+          }
+        },
+        {
+          "id": "v1-013-botanical",
+          "role": "style",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original diagram sheet of invented leaves, veins, and seed pods drawn as blocky two-tone motifs without text.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-013-botanical.png",
+            "sha256": "62093a683c014953576d61217efe01800bef2c4aa514c640ca846a471a56ab6b",
+            "mimeType": "image/png"
+          }
+        }
       ],
-      "revision": null, "expectedSignals": ["coat structure follows content reference", "leaf motifs follow drawing without replacing garment structure"], "honestFailureAllowed": false
+      "revision": null,
+      "expectedSignals": [
+        "coat structure follows content reference",
+        "leaf motifs follow drawing without replacing garment structure"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-014", "title": "Coral survey diver", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["multiple-reference", "photo-reference", "slim-arm-64", "asymmetry"],
+      "id": "v1-014",
+      "title": "Coral survey diver",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "multiple-reference",
+        "photo-reference",
+        "slim-arm-64",
+        "asymmetry"
+      ],
       "prompt": "Use the suit portrait for construction and the palette reference for color; retain the single gauge on the left wrist and one bright ankle band on the right.",
       "references": [
-        {"id": "v1-014-suit", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic mannequin in a generic fitted survey suit with one left wrist gauge and no logos or real equipment design.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
-        {"id": "v1-014-palette", "role": "palette", "mediaKind": "synthetic-palette", "syntheticSpecification": "Original palette of coral orange, sea green, dark teal, warm gray, and one bright yellow accent.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+        {
+          "id": "v1-014-suit",
+          "role": "content",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Synthetic mannequin in a generic fitted survey suit with one left wrist gauge and no logos or real equipment design.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-014-suit.png",
+            "sha256": "61d5385bb8a87f749c31d50e1049cb01a37143df1982e430d597f1da46a9c9f7",
+            "mimeType": "image/png"
+          }
+        },
+        {
+          "id": "v1-014-palette",
+          "role": "palette",
+          "mediaKind": "synthetic-palette",
+          "syntheticSpecification": "Original palette of coral orange, sea green, dark teal, warm gray, and one bright yellow accent.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-014-palette.png",
+            "sha256": "c68ec63ea2526b2f2b1d4f79ce0fdfdecea2997067e66d9de672953bbf3db050",
+            "mimeType": "image/png"
+          }
+        }
       ],
-      "revision": null, "expectedSignals": ["gauge and ankle band retain their declared sides", "all major colors come from the palette reference"], "honestFailureAllowed": false
+      "revision": null,
+      "expectedSignals": [
+        "gauge and ankle band retain their declared sides",
+        "all major colors come from the palette reference"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-015", "title": "Paper lantern steward", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["multiple-reference", "drawing-reference", "wide-arm-64", "transparency", "outer-layer"],
+      "id": "v1-015",
+      "title": "Paper lantern steward",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "multiple-reference",
+        "drawing-reference",
+        "wide-arm-64",
+        "transparency",
+        "outer-layer"
+      ],
       "prompt": "Combine the garment construction drawing with the lantern-light study; use sparse translucent outer-layer pixels to suggest a glowing shoulder veil while preserving a dark base robe.",
       "references": [
-        {"id": "v1-015-garment", "role": "content", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original flat garment diagram of a dark robe with square cuffs and a short shoulder veil, without cultural insignia or text.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
-        {"id": "v1-015-light", "role": "style", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Project-authored abstract study of amber light bands fading into dark violet, rendered as discrete pixel blocks.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+        {
+          "id": "v1-015-garment",
+          "role": "content",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original flat garment diagram of a dark robe with square cuffs and a short shoulder veil, without cultural insignia or text.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-015-garment.png",
+            "sha256": "2925add83ebf9ba9f3f373a522684b069c1f27cf2954e4a3f0bd03f2e5c1e7cb",
+            "mimeType": "image/png"
+          }
+        },
+        {
+          "id": "v1-015-light",
+          "role": "style",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Project-authored abstract study of amber light bands fading into dark violet, rendered as discrete pixel blocks.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-015-light.png",
+            "sha256": "dae38a974415fd90bb3a110c863ca70f92869794d751e6eac53bfd71b454d06b",
+            "mimeType": "image/png"
+          }
+        }
       ],
-      "revision": null, "expectedSignals": ["outer veil uses valid alpha without base holes", "robe construction remains distinct from lighting style"], "honestFailureAllowed": false
+      "revision": null,
+      "expectedSignals": [
+        "outer veil uses valid alpha without base holes",
+        "robe construction remains distinct from lighting style"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-016", "title": "Kite ridge messenger", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["multiple-reference", "photo-reference", "drawing-reference", "slim-arm-64", "difficult-silhouette"],
+      "id": "v1-016",
+      "title": "Kite ridge messenger",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "multiple-reference",
+        "photo-reference",
+        "drawing-reference",
+        "slim-arm-64",
+        "difficult-silhouette"
+      ],
       "prompt": "Use the messenger portrait for body clothing and the kite drawing only as a silhouette cue for a compact head covering; do not invent geometry beyond valid cuboids.",
       "references": [
-        {"id": "v1-016-messenger", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Invented messenger mannequin wearing a maroon jacket, tan trousers, and simple boots against a neutral background.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
-        {"id": "v1-016-kite", "role": "silhouette", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original angular kite silhouette made from two offset diamonds and short tails, with no text or external design reference.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+        {
+          "id": "v1-016-messenger",
+          "role": "content",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Invented messenger mannequin wearing a maroon jacket, tan trousers, and simple boots against a neutral background.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-016-messenger.png",
+            "sha256": "11b12172431e437615aa0e919746878c2fdc0db6d4830c662ad6963c0c185ad7",
+            "mimeType": "image/png"
+          }
+        },
+        {
+          "id": "v1-016-kite",
+          "role": "silhouette",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original angular kite silhouette made from two offset diamonds and short tails, with no text or external design reference.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-016-kite.png",
+            "sha256": "ca117c5416f285a192e1cd6e674d3a114b42cf5d3ef2fdcf6fe5351b22267095",
+            "mimeType": "image/png"
+          }
+        }
       ],
-      "revision": null, "expectedSignals": ["head covering suggests angular kite without protrusion", "clothing content remains independent from silhouette reference"], "honestFailureAllowed": false
+      "revision": null,
+      "expectedSignals": [
+        "head covering suggests angular kite without protrusion",
+        "clothing content remains independent from silhouette reference"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-017", "title": "Two-view harbor warden", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["multiple-reference", "photo-reference", "front-back-consistency", "wide-arm-64", "cross-surface-pattern"],
+      "id": "v1-017",
+      "title": "Two-view harbor warden",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "multiple-reference",
+        "photo-reference",
+        "front-back-consistency",
+        "wide-arm-64",
+        "cross-surface-pattern"
+      ],
       "prompt": "Reconcile the synthetic front and rear views into one harbor warden: preserve the front double clasp, rear wave emblem, and rope stripe continuing around both sides.",
       "references": [
-        {"id": "v1-017-front", "role": "front-view", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic front mannequin view of a navy coat with two brass clasps and a cream rope stripe exiting both sides.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
-        {"id": "v1-017-rear", "role": "rear-view", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic rear view of the same invented coat with centered teal wave emblem and matching rope stripe entry points.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+        {
+          "id": "v1-017-front",
+          "role": "front-view",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Synthetic front mannequin view of a navy coat with two brass clasps and a cream rope stripe exiting both sides.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-017-front.png",
+            "sha256": "f166d6ed86080367815b1b9891ab31e6a8536b97053c8d6511470dd489de0e81",
+            "mimeType": "image/png"
+          }
+        },
+        {
+          "id": "v1-017-rear",
+          "role": "rear-view",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Synthetic rear view of the same invented coat with centered teal wave emblem and matching rope stripe entry points.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-017-rear.png",
+            "sha256": "50b7c7b28a21c53f2d9d3273edc8d41311f5a1d2c812dfbdaded6640bbd39e7a",
+            "mimeType": "image/png"
+          }
+        }
       ],
-      "revision": null, "expectedSignals": ["front clasps and rear emblem occupy correct faces", "rope stripe joins both side seams"], "honestFailureAllowed": false
+      "revision": null,
+      "expectedSignals": [
+        "front clasps and rear emblem occupy correct faces",
+        "rope stripe joins both side seams"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-018", "title": "Ink wash climber", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["multiple-reference", "photo-reference", "drawing-reference", "slim-arm-64", "low-contrast"],
+      "id": "v1-018",
+      "title": "Ink wash climber",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "multiple-reference",
+        "photo-reference",
+        "drawing-reference",
+        "slim-arm-64",
+        "low-contrast"
+      ],
       "prompt": "Use the climber portrait for garment layout and the abstract ink wash only for muted shading; keep face, straps, and boots legible at low contrast.",
       "references": [
-        {"id": "v1-018-climber", "role": "content", "mediaKind": "synthetic-photo", "syntheticSpecification": "Synthetic adult mannequin in generic layered climbing clothes and plain straps, with no real gear brands or logos.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
-        {"id": "v1-018-wash", "role": "style", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original abstract gray-green ink blocks with three close luminance levels and no recognizable artist style.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+        {
+          "id": "v1-018-climber",
+          "role": "content",
+          "mediaKind": "synthetic-photo",
+          "syntheticSpecification": "Synthetic adult mannequin in generic layered climbing clothes and plain straps, with no real gear brands or logos.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-018-climber.png",
+            "sha256": "bcde3a537710868942e49a22f1b0456d844b31f2ff560a20914491bd7526d24f",
+            "mimeType": "image/png"
+          }
+        },
+        {
+          "id": "v1-018-wash",
+          "role": "style",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original abstract gray-green ink blocks with three close luminance levels and no recognizable artist style.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-018-wash.png",
+            "sha256": "9bc23ec214cba51086a87b4190dc04dfef6b0cd6a3708b14263cd3768994d8de",
+            "mimeType": "image/png"
+          }
+        }
       ],
-      "revision": null, "expectedSignals": ["garment layout follows portrait", "ink styling does not erase functional boundaries"], "honestFailureAllowed": false
+      "revision": null,
+      "expectedSignals": [
+        "garment layout follows portrait",
+        "ink styling does not erase functional boundaries"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-019", "title": "Riverline front and rear", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["multiple-reference", "drawing-reference", "front-back-consistency", "wide-arm-64", "cross-surface-pattern"],
+      "id": "v1-019",
+      "title": "Riverline front and rear",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "multiple-reference",
+        "drawing-reference",
+        "front-back-consistency",
+        "wide-arm-64",
+        "cross-surface-pattern"
+      ],
       "prompt": "Build one coherent riverline uniform from the paired front and rear diagrams; the blue river must wrap clockwise without reversing or mirroring at either side.",
       "references": [
-        {"id": "v1-019-front", "role": "front-view", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original flat front diagram showing a blue river entering the torso at lower left and leaving at upper right.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null},
-        {"id": "v1-019-rear", "role": "rear-view", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original matching rear diagram showing the same river crossing behind a centered white bridge motif.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}
+        {
+          "id": "v1-019-front",
+          "role": "front-view",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original flat front diagram showing a blue river entering the torso at lower left and leaving at upper right.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-019-front.png",
+            "sha256": "a05d96d2aafdae88ebf232c86fa408291315576f9b1e5ba862df11551e1548d8",
+            "mimeType": "image/png"
+          }
+        },
+        {
+          "id": "v1-019-rear",
+          "role": "rear-view",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original matching rear diagram showing the same river crossing behind a centered white bridge motif.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-019-rear.png",
+            "sha256": "5cdc85c8775bd33403d14021461bcb7000f1da78a811161c2b77bb0e6d00f8c8",
+            "mimeType": "image/png"
+          }
+        }
       ],
-      "revision": null, "expectedSignals": ["river direction stays clockwise", "bridge appears on rear only"], "honestFailureAllowed": false
+      "revision": null,
+      "expectedSignals": [
+        "river direction stays clockwise",
+        "bridge appears on rear only"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-020", "title": "Checker sash continuity", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["text-only", "slim-arm-64", "dense-pattern", "front-back-consistency", "cross-surface-pattern"],
+      "id": "v1-020",
+      "title": "Checker sash continuity",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "text-only",
+        "slim-arm-64",
+        "dense-pattern",
+        "front-back-consistency",
+        "cross-surface-pattern"
+      ],
       "prompt": "Create a gray traveler with a two-pixel black-and-white checker sash that begins on the left shoulder, crosses the chest, continues around the right side, and ends at the rear left hip.",
-      "references": [], "revision": null,
-      "expectedSignals": ["checker phase stays aligned across face boundaries", "sash path ends at rear left hip"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "the sash is one connected two-texel-wide path whose black/white phase alternates along travel and continues across every crossed face boundary",
+        "the anatomical path begins at wearer-left shoulder, crosses the front chest, enters the wearer-right side, and ends at rear wearer-left hip"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-021", "title": "Directional glove test", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
-      "categories": ["text-only", "wide-arm-64", "asymmetry", "front-back-consistency"],
+      "id": "v1-021",
+      "title": "Directional glove test",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "text-only",
+        "wide-arm-64",
+        "asymmetry",
+        "front-back-consistency"
+      ],
       "prompt": "Create a survey worker with a red left glove marked by one white rear-hand pixel and a blue right glove marked by two yellow front-hand pixels.",
-      "references": [], "revision": null,
-      "expectedSignals": ["left and right hands remain distinct", "front and rear hand details occupy the requested faces"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "left and right hands remain distinct",
+        "front and rear hand details occupy the requested faces"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-022", "title": "Rear-only constellation", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["text-only", "slim-arm-64", "asymmetry", "dense-pattern", "front-back-consistency"],
+      "id": "v1-022",
+      "title": "Rear-only constellation",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "text-only",
+        "slim-arm-64",
+        "asymmetry",
+        "dense-pattern",
+        "front-back-consistency"
+      ],
       "prompt": "Create a plain midnight coat from the front and a seven-point gold constellation only across the rear torso and rear right sleeve; keep all front surfaces unmarked.",
-      "references": [], "revision": null,
-      "expectedSignals": ["constellation never leaks to front surfaces", "seven gold points remain countable"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "constellation never leaks to front surfaces",
+        "exactly seven disconnected gold point components remain countable, each one or two texels in area"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-023", "title": "Copper fixture remix", "mode": "create", "profile": "wide-arm-64", "difficulty": "intermediate",
-      "categories": ["single-reference", "existing-document-remix", "wide-arm-64", "hard-edges"],
+      "id": "v1-023",
+      "title": "Copper fixture remix",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "single-reference",
+        "existing-document-remix",
+        "wide-arm-64",
+        "hard-edges"
+      ],
       "prompt": "Remix the synthetic baseline atlas into a copper-and-verdigris workshop uniform while retaining its face, body-part boundaries, and one-pixel belt buckle layout.",
-      "references": [{"id": "v1-023-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic project fixture: valid wide-arm cuboid humanoid atlas with neutral face, gray workshop uniform, and isolated one-pixel belt buckles.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
-      "revision": null, "expectedSignals": ["baseline face and buckle topology remain recognizable", "new copper palette does not alter profile validity"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-023-atlas",
+          "role": "content",
+          "mediaKind": "synthetic-atlas",
+          "syntheticSpecification": "Deterministic project fixture: valid wide-arm cuboid humanoid atlas with neutral face, gray workshop uniform, and isolated one-pixel belt buckles.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-023-atlas.png",
+            "sha256": "7ac150a0811b33b4b893ddb7c91e3908a91cc2c8bfe19a0f90a2294ce90b610f",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "baseline face and buckle topology remain recognizable",
+        "new copper palette does not alter profile validity"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-024", "title": "Winter fixture remix", "mode": "create", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["single-reference", "existing-document-remix", "slim-arm-64", "outer-layer"],
+      "id": "v1-024",
+      "title": "Winter fixture remix",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "single-reference",
+        "existing-document-remix",
+        "slim-arm-64",
+        "outer-layer"
+      ],
       "prompt": "Remix the synthetic slim-arm baseline into a winter courier with a pale outer-layer collar and snow-specked boots while preserving the original asymmetrical face.",
-      "references": [{"id": "v1-024-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic project fixture: valid slim-arm atlas with asymmetrical face pixels, plain blue clothing, empty outer layer, and transparent unused regions.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
-      "revision": null, "expectedSignals": ["asymmetrical face is preserved", "new collar stays on outer layer and arm profile stays slim"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-024-atlas",
+          "role": "content",
+          "mediaKind": "synthetic-atlas",
+          "syntheticSpecification": "Deterministic project fixture: valid slim-arm atlas with asymmetrical face pixels, plain blue clothing, empty outer layer, and transparent unused regions.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-024-atlas.png",
+            "sha256": "ed69a50eb09c1342ddcddd2cd560938dade2e954438009034c3494483880f323",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "asymmetrical face is preserved",
+        "new collar stays on outer layer and arm profile stays slim"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-025", "title": "Glass trim fixture remix", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["single-reference", "existing-document-remix", "wide-arm-64", "transparency", "outer-layer"],
+      "id": "v1-025",
+      "title": "Glass trim fixture remix",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "single-reference",
+        "existing-document-remix",
+        "wide-arm-64",
+        "transparency",
+        "outer-layer"
+      ],
       "prompt": "Remix the baseline into a ceremonial coat with translucent cyan outer trim; preserve every opaque base texel and keep all unused atlas regions transparent.",
-      "references": [{"id": "v1-025-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic valid wide-arm baseline with opaque base clothing, transparent unused regions, and an entirely empty outer layer.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
-      "revision": null, "expectedSignals": ["translucent trim occupies valid outer regions", "base and unused-region alpha remain valid"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-025-atlas",
+          "role": "content",
+          "mediaKind": "synthetic-atlas",
+          "syntheticSpecification": "Deterministic valid wide-arm baseline with opaque base clothing, transparent unused regions, and an entirely empty outer layer.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-025-atlas.png",
+            "sha256": "30fb9901d00c26455597f1493dcf38502dd5f21d9293b9b8e647f3ad28334ab8",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "translucent trim occupies valid outer regions",
+        "base and unused-region alpha remain valid"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-026", "title": "Mosaic fixture remix", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["single-reference", "existing-document-remix", "slim-arm-64", "dense-pattern", "cross-surface-pattern"],
+      "id": "v1-026",
+      "title": "Mosaic fixture remix",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "single-reference",
+        "existing-document-remix",
+        "slim-arm-64",
+        "dense-pattern",
+        "cross-surface-pattern"
+      ],
       "prompt": "Remix the plain baseline into a red, cream, and charcoal mosaic whose repeating three-pixel rhythm continues across torso sides and rear without changing the face.",
-      "references": [{"id": "v1-026-atlas", "role": "content", "mediaKind": "synthetic-atlas", "syntheticSpecification": "Deterministic valid slim-arm baseline with a plain cream face, solid charcoal clothing, and no outer-layer pixels.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
-      "revision": null, "expectedSignals": ["three-pixel rhythm continues at torso seams", "face pixels remain unchanged in identity"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-026-atlas",
+          "role": "content",
+          "mediaKind": "synthetic-atlas",
+          "syntheticSpecification": "Deterministic valid slim-arm baseline with a plain cream face, solid charcoal clothing, and no outer-layer pixels.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-026-atlas.png",
+            "sha256": "33023bad1eac85e226d64ca315142d74749306b306f637178bb099278b0e7dbe",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "three-pixel rhythm continues at torso seams",
+        "face pixels remain unchanged in identity"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-027", "title": "Localized jacket recolor", "mode": "revise", "profile": "wide-arm-64", "difficulty": "baseline",
-      "categories": ["localized-revision", "protected-regions", "wide-arm-64", "existing-document-remix"],
+      "id": "v1-027",
+      "title": "Localized jacket recolor",
+      "mode": "revise",
+      "profile": "wide-arm-64",
+      "difficulty": "baseline",
+      "categories": [
+        "localized-revision",
+        "protected-regions",
+        "wide-arm-64",
+        "existing-document-remix"
+      ],
       "prompt": "Change only the torso jacket from forest green to burnt orange, preserving face, hair, arms, legs, outer layer, shading values, and all one-pixel details.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with forest-green torso jacket, tan arms, navy legs, detailed face, and sparse outer collar.", "baselineAsset": null, "editableRegions": ["torso.base.all-faces"], "protectedRegions": ["head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["head.base.face", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.005, "materializedMasks": null},
-      "expectedSignals": ["torso hue changes to burnt orange", "protected and immutable texels remain within thresholds"], "honestFailureAllowed": false
+      "revision": {
+        "baselineSpecification": "Deterministic valid wide-arm atlas with forest-green torso jacket, tan arms, navy legs, detailed face, hair, and sparse outer collar.",
+        "baselineAsset": {
+          "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-027/baseline.png",
+          "sha256": "66e0cc34335780ae2882f9591b59e9837823bd2b6eac34f5123ebb2b22f81a05",
+          "mimeType": "image/png"
+        },
+        "protectionMode": "all-mapped-except-editable",
+        "editableRegions": [
+          "torso.base.all-faces"
+        ],
+        "protectedRegions": [
+          "head.all",
+          "arms.all",
+          "legs.all",
+          "outer-layer.all"
+        ],
+        "immutableRegions": [
+          "head.base.face",
+          "unused-atlas-regions"
+        ],
+        "maximumProtectedChangedTexelRate": 0,
+        "materializedMasks": {
+          "editable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-027/editable-mask.png",
+            "sha256": "f1ac4ac3ec42b443d05def9aa31c4b7f0caa2b2a52490564f8ef1beea6a6af80",
+            "mimeType": "image/png"
+          },
+          "protected": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-027/protected-mask.png",
+            "sha256": "7fab1694e9c17aca387e0d73fae13a62ebf13c767f07ece2582636f023c63bbf",
+            "mimeType": "image/png"
+          },
+          "immutable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-027/immutable-mask.png",
+            "sha256": "f7bc4349d11831d8cfce8205dcae476a046d14246e9790115af2e04061c30509",
+            "mimeType": "image/png"
+          }
+        }
+      },
+      "expectedSignals": [
+        "torso hue changes to burnt orange",
+        "protected and immutable texels remain within thresholds"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-028", "title": "Localized left boot repair", "mode": "revise", "profile": "slim-arm-64", "difficulty": "intermediate",
-      "categories": ["localized-revision", "protected-regions", "slim-arm-64", "asymmetry"],
+      "id": "v1-028",
+      "title": "Localized left boot repair",
+      "mode": "revise",
+      "profile": "slim-arm-64",
+      "difficulty": "intermediate",
+      "categories": [
+        "localized-revision",
+        "protected-regions",
+        "slim-arm-64",
+        "asymmetry"
+      ],
       "prompt": "Add a two-pixel silver buckle to the front of the left boot only; preserve the right boot and every other texel exactly.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with asymmetric brown boots, plain left-boot front, and fully detailed clothing elsewhere.", "baselineAsset": null, "editableRegions": ["left-leg.base.front.boot"], "protectedRegions": ["right-leg.all", "head.all", "torso.all", "arms.all", "outer-layer.all"], "immutableRegions": ["right-leg.base.front.boot", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0, "materializedMasks": null},
-      "expectedSignals": ["exactly one left-front boot buckle is added", "right boot and all protected pixels remain byte-identical"], "honestFailureAllowed": false
+      "revision": {
+        "baselineSpecification": "Deterministic valid slim-arm atlas with asymmetric brown boots, plain left-boot front, and fully detailed clothing elsewhere.",
+        "baselineAsset": {
+          "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-028/baseline.png",
+          "sha256": "136f95aa0833a435041c167f50817ab23c30ac73479235a084156c5eb84d6fd9",
+          "mimeType": "image/png"
+        },
+        "protectionMode": "all-mapped-except-editable",
+        "editableRegions": [
+          "left-leg.base.front.boot"
+        ],
+        "protectedRegions": [
+          "right-leg.all",
+          "left-leg.base.all-except-front-boot",
+          "head.all",
+          "torso.all",
+          "arms.all",
+          "outer-layer.all"
+        ],
+        "immutableRegions": [
+          "right-leg.base.front.boot",
+          "unused-atlas-regions"
+        ],
+        "maximumProtectedChangedTexelRate": 0,
+        "materializedMasks": {
+          "editable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-028/editable-mask.png",
+            "sha256": "1356c75c6c4bdd45fc2d014d01f60f723849f3b58857a8e89b011bb1d619520a",
+            "mimeType": "image/png"
+          },
+          "protected": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-028/protected-mask.png",
+            "sha256": "59c7996e7d688c926ea40996ca07c030091a17eeb2c6d73aea00d6d00e0507b0",
+            "mimeType": "image/png"
+          },
+          "immutable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-028/immutable-mask.png",
+            "sha256": "c0b379a2bcf2f0ff7a2755d7f1d75f4dead53f8984232272412142eb7f405715",
+            "mimeType": "image/png"
+          }
+        }
+      },
+      "expectedSignals": [
+        "exactly one left-front boot buckle is added",
+        "right boot and all protected pixels remain byte-identical"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-029", "title": "Localized rear emblem", "mode": "revise", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["localized-revision", "protected-regions", "wide-arm-64", "front-back-consistency", "hard-edges"],
+      "id": "v1-029",
+      "title": "Localized rear emblem",
+      "mode": "revise",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "localized-revision",
+        "protected-regions",
+        "wide-arm-64",
+        "front-back-consistency",
+        "hard-edges"
+      ],
       "prompt": "Add a crisp five-pixel teal diamond only to the rear torso; preserve front, side, top, bottom, limbs, head, and outer layer exactly.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid wide-arm atlas with a solid dark torso, detailed front buttons, and no rear emblem.", "baselineAsset": null, "editableRegions": ["torso.base.rear"], "protectedRegions": ["torso.base.front", "torso.base.left", "torso.base.right", "head.all", "arms.all", "legs.all", "outer-layer.all"], "immutableRegions": ["torso.base.front.buttons", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0, "materializedMasks": null},
-      "expectedSignals": ["five-pixel diamond appears on rear only", "front buttons and every protected face remain byte-identical"], "honestFailureAllowed": false
+      "revision": {
+        "baselineSpecification": "Deterministic valid wide-arm atlas with a solid dark torso, detailed front buttons, and no rear emblem.",
+        "baselineAsset": {
+          "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-029/baseline.png",
+          "sha256": "0cc93ee4f2f6aa275df15ff89097b7fd49818743b76bd9eaf53c559ea50d1618",
+          "mimeType": "image/png"
+        },
+        "protectionMode": "all-mapped-except-editable",
+        "editableRegions": [
+          "torso.base.rear"
+        ],
+        "protectedRegions": [
+          "torso.base.front",
+          "torso.base.left",
+          "torso.base.right",
+          "torso.base.top",
+          "torso.base.bottom",
+          "head.all",
+          "arms.all",
+          "legs.all",
+          "outer-layer.all"
+        ],
+        "immutableRegions": [
+          "torso.base.front.buttons",
+          "unused-atlas-regions"
+        ],
+        "maximumProtectedChangedTexelRate": 0,
+        "materializedMasks": {
+          "editable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-029/editable-mask.png",
+            "sha256": "e81e39e1bc6a46ddec2fb603f55e1b3dc3836eb6658ff6eceee220bc1a5db10e",
+            "mimeType": "image/png"
+          },
+          "protected": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-029/protected-mask.png",
+            "sha256": "dd769f57a963504ae3fc439a9105acf0e70f60d96db17e10139a40697dd77e63",
+            "mimeType": "image/png"
+          },
+          "immutable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-029/immutable-mask.png",
+            "sha256": "7b96a4f0e4b06138af3c03befef2891a84bec20ea66a2ddd37e759cf7187ebc7",
+            "mimeType": "image/png"
+          }
+        }
+      },
+      "expectedSignals": [
+        "five-pixel diamond appears on rear only",
+        "front buttons and every protected face remain byte-identical"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-030", "title": "Localized translucent hood", "mode": "revise", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["localized-revision", "protected-regions", "slim-arm-64", "outer-layer", "transparency"],
+      "id": "v1-030",
+      "title": "Localized translucent hood",
+      "mode": "revise",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "localized-revision",
+        "protected-regions",
+        "slim-arm-64",
+        "outer-layer",
+        "transparency"
+      ],
       "prompt": "Add a partially transparent pale hood to the head outer layer only, leaving the base head, face, hair, clothing, and unused regions unchanged.",
       "references": [],
-      "revision": {"baselineSpecification": "Deterministic valid slim-arm atlas with detailed base head and clothing, empty head outer layer, and transparent unused regions.", "baselineAsset": null, "editableRegions": ["head.outer.all-faces"], "protectedRegions": ["head.base.all-faces", "torso.all", "arms.all", "legs.all"], "immutableRegions": ["head.base.front", "unused-atlas-regions"], "maximumProtectedChangedTexelRate": 0.0, "materializedMasks": null},
-      "expectedSignals": ["hood alpha is confined to head outer layer", "base head and unused regions remain byte-identical"], "honestFailureAllowed": false
+      "revision": {
+        "baselineSpecification": "Deterministic valid slim-arm atlas with detailed base head and clothing, empty head outer layer, and transparent unused regions.",
+        "baselineAsset": {
+          "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-030/baseline.png",
+          "sha256": "fc7239a2afa47333298ff4564161229d966f4302dfb77c8dcf0dae3a5cc8e0f1",
+          "mimeType": "image/png"
+        },
+        "protectionMode": "all-mapped-except-editable",
+        "editableRegions": [
+          "head.outer.all-faces"
+        ],
+        "protectedRegions": [
+          "head.base.all-faces",
+          "torso.all",
+          "arms.all",
+          "legs.all"
+        ],
+        "immutableRegions": [
+          "head.base.front",
+          "unused-atlas-regions"
+        ],
+        "maximumProtectedChangedTexelRate": 0,
+        "materializedMasks": {
+          "editable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-030/editable-mask.png",
+            "sha256": "3924a225d7c273ed87672fa43b994bb62ab7402b9b9e9899265ad9c0b4c6962a",
+            "mimeType": "image/png"
+          },
+          "protected": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-030/protected-mask.png",
+            "sha256": "66c05273538f3d0b02689c431180c1ac8f4adaa046fb469760b285c9c44091ff",
+            "mimeType": "image/png"
+          },
+          "immutable": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/revisions/v1-030/immutable-mask.png",
+            "sha256": "c5e71d5362f2ad990d1c5884877a35323f9df3826a48b91d25882863ddfc2fa6",
+            "mimeType": "image/png"
+          }
+        }
+      },
+      "expectedSignals": [
+        "hood alpha is confined to head outer layer",
+        "base head and unused regions remain byte-identical"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-031", "title": "Antler suggestion stress", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["text-only", "wide-arm-64", "difficult-silhouette", "outer-layer"],
+      "id": "v1-031",
+      "title": "Antler suggestion stress",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "text-only",
+        "wide-arm-64",
+        "difficult-silhouette",
+        "outer-layer"
+      ],
       "prompt": "Create a woodland ceremonial figure whose branching antler idea is suggested only through valid head outer-layer pixels; do not emit extra geometry or conceal the face.",
-      "references": [], "revision": null,
-      "expectedSignals": ["antler identity is abstracted onto valid cuboid faces", "face remains visible and format remains valid"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "antler identity is abstracted as at least two branching connected pixel paths confined to head outer-layer top and side faces",
+        "face remains visible and format remains valid"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-032", "title": "Unsupported floating halo", "mode": "create", "profile": "slim-arm-64", "difficulty": "unsupported",
-      "categories": ["text-only", "slim-arm-64", "difficult-silhouette", "unsupported-request"],
+      "id": "v1-032",
+      "title": "Unsupported floating halo",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "unsupported",
+      "categories": [
+        "text-only",
+        "slim-arm-64",
+        "difficult-silhouette",
+        "unsupported-request"
+      ],
       "prompt": "Create a detached glowing ring floating above the head with empty space between the ring and every valid cuboid surface; do not approximate it as painted pixels.",
-      "references": [], "revision": null,
-      "expectedSignals": ["request is rejected or limitation is reported honestly", "no invalid detached geometry is fabricated"], "honestFailureAllowed": true
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "request is rejected or limitation is reported honestly",
+        "no invalid detached geometry is fabricated"
+      ],
+      "honestFailureAllowed": true
     },
     {
-      "id": "v1-033", "title": "Unsupported readable microtext", "mode": "create", "profile": "wide-arm-64", "difficulty": "unsupported",
-      "categories": ["text-only", "wide-arm-64", "dense-pattern", "unsupported-request"],
+      "id": "v1-033",
+      "title": "Unsupported readable microtext",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "unsupported",
+      "categories": [
+        "text-only",
+        "wide-arm-64",
+        "dense-pattern",
+        "unsupported-request"
+      ],
       "prompt": "Place a full readable forty-character sentence across a two-pixel-high belt while preserving exact spelling and punctuation at native atlas resolution.",
-      "references": [], "revision": null,
-      "expectedSignals": ["request is rejected or infeasibility is stated", "provider does not claim unreadable marks are exact text"], "honestFailureAllowed": true
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "request is rejected or infeasibility is stated",
+        "provider does not claim unreadable marks are exact text"
+      ],
+      "honestFailureAllowed": true
     },
     {
-      "id": "v1-034", "title": "Low-contrast contour camouflage", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["text-only", "slim-arm-64", "low-contrast", "dense-pattern", "cross-surface-pattern"],
+      "id": "v1-034",
+      "title": "Low-contrast contour camouflage",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "text-only",
+        "slim-arm-64",
+        "low-contrast",
+        "dense-pattern",
+        "cross-surface-pattern"
+      ],
       "prompt": "Create contour-line camouflage in four close green-gray values, continuing coherently over torso and limbs while keeping cuffs, hands, face, and boots distinguishable.",
-      "references": [], "revision": null,
-      "expectedSignals": ["contour pattern crosses faces without noisy breaks", "semantic boundaries remain readable at low contrast"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "contour pattern crosses faces without noisy breaks",
+        "semantic boundaries remain readable at low contrast"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-035", "title": "Transparent lace mantle", "mode": "create", "profile": "wide-arm-64", "difficulty": "stress",
-      "categories": ["text-only", "wide-arm-64", "transparency", "outer-layer", "dense-pattern"],
+      "id": "v1-035",
+      "title": "Transparent lace mantle",
+      "mode": "create",
+      "profile": "wide-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "text-only",
+        "wide-arm-64",
+        "transparency",
+        "outer-layer",
+        "dense-pattern"
+      ],
       "prompt": "Create a dark formal outfit with a sparse transparent lace mantle across torso and arm outer layers; use a regular diamond grid and preserve the opaque base beneath it.",
-      "references": [], "revision": null,
-      "expectedSignals": ["diamond grid is regular across outer-layer seams", "base remains opaque and visible through lace openings"], "honestFailureAllowed": false
+      "references": [],
+      "revision": null,
+      "expectedSignals": [
+        "diamond intersections repeat every four texels along each outer-layer face and retain phase across torso/arm seams",
+        "lace uses at least one alpha value from 1 through 254 while the complete base layer remains opaque and visible through openings"
+      ],
+      "honestFailureAllowed": false
     },
     {
-      "id": "v1-036", "title": "Asymmetric fin silhouette", "mode": "create", "profile": "slim-arm-64", "difficulty": "stress",
-      "categories": ["single-reference", "drawing-reference", "slim-arm-64", "asymmetry", "difficult-silhouette", "outer-layer"],
+      "id": "v1-036",
+      "title": "Asymmetric fin silhouette",
+      "mode": "create",
+      "profile": "slim-arm-64",
+      "difficulty": "stress",
+      "categories": [
+        "single-reference",
+        "drawing-reference",
+        "slim-arm-64",
+        "asymmetry",
+        "difficult-silhouette",
+        "outer-layer"
+      ],
       "prompt": "Translate the single offset fin concept into a valid right-side head outer-layer motif; keep the left side plain and do not generate protruding geometry.",
-      "references": [{"id": "v1-036-fin", "role": "silhouette", "mediaKind": "synthetic-drawing", "syntheticSpecification": "Original block drawing of one curved teal fin offset to the figure's right, with a plain left side and no borrowed creature design.", "provenance": {"origin": "project-authored-synthetic", "rights": "evaluation-use-approved", "thirdPartyContent": false}, "materializedAsset": null}],
-      "revision": null, "expectedSignals": ["fin cue remains on right side only", "output stays within valid cuboid outer-layer geometry"], "honestFailureAllowed": false
+      "references": [
+        {
+          "id": "v1-036-fin",
+          "role": "silhouette",
+          "mediaKind": "synthetic-drawing",
+          "syntheticSpecification": "Original block drawing of one curved teal fin offset to the figure's right, with a plain left side and no borrowed creature design.",
+          "provenance": {
+            "origin": "project-authored-synthetic",
+            "rights": "evaluation-use-approved",
+            "thirdPartyContent": false
+          },
+          "materializedAsset": {
+            "path": "evaluations/voxl-humanoid-skin/v1/assets/references/v1-036-fin.png",
+            "sha256": "1d69885a86c6d88a7fdf651c5a4bbf0b634c2e7320bb50aa3f36d8805565b841",
+            "mimeType": "image/png"
+          }
+        }
+      ],
+      "revision": null,
+      "expectedSignals": [
+        "fin cue remains on right side only",
+        "output stays within valid cuboid outer-layer geometry"
+      ],
+      "honestFailureAllowed": false
     }
   ]
 }

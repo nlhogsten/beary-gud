@@ -83,3 +83,42 @@ export function createMappedPixelMask(profileId, layer) {
   }
   return mask;
 }
+
+export function createHumanoidSkinSelectionMask(profileId, selections) {
+  const profile = getHumanoidSkinProfile(profileId);
+  if (!Array.isArray(selections) || selections.length === 0) {
+    throw new Error("Humanoid-skin mask selections must be a non-empty array.");
+  }
+  const mask = new Uint8Array(profile.width * profile.height);
+  for (const selection of selections) {
+    if (!selection || typeof selection !== "object" || Array.isArray(selection)) {
+      throw new Error("Humanoid-skin mask selection must be an object.");
+    }
+    const region = getHumanoidSkinRegion(
+      profileId,
+      selection.part,
+      selection.layer,
+      selection.face,
+    );
+    const x = selection.x ?? 0;
+    const y = selection.y ?? 0;
+    const width = selection.width ?? region.width;
+    const height = selection.height ?? region.height;
+    if ([x, y, width, height].some((value) => !Number.isInteger(value))
+      || x < 0 || y < 0 || width <= 0 || height <= 0
+      || x + width > region.width || y + height > region.height) {
+      throw new Error("Humanoid-skin mask selection rectangle is outside its UV face.");
+    }
+    for (let row = region.y + y; row < region.y + y + height; row += 1) {
+      for (let column = region.x + x; column < region.x + x + width; column += 1) {
+        mask[row * profile.width + column] = 1;
+      }
+    }
+  }
+  return mask;
+}
+
+export function createUnusedPixelMask(profileId) {
+  const mapped = createMappedPixelMask(profileId);
+  return Uint8Array.from(mapped, (value) => value ? 0 : 1);
+}

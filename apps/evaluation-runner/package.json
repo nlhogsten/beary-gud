@@ -6,9 +6,10 @@
   "scripts": {
     "check": "bun src/cli.ts check",
     "adapters": "bun src/cli.ts adapters",
+    "assets": "bun src/cli.ts assets",
     "plan": "bun src/cli.ts plan",
     "replay": "bun src/cli.ts replay",
-    "test": "bun test src",
+    "test": "bun test src/core.test.ts && bun test src/assets.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

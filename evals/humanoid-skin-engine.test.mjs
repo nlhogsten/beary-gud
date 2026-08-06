@@ -9,8 +9,10 @@ import {
   HUMANOID_SKIN_PROFILE_IDS,
   HUMANOID_SKIN_PROFILES,
   createBlankHumanoidSkinDocument,
+  createHumanoidSkinSelectionMask,
   createHumanoidSkinEngine,
   createMappedPixelMask,
+  createUnusedPixelMask,
   decodeRgbaPng,
   encodeRgbaPng,
   exportHumanoidSkinPng,
@@ -56,6 +58,36 @@ test("defines non-overlapping wide and slim UV maps within the 64x64 atlas", () 
     getHumanoidSkinRegion("wide-arm-64", "left-arm", "outer", "back"),
     { part: "left-arm", layer: "outer", face: "back", x: 60, y: 52, width: 4, height: 12 },
   );
+});
+
+test("creates deterministic exact-face, cropped, union, and unused masks", () => {
+  const face = getHumanoidSkinRegion("slim-arm-64", "left-leg", "base", "front");
+  const cropped = createHumanoidSkinSelectionMask("slim-arm-64", [{
+    part: "left-leg",
+    layer: "base",
+    face: "front",
+    y: face.height - 4,
+    height: 4,
+  }]);
+  assert.equal(cropped.reduce((sum, value) => sum + value, 0), face.width * 4);
+  assert.equal(cropped[(face.y + face.height - 4) * 64 + face.x], 1);
+  assert.equal(cropped[(face.y + face.height - 5) * 64 + face.x], 0);
+
+  const union = createHumanoidSkinSelectionMask("wide-arm-64", [
+    { part: "torso", layer: "base", face: "front" },
+    { part: "torso", layer: "base", face: "back" },
+  ]);
+  assert.equal(union.reduce((sum, value) => sum + value, 0), 8 * 12 * 2);
+
+  const unused = createUnusedPixelMask("wide-arm-64");
+  assert.equal(
+    unused.reduce((sum, value) => sum + value, 0),
+    64 * 64 - createMappedPixelMask("wide-arm-64").reduce((sum, value) => sum + value, 0),
+  );
+  assert.throws(() => createHumanoidSkinSelectionMask("wide-arm-64", []), /non-empty/);
+  assert.throws(() => createHumanoidSkinSelectionMask("wide-arm-64", [{
+    part: "head", layer: "base", face: "front", x: 8, width: 1,
+  }]), /outside/);
 });
 
 test("validates fixture cases with actionable issue codes", async () => {

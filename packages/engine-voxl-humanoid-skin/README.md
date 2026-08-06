@@ -6,6 +6,7 @@ It currently provides:
 
 - Target-neutral `wide-arm-64` and `slim-arm-64` profiles.
 - Exact base and outer-layer UV face rectangles.
+- Deterministic selection masks for exact UV faces, region-local rectangular crops, unions, and unused atlas pixels.
 - A versioned in-memory document and JSON sidecar.
 - Deterministic validation for dimensions, RGBA length, profile consistency, unused pixels, and base transparency.
 - Non-interlaced 8-bit RGBA PNG import and export with checksum validation.

@@ -8,6 +8,7 @@ import {
   replayArtifact,
 } from "./core.ts";
 import { loadProviderCatalog } from "./catalog.ts";
+import { materializeEvaluationAssets } from "./assets.ts";
 
 const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const [command = "check", ...args] = process.argv.slice(2);
@@ -18,11 +19,26 @@ function option(name: string): string | undefined {
 }
 
 if (command === "check") {
-  const [specification, catalog] = await Promise.all([
+  const [specification, catalog, assetIntegrity] = await Promise.all([
     loadAndValidateSpecification(repoRoot),
     loadProviderCatalog(repoRoot),
+    materializeEvaluationAssets(repoRoot, "check"),
   ]);
-  console.log(JSON.stringify(evaluationReadiness(specification, catalog), null, 2));
+  const readiness = evaluationReadiness(specification, catalog);
+  const result = {
+    ...readiness,
+    executionReady: readiness.executionReady && assetIntegrity.ok,
+    blockers: assetIntegrity.ok
+      ? readiness.blockers
+      : [...readiness.blockers, "Materialized evaluation asset integrity check failed."],
+    assetIntegrity: {
+      ok: assetIntegrity.ok,
+      files: assetIntegrity.files,
+      issues: assetIntegrity.issues,
+    },
+  };
+  console.log(JSON.stringify(result, null, 2));
+  if (!assetIntegrity.ok) process.exitCode = 1;
 } else if (command === "adapters") {
   const catalog = await loadProviderCatalog(repoRoot);
   console.log(JSON.stringify({
@@ -59,6 +75,12 @@ if (command === "check") {
     status: result.attempt.outcome.status,
     directory: result.directory,
   }, null, 2));
+} else if (command === "assets") {
+  const mode = args[0] ?? "check";
+  if (mode !== "check" && mode !== "write") throw new Error("assets requires either check or write.");
+  const result = await materializeEvaluationAssets(repoRoot, mode);
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
 } else {
   throw new Error(`Unknown evaluation command '${command}'.`);
 }

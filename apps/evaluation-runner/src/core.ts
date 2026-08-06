@@ -39,15 +39,16 @@ export interface EvaluationCase extends JsonObject {
   categories: string[];
   references: Array<JsonObject & { materializedAsset: null | { path: string; sha256: string; mimeType: string } }>;
   revision: null | (JsonObject & {
-    baselineAsset: null | { path: string; sha256: string };
+    baselineAsset: null | { path: string; sha256: string; mimeType: "image/png" };
+    protectionMode: "all-mapped-except-editable";
     editableRegions: string[];
     protectedRegions: string[];
     immutableRegions: string[];
     maximumProtectedChangedTexelRate: number;
     materializedMasks: null | {
-      editable: { path: string; sha256: string };
-      protected: { path: string; sha256: string };
-      immutable: { path: string; sha256: string };
+      editable: { path: string; sha256: string; mimeType: "image/png" };
+      protected: { path: string; sha256: string; mimeType: "image/png" };
+      immutable: { path: string; sha256: string; mimeType: "image/png" };
     };
   });
 }
@@ -170,6 +171,10 @@ export async function loadAndValidateSpecification(repoRoot: string): Promise<Ev
   const typedRubric = rubric as EvaluationSpecification["rubric"];
   const ids = typedCases.cases.map((item) => item.id);
   if (new Set(ids).size !== ids.length) throw new Error("Evaluation case IDs must be unique.");
+  const referenceIds = typedCases.cases.flatMap((item) => item.references.map((reference) => reference.id));
+  if (new Set(referenceIds).size !== referenceIds.length) {
+    throw new Error("Evaluation reference IDs must be globally unique.");
+  }
   if (typedCases.requiredCategories.length !== REQUIRED_CATEGORY_COUNT) {
     throw new Error(`Evaluation must declare exactly ${REQUIRED_CATEGORY_COUNT} required categories.`);
   }
@@ -243,6 +248,7 @@ export function planEvaluationCase(options: {
   if (provider.descriptor.billingRisk === "possible") blockers.push("paid-call-not-authorized");
 
   const revisionPolicy = evaluationCase.revision ? {
+    protectionMode: evaluationCase.revision.protectionMode,
     editableRegions: evaluationCase.revision.editableRegions,
     protectedRegions: evaluationCase.revision.protectedRegions,
     immutableRegions: evaluationCase.revision.immutableRegions,
@@ -445,6 +451,7 @@ export async function replayArtifact(options: {
       baselineSha256: evaluationCase.revision?.baselineAsset?.sha256 ?? null,
       editableMaskSha256: evaluationCase.revision?.materializedMasks?.editable.sha256 ?? null,
       protectedMaskSha256: evaluationCase.revision?.materializedMasks?.protected.sha256 ?? null,
+      immutableMaskSha256: evaluationCase.revision?.materializedMasks?.immutable.sha256 ?? null,
     },
     rawOutput: artifact(rawPath, options.candidateBytes),
     normalization: { operations: normalizationOperations, policyVersion: "humanoid-replay/v1", manuallyRepaired: false },

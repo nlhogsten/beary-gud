@@ -32,6 +32,16 @@ export type HumanoidSkinProfile = {
   byKey: Readonly<Record<string, HumanoidSkinRegion>>;
 };
 
+export type HumanoidSkinRegionSelection = {
+  part: HumanoidSkinPart;
+  layer: HumanoidSkinLayer;
+  face: HumanoidSkinFace;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+};
+
 export type HumanoidSkinSidecar = {
   kind: "voxl.humanoid-skin.sidecar/v1";
   formatVersion: 1;
@@ -80,6 +90,11 @@ export function getHumanoidSkinRegion(
   face: HumanoidSkinFace,
 ): HumanoidSkinRegion;
 export function createMappedPixelMask(profileId: HumanoidSkinProfileId, layer?: HumanoidSkinLayer): Uint8Array;
+export function createHumanoidSkinSelectionMask(
+  profileId: HumanoidSkinProfileId,
+  selections: readonly HumanoidSkinRegionSelection[],
+): Uint8Array;
+export function createUnusedPixelMask(profileId: HumanoidSkinProfileId): Uint8Array;
 
 export function createHumanoidSkinSidecar(
   profile: HumanoidSkinProfileId,

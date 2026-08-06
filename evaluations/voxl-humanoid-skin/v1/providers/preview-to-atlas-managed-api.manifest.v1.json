@@ -2,10 +2,10 @@
   "schemaVersion": "voxl.generation-provider-manifest/v1",
   "descriptor": {
     "id": "preview-to-atlas-managed-api",
-    "version": "0.1.0",
-    "providerId": "managed-api-candidate",
-    "modelId": "unselected-managed-model",
-    "modelVersion": "pending-selection",
+    "version": "0.2.0",
+    "providerId": "openai",
+    "modelId": "gpt-image-2",
+    "modelVersion": "gpt-image-2-2026-04-21",
     "networkAccess": "required",
     "billingRisk": "possible",
     "supportedOperations": ["create", "revise"]
@@ -14,16 +14,20 @@
   "computeOwnership": "provider-managed",
   "credentialMode": "external-at-execution",
   "configuration": {
-    "id": "managed-api-evaluation-defaults",
+    "id": "preview-to-atlas-api-evaluation-defaults",
     "values": {
       "acceptedOutputMediaTypes": ["image/png"],
-      "requestPurpose": "generation-evaluation"
+      "apiSurface": "image-api",
+      "outputQuality": "medium",
+      "outputSize": "1024x1024",
+      "requestPurpose": "generation-evaluation",
+      "snapshot": "gpt-image-2-2026-04-21"
     }
   },
-  "configurationSha256": "371aaa42def70438755539735e5523583ff7c4e72c6e6203e76a2f5cfb7bbc0d",
+  "configurationSha256": "7678888b6778370c07b662c64b3503fdd8cbff6221bdc4e87783f7493dd8b67f",
   "provenanceDossier": {
     "id": "preview-to-atlas-managed-api-review",
     "path": "preview-to-atlas-managed-api.dossier.v1.json",
-    "sha256": "1bfef8742f87646b9e8d5b8ebc4a3ee698c549b0aca7681d28f00bb7ca622cac"
+    "sha256": "eaa0d48af25a9e8c34812f74a25b587474bb81b12b8f1773b47b34c67618e9f1"
   }
 }

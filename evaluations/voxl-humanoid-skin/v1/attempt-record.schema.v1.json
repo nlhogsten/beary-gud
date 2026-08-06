@@ -90,13 +90,14 @@
     },
     "inputs": {
       "type": "object",
-      "required": ["normalizedPromptSha256", "references", "baselineSha256", "editableMaskSha256", "protectedMaskSha256"],
+      "required": ["normalizedPromptSha256", "references", "baselineSha256", "editableMaskSha256", "protectedMaskSha256", "immutableMaskSha256"],
       "properties": {
         "normalizedPromptSha256": { "$ref": "#/$defs/sha256" },
         "references": { "type": "array", "items": { "$ref": "#/$defs/sha256" } },
         "baselineSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
         "editableMaskSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
-        "protectedMaskSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
+        "protectedMaskSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "immutableMaskSha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
       },
       "additionalProperties": false
     },

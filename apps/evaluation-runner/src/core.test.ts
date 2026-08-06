@@ -50,14 +50,14 @@ describe("generation evaluation specification", () => {
       caseCount: 36,
       referenceBearingCases: 18,
       revisionCases: 4,
-      missingRevisionBaselines: 4,
-      missingRevisionMaskSets: 4,
+      missingRevisionBaselines: 0,
+      missingRevisionMaskSets: 0,
       cataloguedProviderCandidates: 1,
       pendingProviderCandidates: 1,
       provenanceAdmittedProviderCandidates: 0,
       executableProviderAdapters: 0,
     });
-    assert.ok(readiness.missingReferenceAssets >= 18);
+    assert.equal(readiness.missingReferenceAssets, 0);
     assert.ok(readiness.blockers.includes("No provider candidate has completed provenance admission."));
   });
 
@@ -118,7 +118,7 @@ describe("managed API dry-run planning", () => {
     }
   });
 
-  test("reports missing reference inputs without trying to materialize them", async () => {
+  test("binds materialized reference inputs without reading or transmitting them", async () => {
     const [specification, catalog] = await Promise.all([
       loadAndValidateSpecification(repoRoot),
       loadProviderCatalog(repoRoot),
@@ -129,12 +129,13 @@ describe("managed API dry-run planning", () => {
       adapterId: "preview-to-atlas-managed-api",
       caseId: "v1-007",
     });
-    assert.ok(plan.blockers.includes("missing-reference-assets"));
-    assert.deepEqual(plan.case.referenceSha256s, [null]);
+    assert.equal(plan.blockers.includes("missing-reference-assets"), false);
+    assert.equal(plan.case.referenceSha256s.length, 1);
+    assert.match(plan.case.referenceSha256s[0]!, /^[a-f0-9]{64}$/);
     assert.equal(plan.execution.adapterInvoked, false);
   });
 
-  test("binds revision policy and missing masks into the dry-run identity and blockers", async () => {
+  test("binds revision policy and materialized masks into the dry-run identity", async () => {
     const [specification, catalog] = await Promise.all([
       loadAndValidateSpecification(repoRoot),
       loadProviderCatalog(repoRoot),
@@ -145,10 +146,10 @@ describe("managed API dry-run planning", () => {
       adapterId: "preview-to-atlas-managed-api",
       caseId: "v1-027",
     });
-    assert.ok(first.blockers.includes("missing-revision-baseline"));
-    assert.ok(first.blockers.includes("missing-revision-masks"));
+    assert.equal(first.blockers.includes("missing-revision-baseline"), false);
+    assert.equal(first.blockers.includes("missing-revision-masks"), false);
     assert.notEqual(first.case.revisionPolicySha256, null);
-    assert.equal(first.case.editableMaskSha256, null);
+    assert.match(first.case.editableMaskSha256!, /^[a-f0-9]{64}$/);
     assert.match(first.providerDescriptorSha256, /^[a-f0-9]{64}$/);
 
     const changed = structuredClone(specification);

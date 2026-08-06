@@ -1,19 +1,56 @@
 {
   "schemaVersion": "voxl.provider-provenance-dossier/v1",
   "id": "preview-to-atlas-managed-api-review",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "candidateId": "preview-to-atlas-managed-api",
   "decision": "pending",
-  "reviewedAt": null,
+  "reviewedAt": "2026-08-06T07:27:37Z",
   "checks": {
-    "commercialUse": "pending",
-    "modelProvenance": "pending",
+    "commercialUse": "approved",
+    "modelProvenance": "approved",
     "datasetProvenance": "pending",
-    "referenceUse": "pending",
-    "retention": "pending"
+    "referenceUse": "approved",
+    "retention": "approved"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "id": "commercial-services-agreement-2026-01-01",
+      "check": "commercialUse",
+      "source": "OpenAI Services Agreement, effective 2026-01-01: https://cdn.openai.com/osa/openai-services-agreement.pdf",
+      "checkedAt": "2026-08-06T07:27:37Z"
+    },
+    {
+      "id": "model-snapshot-2026-04-21",
+      "check": "modelProvenance",
+      "source": "GPT Image 2 model page and fixed snapshot: https://developers.openai.com/api/docs/models/gpt-image-2",
+      "checkedAt": "2026-08-06T07:27:37Z"
+    },
+    {
+      "id": "model-capabilities-2026-08-05",
+      "check": "modelProvenance",
+      "source": "Image generation guide for generation, editing, masks, reference limits, fidelity, output controls, and cost calculation: https://developers.openai.com/api/docs/guides/image-generation",
+      "checkedAt": "2026-08-06T07:27:37Z"
+    },
+    {
+      "id": "training-data-summary-2026-08-05",
+      "check": "datasetProvenance",
+      "source": "Official training-data summary provides categories rather than a model-specific licensed-source inventory and includes copyrighted material: https://help.openai.com/en/articles/20001044-training-data-summary-pursuant-to-california-civil-code-section-3111.jar",
+      "checkedAt": "2026-08-06T07:27:37Z"
+    },
+    {
+      "id": "synthetic-reference-rights-2026-08-05",
+      "check": "referenceUse",
+      "source": "Evaluation approval is limited to the committed project-authored synthetic fixtures; customer content is excluded. Input-rights obligations are recorded in the OpenAI Services Agreement: https://cdn.openai.com/osa/openai-services-agreement.pdf",
+      "checkedAt": "2026-08-06T07:27:37Z"
+    },
+    {
+      "id": "image-api-retention-2026-08-05",
+      "check": "retention",
+      "source": "API data controls: image generation/edit endpoints have no application-state retention, default abuse-monitoring retention up to 30 days, and Zero Data Retention eligibility subject to documented exceptions: https://developers.openai.com/api/docs/guides/your-data",
+      "checkedAt": "2026-08-06T07:27:37Z"
+    }
+  ],
   "blockers": [
-    "A managed API provider and model have not been selected or reviewed."
+    "The public training-data disclosure is category-level and does not provide a model-specific licensed-source inventory; human legal/product review must decide whether that satisfies VOXL's dataset-provenance requirement before admission or any API call."
   ]
 }

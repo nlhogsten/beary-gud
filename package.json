@@ -38,6 +38,7 @@
     "qa:smoke": "bun run --cwd apps/quality-runner walkthrough studio-smoke",
     "eval:check": "bun run --cwd apps/evaluation-runner check",
     "eval:adapters": "bun run --cwd apps/evaluation-runner adapters",
+    "eval:assets": "bun run --cwd apps/evaluation-runner assets",
     "eval:plan": "bun run --cwd apps/evaluation-runner plan",
     "eval:replay": "bun run --cwd apps/evaluation-runner replay",
     "env:init": "./scripts/env-local.sh init",

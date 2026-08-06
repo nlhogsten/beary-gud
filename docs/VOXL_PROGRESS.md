@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 5 — generative-provider research spike.** Phases 0–4 are complete. The studio, synchronized 2D/3D editor, profile-valid export, and named local versions are verified. The fixed evaluation specification, offline harness, managed-API candidate catalog, and no-call dry-run planner exist. Current work is materializing the synthetic reference/baseline assets and completing provenance review for an API-accessible candidate. VOXL does not plan to rent or manage GPUs.
+**Phase 5 — generative-provider research spike.** Phases 0–4 are complete. The studio, synchronized 2D/3D editor, profile-valid export, and named local versions are verified. The fixed evaluation specification, offline harness, no-call dry-run planner, and all deterministic reference/baseline/mask fixtures exist and pass integrity checks. A first managed-API candidate and pinned model snapshot are documented, but dataset provenance remains pending, so the provider is not admitted and no API call is authorized. VOXL does not plan to rent or manage GPUs.
 
 ## Platform and repository foundation
 
@@ -168,11 +168,12 @@ Status: **in progress**
 - [x] Record the API-first/no-VOXL-GPU architecture decision and research current hosted generation/editing candidates from official sources without selecting one.
 - [x] Add schemas and a metadata-only catalog for managed-API candidates with explicit provenance decisions, provider-managed compute, secret rejection, integrity hashes, and separate executable-adapter counts.
 - [x] Add deterministic `eval:plan` output that binds the complete case, rubric, provider descriptor/configuration, provenance dossier, revision policy, and materialized-input hashes while proving it reads no credentials, invokes no adapter, uses no network, makes no paid call, and writes no provider attempt evidence.
+- [x] Identify and document the first conditional managed-API candidate, fixed snapshot, evaluation configuration, price floor, retention scope, official evidence, and unresolved dataset-provenance blocker without admitting or calling it.
 
 ### Remaining experiment gate
 
-- [ ] Materialize and SHA-256 lock 25 synthetic reference assets used by 18 cases.
-- [ ] Materialize and SHA-256 lock four revision baselines plus editable/protected masks.
+- [x] Materialize and SHA-256 lock 25 synthetic reference assets used by 18 cases.
+- [x] Materialize and SHA-256 lock four revision baselines plus editable/protected/immutable masks.
 - [ ] Complete model, dataset, commercial-use, reference-use, and retention provenance review for at least one candidate.
 - [ ] Implement and admit a real API-accessible `preview-to-atlas` provider adapter only after provenance review.
 - [ ] Run the fixed experiment through managed-provider APIs and reproducible host-native compute where available, without charging product entitlements.
@@ -265,4 +266,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Materialize and SHA-256 lock the synthetic Phase 5 reference assets, revision baselines, and masks, then complete provenance review for the first API-accessible candidate.
+Resolve the documented dataset-provenance decision for the first conditional API candidate. If it is approved for the synthetic research run, implement the adapter and capped shakedown; if the strict licensed/public-domain-only gate remains, evaluate the documented provenance-oriented fallback instead.
