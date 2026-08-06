@@ -1,0 +1,571 @@
+# VOXL product research and architecture
+
+Research captured on August 4, 2026 and revised on August 5, 2026. Product policies, model availability, pricing, and external compatibility rules can change; recheck primary sources in the restricted compliance record before launch.
+
+Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) whenever a product, AI, graphics, service, or billing term is unfamiliar.
+
+## Decision summary
+
+VOXL should be developed as a componentized AI-native asset studio with a web service and optional chat clients. The first new asset engine, `voxl-humanoid-skin`, should produce valid 64x64 cuboid-humanoid texture atlases in the `wide-arm-64` and `slim-arm-64` export profiles. The existing Bash-derived `transparent-character` workflow must remain a first-class engine rather than being replaced or forced into the humanoid-skin schema.
+
+The product does not need a custom 3D generative model to begin. Three systems that have different jobs must not be conflated:
+
+1. **Conversation and reasoning:** Codex or Claude interprets natural language and reference images, produces a structured character brief, chooses editing operations, and explains results.
+2. **Skin construction:** Deterministic code or an optional specialized image model creates a valid 64x64 RGBA texture atlas.
+3. **3D preview:** A conventional browser renderer wraps that 2D texture around fixed cuboid-humanoid geometry. It displays the skin; it does not invent the character.
+
+The intended VOXL humanoid-skin generator is generative-first and multimodal: text, reference images, an existing skin, masks, sketches, palettes, and future input types can condition full pixel synthesis. Structured fields such as hair color are optional control metadata, not the vocabulary or limit of creation. A procedural constructor remains useful as a test fixture and fallback, but it is not the long-term creative core.
+
+The first vertical slice does not require production GPU infrastructure, but it must evaluate a real open-ended preview-to-atlas model early. Production hosting should be designed only after that experiment establishes quality, latency, memory, and cost.
+
+## Target-neutral naming policy
+
+VOXL's product architecture must never use an external application, game, platform, publisher, or model brand as the identity of an artifact engine. Names describe the visual object and its geometry:
+
+- Engine: `voxl-humanoid-skin`.
+- Document kind: `voxl.humanoid-skin/v1`.
+- Export profiles: `wide-arm-64` and `slim-arm-64`.
+- Renderer capability: `cuboid-humanoid-renderer`.
+- Provider capability: `preview-to-atlas`, regardless of the model used behind it.
+- Package: `engine-voxl-humanoid-skin`.
+
+This rule applies to package names, API and MCP schemas, database values, prompts, fixtures, logs, analytics, UI labels, plugin metadata, public copy, and source documentation. Compatibility with an external destination belongs behind a neutral export-profile adapter and conformance test. It does not fork or rename the artifact engine. Target- and publisher-specific research belongs in a restricted legal/compliance record outside the product namespace and is not copied into product-facing repository documentation.
+
+## The central mental model
+
+A VOXL humanoid skin is not a generated 3D mesh. Its character body already exists as fixed cuboid geometry. The skin is a small 2D PNG whose pixel regions map to the head, torso, arms, and legs. The 3D viewer folds that fixed UV atlas around the fixed body.
+
+```text
+User prompt + optional reference image
+                  |
+                  v
+        Codex or Claude (the brain)
+        - understands the request
+        - extracts colors and features
+        - decides what must be preserved
+                  |
+                  v
+   Multimodal generation request and optional controls
+                  |
+                  v
+       Skin constructor (the hands)
+       - generative provider for open-ended synthesis
+       - procedural provider only as fallback/fixture
+                  |
+                  v
+         Valid 64x64 RGBA skin PNG
+             /                \
+            v                  v
+   3D browser preview      2D pixel editor
+            \                  /
+             v                v
+          revisions, validation, download
+```
+
+Codex and Claude are still heavily leveraged. They provide the natural-language interface, image understanding, planning, selective-edit reasoning, and tool orchestration. The deterministic code provides precision that a general LLM or image model cannot guarantee.
+
+This is analogous to asking an LLM to edit a spreadsheet: the LLM decides what should change, while spreadsheet code performs exact cell operations. The spreadsheet library is not a replacement for the LLM. A skin library has the same relationship to the conversational model.
+
+## Open-ended inputs and structured controls
+
+The hosted engine should not accept only a closed character-customizer schema. Its primary request contains raw multimodal inputs:
+
+```ts
+type GenerationRequest = {
+  engineId: string;
+  prompt: string;
+  references: FileReference[];
+  existingDocument?: AssetDocumentReference;
+  editMask?: FileReference;
+  preserveMasks?: FileReference[];
+  desiredOutputs: string[];
+  controls?: Record<string, unknown>;
+};
+```
+
+`references` may contain photos, drawings, palettes, textures, existing skins, sketches, or future supported file types. The generative provider consumes their pixels or embeddings directly. It does not need a programmer to anticipate concepts such as moss, asymmetric armor, spiral patterns, galaxy gradients, or a symbol continuing around the back.
+
+`controls` provides optional reproducibility and editing hints such as model type, seed, preserve constraints, or a known semantic region. Those controls improve precision; they do not define the set of things the model can create.
+
+After generation, semantic masks and descriptions become a control plane for revision. A complex generated asset can be analyzed into regions such as face, hair, armor, cloak, emblem, or outer layer. The user can then request a localized edit while the system sends the existing asset, a mask, the edit instruction, and preservation constraints back to an image-editing provider.
+
+The product is open-ended within the physical capacity of the visual format. A `voxl-humanoid-skin` atlas has only 64x64 pixels split across UV faces, so fine details must be compressed into pixel art. That resolution is the creative constraint; a VOXL feature catalog should not be.
+
+## What Codex subscription compute can and cannot do
+
+Codex can:
+
+- Read an attached reference image.
+- Interpret a text request and convert it to structured data.
+- Run local plugin scripts that assemble, modify, validate, and export a skin.
+- Use built-in image generation with reference images. OpenAI currently states that built-in image generation uses the user's general Codex allowance.
+- Call an authenticated remote MCP service when durable accounts, storage, cross-device history, or hosted inference are needed.
+
+Codex does not give a third-party backend a general token that lets that backend make arbitrary model API calls against the user's ChatGPT subscription. The work has to occur inside the Codex turn through available native tools, or the external service must pay for and meter its own inference.
+
+This produces two different uses of the word "credit":
+
+- **OpenAI/Anthropic usage:** consumed by the user's conversation and native tools.
+- **VOXL product credits:** entitlements for compute performed on VOXL infrastructure.
+
+They are separate systems. VOXL should not pretend that a user's ChatGPT or Claude subscription automatically pays VOXL's GPU bill.
+
+Relevant sources:
+
+- [OpenAI image generation in ChatGPT and Codex](https://learn.chatgpt.com/docs/image-generation)
+- [OpenAI plugin architecture](https://developers.openai.com/plugins/concepts/plugins)
+- [OpenAI MCP server and UI architecture](https://developers.openai.com/plugins/build/chatgpt-ui)
+- [Anthropic: Claude can analyze but does not natively produce raster images](https://support.claude.com/en/articles/9002504-can-claude-produce-images)
+
+## Three viable compute designs
+
+### Option A: local/BYO reasoning with deterministic construction
+
+```text
+Codex or Claude subscription
+  -> understands prompt/reference
+  -> emits CharacterBrief and edit operations
+  -> runs bundled local skin code
+  -> exports PNG locally
+```
+
+VOXL hosts no model and pays no generation bill.
+
+Advantages:
+
+- Lowest operating complexity and cost.
+- Private by default because references and skins can remain local.
+- Demonstrates the conversational workflow immediately.
+- Works in both Codex and Claude because both can reason about images and run code.
+
+Limitations:
+
+- A template/parts library may produce less faithful likenesses.
+- Local skills and scripts are copied to the user's machine, so they are difficult to protect or meter.
+- Results can differ across host models and product surfaces.
+- Claude has no native raster image generator, so only reasoning and procedural construction are portable there.
+
+Best use: deterministic testing, offline/manual editing, a free local tier, and fallback behavior. It is not the intended answer for open-ended high-fidelity generation.
+
+### Option B: hybrid native reasoning plus VOXL specialization
+
+```text
+Codex or Claude subscription
+  -> understands the request and prepares a canonical brief/preview
+  -> calls VOXL MCP
+VOXL service
+  -> performs only specialized atlas construction or storage
+  -> returns a validated PNG and editor state
+```
+
+VOXL pays only for the part that must be consistent across hosts.
+
+Advantages:
+
+- Preserves substantial use of the customer's existing AI subscription.
+- Gives VOXL a server-controlled capability that can be authenticated and metered.
+- Provides consistent skin validity, accounts, history, and cross-device projects.
+- Supports both Codex and Claude through the same remote MCP contract.
+
+Limitations:
+
+- More infrastructure than the local proof of concept.
+- The handoff format between the host LLM and VOXL must be tightly specified.
+- High-fidelity generation may still require a GPU endpoint.
+
+Best use: the likely commercial architecture after product validation.
+
+### Option C: fully hosted VOXL generation
+
+```text
+Any web or chat client
+  -> sends prompt and references to VOXL
+VOXL service
+  -> calls its own multimodal/image APIs or GPU model
+  -> constructs, validates, stores, and exports the skin
+```
+
+Advantages:
+
+- Most consistent experience across web, Codex, ChatGPT, Claude, and future clients.
+- Straightforward VOXL usage metering.
+- The model pipeline and prompts remain server-side.
+
+Limitations:
+
+- Highest inference cost and operational burden.
+- Requires upload privacy, retention, moderation, and abuse controls.
+- Duplicates some capabilities users already pay for in their AI subscriptions.
+
+Best use: only when tests show that consistent quality is worth the additional complexity.
+
+## Recommended sequence
+
+Do not build production GPU infrastructure up front. Prove the experience in this order:
+
+1. Define the shared engine contract and extract the existing workflow as `transparent-character` without changing its behavior.
+2. Build a deterministic `voxl-humanoid-skin` document, validator, renderer, editor, and exporter.
+3. Create a fixed multimodal evaluation set with complex text and image references.
+4. Run a real preview-to-atlas checkpoint on a temporary local, notebook, or rented GPU and record quality, latency, memory, and cost.
+5. Connect the successful provider behind the `voxl-humanoid-skin` engine and add localized generative edits.
+6. Test the complete generation and refinement loop with users.
+7. Add durable accounts, remote MCP, and billing only after the loop is useful.
+8. Turn the experimental inference setup into a hosted service only when measured usage justifies it.
+
+This order protects the current product, avoids constraining VOXL to templates, and prevents the project from becoming a production GPU-infrastructure project before the model path is validated.
+
+## Componentized artifact-engine architecture
+
+VOXL must distinguish an **artifact engine** from a **generation provider**.
+
+- An artifact engine knows a visual format and its lifecycle: document schema, supported inputs, validation, editing, rendering, and export.
+- A generation provider supplies compute: Codex-native tools, an external API, a self-hosted preview-to-atlas model, a procedural fallback, or a future provider.
+- A renderer presents an engine document. It is not itself the generator.
+
+The same provider can support several engines, and one engine can choose among several providers.
+
+```text
+Shared VOXL platform
+  projects / files / versions / jobs / auth / entitlements / MCP
+                              |
+                         Engine registry
+                    /                         \
+                   v                           v
+   transparent-character engine    voxl-humanoid-skin engine
+   - character.json + frame grids      - 64x64 RGBA + semantic masks
+   - animation validator               - UV/model validator
+   - PNG/APNG/MOV renderer             - 2D/3D renderer and editor
+   - Bash safe importer            - profile-valid PNG exporter
+                   \                           /
+                    v                         v
+                     Generation providers
+        native host / hosted model / API / procedural fallback
+```
+
+An engine contract should be capability-driven so future engines can omit features they do not need:
+
+```ts
+interface AssetEngine<TDocument> {
+  id: string;
+  version: string;
+  capabilities: EngineCapabilities;
+
+  create(request: GenerationRequest): Promise<EngineJob<TDocument>>;
+  revise(request: RevisionRequest<TDocument>): Promise<EngineJob<TDocument>>;
+  validate(document: TDocument): Promise<ValidationResult>;
+  render(document: TDocument, options: RenderOptions): Promise<RenderedArtifact[]>;
+  export(document: TDocument, format: string): Promise<ExportedArtifact>;
+}
+```
+
+The contract must not require every engine to share one document schema or pretend every asset is a skin. Engine-specific packages own their types and migrations. Shared platform records refer to documents through `engineId`, `engineVersion`, and a typed document reference.
+
+Initial engine IDs:
+
+- `transparent-character`: the current Bash-derived transparent pixel animation system and Premiere-ready exports.
+- `voxl-humanoid-skin`: multimodal generation, revision, validation, 2D/3D editing, and `wide-arm-64`/`slim-arm-64` PNG export.
+
+Possible future engines include voxel props, animated sprites, texture packs, other avatar geometries, or video-overlay characters. Adding one should require registering an engine package and its UI module, not changing all existing engines.
+
+## Proposed skin document
+
+The durable product object should be a PNG plus a structured sidecar rather than the current palette-symbol animation grid.
+
+```json
+{
+  "formatVersion": 1,
+  "profile": "wide-arm-64",
+  "texture": "skin.png",
+  "palette": ["#24170f", "#b82332", "#f2c6a0"],
+  "regions": {
+    "hair": { "mask": "masks/hair.png" },
+    "face": { "mask": "masks/face.png" },
+    "jacket": { "mask": "masks/jacket.png" }
+  },
+  "references": [],
+  "operations": [],
+  "versions": []
+}
+```
+
+The exact schema is still exploratory. Important properties are:
+
+- Fixed 64x64 RGBA output.
+- Explicit `wide-arm-64`/`slim-arm-64` export-profile selection.
+- Base and outer/overlay layers.
+- Semantic masks for controlled revisions.
+- Version history so edits can preserve or restore regions.
+- Provenance and retention metadata for uploaded references.
+
+Example operations:
+
+- Recolor only the jacket.
+- Replace the hair while preserving the face.
+- Mirror one sleeve to the other.
+- Add or remove the outer-layer hood.
+- Convert `wide-arm-64` geometry to `slim-arm-64` geometry.
+- Restore the shoes from a previous version.
+
+## Generation approaches
+
+### Procedural constructor
+
+The LLM emits fields such as hairstyle, skin tone, top, pants, shoes, accessories, palette, and shading style. Deterministic code chooses or combines compatible parts and writes them into known UV regions.
+
+This approach is highly controllable but creatively limited. Keep it for fixtures, deterministic examples, offline fallback, and possibly simple starter assets. Do not make it the main generator for the open-ended product vision.
+
+### Direct image generation
+
+Asking a general image model to emit a finished UV atlas in one step is unreliable. The output may look like a skin while placing body parts in the wrong coordinates, blurring pixel edges, filling unused transparent regions, or making the front and back inconsistent.
+
+Native image generation is still useful for producing a canonical front/back concept preview. Codex can use a customer's native image allowance for this step where available.
+
+### Specialized preview-to-atlas model
+
+March 2026 research separates the task into:
+
+1. Character reference to a standardized front/back cuboid-humanoid preview.
+2. Preview to a 64x64 UV atlas with a specialized image-to-image model.
+3. Deterministic downsampling and structure enforcement.
+
+The published candidate checkpoint is a 4-billion-parameter image-to-image model. Its model card labels it Apache 2.0 and describes approximately 13 GB of VRAM for the FLUX.2 Klein 4B base. It is not currently deployed by a standard Hugging Face inference provider, so production use would require a compatible custom endpoint or local GPU.
+
+This is the first serious candidate to evaluate behind a provider identified only by its capability, `preview-to-atlas`. It is not coupled to the engine contract and can be replaced if evaluation shows insufficient quality or unsuitable provenance.
+
+Sources retained without turning third-party names into VOXL component identities:
+
+- [Preview-to-atlas research paper](https://arxiv.org/abs/2603.03964)
+- [Candidate checkpoint and example inference](https://huggingface.co/AliceKJ/BLOCKv0.6)
+- [Base model card and license](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4B)
+
+Commercial use requires a separate provenance review. A model license alone does not settle training-data or third-party-rights questions. Target-specific datasets and conformance sources must be reviewed in the restricted compliance record rather than named in product architecture.
+
+## 3D preview and editing
+
+VOXL does not need to train or generate a 3D body. The body geometry is fixed. A browser renderer loads the 64x64 PNG as a texture and maps its UV regions onto cubes representing the head, torso, arms, and legs.
+
+The implementation should place any permissively licensed viewer library behind `cuboid-humanoid-renderer`. The adapter must support base and overlay rendering, both export-profile geometries, and animations without leaking an external target name into product code. Direct painting requires raycasting that converts a clicked 3D face back to the corresponding texture pixel.
+
+The editor should support:
+
+- Rotate and zoom.
+- `wide-arm-64`/`slim-arm-64` profile selection.
+- Base/overlay visibility.
+- Body-part visibility.
+- Pencil, eraser, fill, color picker, and palette tools.
+- 2D atlas and 3D views that remain synchronized.
+- Semantic region selection.
+- Undo/redo and named versions.
+- Side-by-side comparison.
+- Profile-valid PNG download.
+
+## Chat plugin and MCP boundary
+
+An installable plugin can contain:
+
+- A skill that teaches Codex or Claude the VOXL workflow.
+- Local scripts for deterministic transformations and export.
+- A remote MCP connection for authenticated VOXL tools.
+- Optional MCP Apps UI where the host supports interactive components.
+
+The MCP server should expose small, explicit tools rather than one opaque `do_everything` call:
+
+- `create_skin`
+- `revise_skin`
+- `get_skin`
+- `render_skin_preview`
+- `validate_skin`
+- `export_skin`
+- `get_generation_status`
+
+Long generation should return a job ID and be polled rather than holding one tool call open. Data-processing tools should be separate from the final render/editor tool so a component is mounted only when visual interaction is helpful.
+
+Authoritative projects, accounts, entitlements, and version history belong on the VOXL service. Temporary camera position, selected tool, and open panels belong in the UI.
+
+Sources:
+
+- [OpenAI plugin architecture](https://developers.openai.com/plugins/concepts/plugins)
+- [OpenAI: add UI to an MCP server](https://developers.openai.com/plugins/build/chatgpt-ui)
+- [OpenAI: build an MCP server](https://developers.openai.com/plugins/build/mcp-server)
+- [OpenAI plugin submission process](https://developers.openai.com/plugins/deploy/submission)
+- [Anthropic remote MCP support](https://www.anthropic.com/news/claude-code-remote-mcp)
+- [Anthropic plugin creation](https://code.claude.com/docs/en/plugins)
+- [Anthropic plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
+
+## Monetization findings
+
+OpenAI's current public-plugin policy is a major product constraint:
+
+- Plugins may conduct commerce only for physical goods.
+- Digital services, subscriptions, digital content, tokens, and credits cannot be sold directly or indirectly through the plugin.
+- A user may sign in to an existing paid account and access features already purchased elsewhere.
+- The plugin may not present plans, start a subscription, or promote an upgrade.
+
+Therefore the web product must own pricing and checkout. The public plugin can authenticate existing customers, but it cannot be treated as the paid checkout funnel while this policy remains in force.
+
+OpenAI also says public submissions must be complete and reliable; trial or demo plugins are not accepted. VOXL should use local/private marketplace installation during development and submit only after the underlying service is production-ready.
+
+Claude Code can install plugins from public or private Git repositories. Because installed plugin files are copied to a local cache, private-repository access is useful for distribution but is not strong usage metering or durable copy protection.
+
+Sources:
+
+- [OpenAI plugin commerce and monetization rules](https://developers.openai.com/plugins/app-guidelines#commerce-and-monetization)
+- [OpenAI checkout documentation](https://developers.openai.com/plugins/build/monetization)
+- [Anthropic marketplace distribution and private repositories](https://code.claude.com/docs/en/plugin-marketplaces)
+
+Potential VOXL model:
+
+- Free manual editing, preview, validation, and local export.
+- Paid creation sessions purchased on the VOXL website.
+- A session includes initial candidates and a bounded number of conversational revisions rather than charging for every pixel edit.
+- Existing paid users connect the plugin through OAuth.
+- Native host-model generation reduces VOXL costs where available; hosted VOXL generation consumes a VOXL entitlement.
+
+Pricing should not be fixed before measuring actual inference cost and user-perceived value.
+
+## Competitor findings
+
+The category is validated but crowded. The generator alone is not a sufficient differentiator.
+
+The reviewed tools commonly offer text or photo generation, browser 2D/3D editing, direct 3D painting, layers, geometry variants, downloadable PNGs, libraries, and credit-based usage. The implications are:
+
+- Reference conversion plus an editor already exists.
+- Basic AI generation is becoming a commodity.
+- Cross-profile compatibility claims require independent conformance testing.
+- VOXL needs a stronger conversational refinement and preservation experience.
+
+The likely differentiation is:
+
+- Conversation-native revisions rather than one-shot generation.
+- Precise preservation: "change only the coat; keep the face and hair."
+- Valid export on every version.
+- Persistent versions and semantic regions.
+- The same project accessible from a web editor and multiple AI-chat clients.
+- Private-by-default reference handling.
+
+Competitor features and prices are point-in-time observations from public pages, not an independent quality or business audit. Target-specific product names and links are intentionally excluded from the product architecture; maintain them only in the restricted market/legal research record.
+
+## External compatibility and brand boundary
+
+The first release needs independently verified compatibility with each supported destination, but destination identity must not become VOXL architecture. The durable object is a `voxl-humanoid-skin`; `wide-arm-64` and `slim-arm-64` adapters encode geometry and export constraints.
+
+Do not place destination or publisher names in engine IDs, package names, schemas, database enums, tool names, prompts, UI labels, fixtures, analytics events, plugin metadata, or repository-facing documentation. Public launch copy should describe VOXL's own visual formats and state generically that VOXL is independent and unaffiliated with external destination platforms or publishers.
+
+Exact compatibility instructions, destination-specific test procedures, trademark requirements, and primary-source links belong in access-controlled legal/compliance records. Release engineering can execute those procedures through neutral conformance-test IDs without exposing destination branding to the engine. A trademark and domain review is still required before committing to the VOXL name.
+
+This separation is an engineering and branding precaution, not a substitute for qualified legal review.
+
+## Privacy, children, and reference images
+
+Avatar-creation tools can attract a substantial youth audience. Uploaded photos can contain personal information, faces, and metadata. Initial product design should minimize collection rather than postponing privacy work.
+
+Recommended starting posture:
+
+- Target adult creators during the first private beta.
+- Do not launch a public gallery initially.
+- Strip image metadata.
+- Delete original references after a short documented period unless the user explicitly saves them.
+- Do not train on uploads by default.
+- Require explicit opt-in for any future training use.
+- Provide deletion controls for projects and source images.
+- Add moderation and reporting before public sharing.
+- Obtain qualified legal review before intentionally serving children.
+
+COPPA can apply to child-directed commercial services collecting personal information from children under 13. The UK Children's Code can apply to online services likely to be accessed by under-18s even when children are not the stated target audience.
+
+Sources:
+
+- [FTC COPPA FAQ](https://www.ftc.gov/business-guidance/resources/complying-coppa-frequently-asked-questions)
+- [ICO introduction to the Children's Code](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/childrens-information/childrens-code-guidance-and-resources/introduction-to-the-childrens-code/)
+
+This document records product research and is not legal advice.
+
+## How the current repository fits
+
+The current studio should remain functional while VOXL is explored. Reusable concepts include:
+
+- Pixel painting.
+- Palettes and color picking.
+- Undo/redo.
+- Browser-local drafts.
+- PNG encoding and export.
+- Deterministic validation and rendering.
+- A Codex-driven create/validate/render workflow.
+
+The current format is not the future humanoid-skin format. It represents arbitrary rectangular animated characters as palette symbols and is optimized for transparent video overlays. VOXL humanoid skins require a fixed UV atlas, per-pixel RGBA, base and outer layers, and `wide-arm-64`/`slim-arm-64` geometry.
+
+Suggested eventual separation:
+
+```text
+packages/
+  engine-contracts/              # registry, requests, jobs, capabilities
+  engine-transparent-character/  # current format, Bash importer, alpha exports
+  engine-voxl-humanoid-skin/      # UV maps, edits, validation, PNG I/O
+  provider-procedural/            # deterministic fixtures and fallback
+  provider-preview-to-atlas/      # experimental/hosted model adapter
+apps/
+  web/                           # shared shell and engine-specific editors
+  mcp/                           # authenticated engine-neutral tools and UI
+plugins/
+  codex/
+  claude/
+workers/
+  jobs/                          # generation orchestration
+  inference/                     # added after provider evaluation
+```
+
+No migration should occur until the vertical slice proves that the skin workflow is worth pursuing.
+
+## First vertical slice
+
+The next implementation milestone should deliberately avoid accounts, billing, public MCP submission, and production GPU hosting.
+
+1. Define the engine contract and registry.
+2. Wrap the current Bash-derived workflow as `transparent-character` and prove all existing validation/render tests still pass.
+3. Register a skeletal `voxl-humanoid-skin` engine without coupling it to the existing grid schema.
+4. Import a known valid 64x64 skin PNG.
+5. Detect or select `wide-arm-64`/`slim-arm-64` geometry.
+6. Render it on a rotatable 3D character.
+7. Click a body face and map the click to the correct texture pixel.
+8. Edit pixels in synchronized 2D and 3D views.
+9. Validate transparent and unused regions and download a valid PNG.
+10. Run a `preview-to-atlas` model experiment against complex text/image fixtures using temporary GPU compute.
+11. Connect the experimental provider to `voxl-humanoid-skin` through the engine contract.
+12. Ask Codex to perform an open-ended generation and a masked revision.
+13. Confirm that the result passes the neutral export-profile import smoke test and that the `transparent-character` engine remains unchanged.
+
+This is the smallest slice that tests both componentization and the unconstrained generative vision.
+
+## Evaluation plan
+
+Create a fixed set of approximately 30 cases:
+
+- Text-only characters.
+- Single reference images.
+- Multiple content/style references.
+- Existing skin remixes.
+- Selective revisions with explicit preserve constraints.
+- `wide-arm-64` and `slim-arm-64` profiles.
+- Difficult front/back details and overlays.
+
+Measure:
+
+- Valid upload rate.
+- Reference and prompt fidelity.
+- Front/back consistency.
+- Preservation accuracy during selective edits.
+- Number of revisions to acceptance.
+- Time to first usable skin.
+- Cost per accepted skin, not merely cost per model call.
+- Willingness to pay for a second creation session.
+
+The architecture decision should follow these results:
+
+- If the specialized decoder preserves complex references and fits acceptable cost/latency, move that provider toward hosted production.
+- If preview quality is good but atlas conversion fails, evaluate or fine-tune another specialized decoder without changing the engine contract.
+- If the native host can produce a suitable canonical preview, keep that step on the user's subscription where the surface permits it.
+- If host-specific behavior causes unacceptable inconsistency, move more generation into a VOXL-hosted provider.
+- If users value editing more than first-pass generation, invest in masks, versioning, and localized image editing rather than a larger template catalog.
+- If a provider fails provenance review, replace it before commercial launch even if its visual quality is strong.
+
+The detailed delivery phases and completion gates are in [VOXL implementation plan](VOXL_IMPLEMENTATION_PLAN.md).
