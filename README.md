@@ -8,7 +8,7 @@ This repository began as a transparent pixel-character studio. It is now also th
 
 VOXL names engines, packages, APIs, and editor modules after the visual artifact they implement—not after any external application, game, platform, or publisher. Compatibility is represented by neutral export profiles such as `wide-arm-64` and `slim-arm-64`.
 
-The existing animation workflow remains the current working product. The VOXL generative product and shared multi-engine editor are not implemented yet, but the platform now has [`@voxl/engine-contracts`](packages/engine-contracts/README.md), the registered [`transparent-character` engine](packages/engine-transparent-character/README.md), and the deterministic [`voxl-humanoid-skin` core](packages/engine-voxl-humanoid-skin/README.md). Start with [the plain-language VOXL glossary](docs/VOXL_GLOSSARY.md), read [the VOXL product research and architecture](docs/VOXL_PRODUCT_RESEARCH.md) for the product boundary and evidence, use [the start-to-finish implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md) for the complete roadmap, and follow [the checked progress tracker](docs/VOXL_PROGRESS.md) for what is actually done and what comes next.
+The existing animation workflow remains the current working product. The platform now has [`@voxl/engine-contracts`](packages/engine-contracts/README.md), the registered [`transparent-character` engine](packages/engine-transparent-character/README.md), the deterministic [`voxl-humanoid-skin` core](packages/engine-voxl-humanoid-skin/README.md), and a verified shared-shell/2D-atlas editor slice. The frontend is now being consolidated into one React 19 + TypeScript + Vite browser application before 3D editing begins. Start with [the plain-language VOXL glossary](docs/VOXL_GLOSSARY.md), read [the VOXL product research and architecture](docs/VOXL_PRODUCT_RESEARCH.md), use [the implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), and follow [the checked progress tracker](docs/VOXL_PROGRESS.md).
 
 ## Start the local editor
 
@@ -19,7 +19,7 @@ npm run dev
 
 Open `http://localhost:4173`. The editor lets you create local draft characters, paint pixels, undo and redo edits, create custom colors, sample canvas colors, adjust preview settings, toggle effects, and export a still PNG, animated PNG, or sprite sheet. Drafts and activity history are saved in your browser.
 
-The local editor is deliberately a small browser app served by `scripts/server.mjs`; the React/Next files in `app/` are a separate prototype and are not what `npm run dev` currently starts. Server requests and failures are appended to `logs/dev-server.log`, which survives restarts and is ignored by Git.
+The current verified compatibility editor is still served by `scripts/server.mjs`. [ADR 0008](docs/adr/0008-react-vite-studio-frontend.md) records the in-progress migration that will make React/Vite the single local and hosted frontend and remove the static/iframe split only after behavior parity is proven. Server requests and failures are appended to `logs/dev-server.log`, which survives restarts and is ignored by Git.
 
 If port 4173 is already in use, the editor is probably already running; open the URL above. To restart it, stop the existing process with `Ctrl-C` in its original terminal, then run `npm run dev` once.
 
@@ -45,4 +45,4 @@ npm run import-bash -- /path/to/old-animation.sh new-character
 npm run render -- new-character
 ```
 
-Read [the usage guide](docs/USAGE_GUIDE.md), [animation guide](docs/ANIMATION_GUIDE.md), [Bash migration guide](docs/BASH_MIGRATION.md), [VOXL glossary](docs/VOXL_GLOSSARY.md), [VOXL research](docs/VOXL_PRODUCT_RESEARCH.md), [VOXL implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), and [VOXL progress tracker](docs/VOXL_PROGRESS.md).
+Read [the usage guide](docs/USAGE_GUIDE.md), [animation guide](docs/ANIMATION_GUIDE.md), [Bash migration guide](docs/BASH_MIGRATION.md), [VOXL glossary](docs/VOXL_GLOSSARY.md), [VOXL research](docs/VOXL_PRODUCT_RESEARCH.md), [VOXL implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), [VOXL progress tracker](docs/VOXL_PROGRESS.md), and [Seek pilot notes](docs/SEEK_PILOT_NOTES.md).

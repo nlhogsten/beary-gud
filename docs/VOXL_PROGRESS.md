@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Engine selection and the local humanoid 2D atlas workflow now exist. The next slice is the renderer boundary and synchronized 3D preview/editing.
+**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Engine selection and the local humanoid 2D atlas workflow now exist in the verified compatibility editor. The next slice consolidates the split frontend into the canonical React/Vite engine shell before adding synchronized 3D editing.
 
 ## Phase 0 — baseline and decisions
 
@@ -105,8 +105,10 @@ Status: **in progress**
 
 ### Work
 
+- [ ] Migrate the verified static/iframe frontend to one React 19 + TypeScript + Vite application without storage or export regressions.
+- [x] Add a typed React engine-UI registry and port the humanoid 2D editor to canvas-based React with compatible draft persistence.
 - [x] Add engine selection to the shared studio shell.
-- [ ] Load format-specific editor modules from the registry.
+- [x] Load format-specific editor modules from the React engine-UI registry.
 - [x] Keep the current transparent-character editor behavior available.
 - [x] Build the VOXL humanoid-skin 2D atlas editor.
 - [ ] Integrate a permissively licensed viewer behind `cuboid-humanoid-renderer`.
@@ -208,4 +210,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Integrate a target-neutral cuboid-humanoid renderer, then map 3D face clicks to the atlas and synchronize painting between both views.
+Port the transparent-character compatibility editor into its registered React module, make Vite the canonical local command, remove the iframe/static split after parity tests, then integrate the target-neutral 3D renderer.
