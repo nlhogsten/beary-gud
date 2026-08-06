@@ -2,6 +2,8 @@
 
 This is the plain-language dictionary for the VOXL project. It explains product, AI, graphics, platform, and current character-studio terms used throughout the documentation. Terms are listed alphabetically within related groups so this can be read from top to bottom or searched as needed.
 
+For implementation status, use [the checked VOXL progress tracker](VOXL_PROGRESS.md).
+
 ## The shortest explanation
 
 VOXL is a studio for creating visual assets with conversation, reference images, and direct editing. A conversational AI understands what the user wants. A visual engine owns the exact file format and editing rules. A generation provider creates or changes pixels. Deterministic code validates the result and exports a file that matches a neutral geometry profile.

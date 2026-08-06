@@ -32,3 +32,5 @@ registry.register({
   },
 });
 ```
+
+The local engine-neutral harness is available with `npm run voxl -- engines`, `npm run voxl -- describe <engine-id>`, and `npm run voxl -- invoke <engine-id> <operation> <request.json>`.

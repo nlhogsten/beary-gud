@@ -1,8 +1,10 @@
 # VOXL implementation plan
 
-Status: active start-to-finish delivery plan. Phase 1 began on August 5, 2026 with the dependency-free engine contracts, in-process registry, public error boundary, TypeScript declarations, and incompatible-document contract tests. No phase is complete merely because some of its work has started or appears in this document.
+Status: active start-to-finish delivery plan. Phases 0–2 were completed on August 5, 2026: decisions are recorded, the dependency-free registry is verified, and the original transparent-character runtime is registered without source or command migration. Phase 3 is next. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
 
 Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) for unfamiliar terms and [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) for research evidence, source links, product constraints, and the rationale for this plan.
+
+Use [the VOXL build progress tracker](VOXL_PROGRESS.md) for checkboxes, current focus, verification evidence, and the next unfinished step. This implementation plan remains the detailed specification; the progress tracker is the status source of truth.
 
 ## Objective
 

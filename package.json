@@ -11,12 +11,13 @@
     "start": "node scripts/server.mjs",
     "test": "node --test evals/*.test.mjs",
     "studio": "node scripts/studio.mjs",
+    "voxl": "node scripts/voxl.mjs",
     "render": "node scripts/studio.mjs render",
     "validate": "node scripts/studio.mjs validate",
     "import-bash": "node scripts/studio.mjs import-bash",
     "check": "npm test",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "typecheck:engine-contracts": "tsc --noEmit --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 packages/engine-contracts/src/index.d.ts",
+    "typecheck:voxl": "tsc --noEmit --skipLibCheck --module NodeNext --moduleResolution NodeNext --target ES2022 packages/engine-contracts/src/index.d.ts packages/engine-transparent-character/src/index.d.ts",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

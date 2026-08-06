@@ -10,6 +10,8 @@ Use `$transparent-character-studio` from this repository. Ask naturally, for exa
 
 Codex should create or version source data, validate it, render it, inspect the generated alpha outputs, and return the exact export paths. It must not execute pasted animation scripts.
 
+The implementation now lives in `packages/engine-transparent-character/` and is registered through the shared VOXL contracts. The existing `npm run validate`, `npm run render`, and `npm run import-bash` commands remain compatibility interfaces. Use `npm run voxl -- engines` for engine-neutral discovery.
+
 ## Proposed componentized VOXL workflow
 
 VOXL skin generation is not implemented by the current skill or character schema. Do not represent a fixed 64x64 cuboid-humanoid skin as the existing arbitrary palette-symbol animation grid. Do not remove or silently migrate the Bash-derived format; it remains the `transparent-character` engine with its own schema, editor capabilities, validation, renderer, and exports.
