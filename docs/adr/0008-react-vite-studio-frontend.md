@@ -8,14 +8,14 @@ The working local editor began as `public/index.html` plus imperative browser Ja
 
 ## Decision
 
-React 19, TypeScript, and Vite will be the single canonical frontend for local development and hosted delivery. The studio is a browser application, not a native desktop application and not a separate marketing site.
+React 19, TypeScript, and Vite will be the single canonical frontend for local development and future independently hosted delivery. The studio is a browser application, not a native desktop application, not a separate marketing site, and not a ChatGPT-hosted application. Current development is localhost-only; ADR 0009 defines the future AWS runtime.
 
 - The shared React shell discovers engine UI modules rather than hard-coding engine document fields.
 - Each engine UI owns its reducer, persistence adapter, editor, inspector, asset panel, export action, and shortcuts.
 - Canvas drawing and binary import/export stay in imperative, testable utilities behind React hooks and refs.
 - Domain schemas, validation, rendering, and export rules remain in `packages/*`; they do not move into React components.
 - Existing browser storage keys and export behavior remain compatible during migration.
-- The current iframe and static editor are removed only after both engine workflows pass equivalent local and hosted checks.
+- The current iframe and static editor are removed only after both engine workflows pass equivalent local checks. Future deployment checks begin only after the AWS environment exists.
 
 ## Consequences
 

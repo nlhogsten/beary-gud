@@ -12,7 +12,7 @@ export function TransparentCharacterCompatibility() {
       </div>
       <iframe
         className={styles.compatibilityFrame}
-        src="/index.html"
+        src="/compatibility/index.html"
         title="Transparent character compatibility editor"
       />
     </section>

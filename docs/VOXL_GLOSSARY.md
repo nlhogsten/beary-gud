@@ -333,6 +333,10 @@ Model Context Protocol. A standard way for an AI client to discover and call ext
 
 One callable operation exposed through MCP. Tools should have small, explicit responsibilities and accurate descriptions of whether they read, write, or delete data.
 
+### MCP UI or in-chat UI
+
+An optional interactive component displayed by a compatible chat host beside a conversation. A VOXL in-chat UI can show the current character, preview or refine an asset, and follow generation progress. It is a companion client of the same VOXL API, account, projects, immutable versions, database, and object storage as the standalone studio—not a second backend or a replacement for the complete website. MCP tools must still work when a host cannot display the UI.
+
 ### OAuth
 
 An authorization protocol that lets a user connect a client to a service without giving the client the user's password. VOXL can use OAuth to connect chat clients to the user's VOXL account.
@@ -341,11 +345,19 @@ An authorization protocol that lets a user connect a client to a service without
 
 An installable bundle that can include skills, MCP connections, and interactive UI. The plugin is a client integration; it is not the visual engine or hosted inference service itself.
 
+### Standalone web application
+
+The complete VOXL Studio reached in an ordinary browser independently of any AI-chat host. It is built with React, TypeScript, and Vite. During current development it runs only on localhost; future production hosting is part of VOXL's own AWS infrastructure.
+
 ### Tool orchestration
 
 The LLM's work of selecting and sequencing tools to accomplish a request—for example create, wait for a job, validate, render, revise, and export.
 
 ## Service, storage, and billing terms
+
+### Application Load Balancer (ALB)
+
+An AWS service that accepts HTTP traffic and routes it to healthy application tasks. The planned API/MCP service can run behind an ALB without exposing individual containers directly.
 
 ### Asynchronous job
 
@@ -363,6 +375,10 @@ The system's record that an account is allowed to use a paid or limited capabili
 
 Running on infrastructure operated or paid for by VOXL or one of its service providers rather than solely on the user's machine.
 
+### Amazon ECS and Fargate
+
+Amazon Elastic Container Service runs containerized services. Fargate supplies managed compute for those containers without VOXL operating virtual-machine hosts. The proposed Express API, MCP transport, and later job workers can run this way.
+
 ### Idempotent
 
 Safe to repeat without creating duplicate effects. Retrying the same generation settlement should not charge twice or create duplicate final versions.
@@ -375,9 +391,33 @@ The ordered system that holds background tasks until a worker can process them. 
 
 Running on the user's own machine. Local editing and deterministic validation can work without VOXL paying for remote compute.
 
+### OpenTofu
+
+An infrastructure-as-code tool used to declare, review, and reproduce cloud resources. VOXL plans to use OpenTofu as the source of truth for future AWS environments. A checked-in scaffold is not evidence that any cloud resource has been created.
+
 ### Object storage
 
 A service designed for large binary files such as uploads, PNGs, masks, and previews. The database stores metadata and permissions while object storage holds the file bytes.
+
+### RDS PostgreSQL
+
+AWS-managed PostgreSQL proposed for durable relational records such as users, projects, assets, immutable versions, jobs, and entitlements. Large file bytes remain in object storage.
+
+### S3
+
+Amazon Simple Storage Service, the proposed object store for uploaded references, textures, previews, exports, and possibly the built Vite client.
+
+### Secrets Manager
+
+An AWS service for storing and rotating runtime credentials and other secrets. Secrets are injected into services at runtime rather than committed to OpenTofu variables or source control.
+
+### CloudFront
+
+An AWS content-delivery service. The proposed production path serves the Vite application's static files through CloudFront while keeping the application independent of a chat host.
+
+### CloudWatch
+
+AWS services for logs, metrics, dashboards, and alarms. API, MCP, worker, database, and generation health should be observable here or through a deliberately chosen equivalent.
 
 ### Retention
 
@@ -442,5 +482,7 @@ The authoritative editable representation. Generated previews and exports can be
 | Reference | Output | A reference conditions generation; the output is the newly created VOXL asset. |
 | Mask | Layer | A mask selects affected pixels; a layer is a visible texture surface. |
 | Version | Export | A version is durable editable history; an export is a derived file for download. |
+| Plugin UI | Standalone studio | Plugin UI is an optional focused client inside a supported chat host; the standalone studio is the complete product. Both use the same VOXL backend and saved versions. |
+| Localhost | AWS environment | Localhost is the current development runtime; an AWS environment is future independently managed production or staging infrastructure. |
 
 If a term in the repository is still unclear or missing here, add it to this glossary when the term is introduced. New engine documentation should define its visual geometry and export-profile vocabulary before implementation begins.

@@ -28,9 +28,9 @@ test("a missing static file returns 404 without crashing the server", async () =
   });
 });
 
-test("serves the editor and its split frontend assets", async () => {
+test("serves the compatibility editor and its split frontend assets", async () => {
   await withServer(async (origin) => {
-    for (const path of ["/", "/studio.css", "/studio.js", "/skin-editor.js", "/skin-editor-core.js", "/favicon.svg"]) {
+    for (const path of ["/", "/compatibility/", "/studio.css", "/studio.js", "/skin-editor.js", "/skin-editor-core.js", "/favicon.svg"]) {
       const response = await fetch(`${origin}${path}`);
       assert.equal(response.status, 200, path);
     }

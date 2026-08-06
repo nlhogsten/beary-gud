@@ -6,7 +6,7 @@ const root = new URL("../", import.meta.url);
 
 test("shared shell loads independent editor modules and storage boundaries", async () => {
   const [html, motionModule, skinModule] = await Promise.all([
-    readFile(new URL("public/index.html", root), "utf8"),
+    readFile(new URL("public/compatibility/index.html", root), "utf8"),
     readFile(new URL("public/studio.js", root), "utf8"),
     readFile(new URL("public/skin-editor.js", root), "utf8"),
   ]);

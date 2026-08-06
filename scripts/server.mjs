@@ -39,7 +39,10 @@ async function log(level, message, details = {}) {
 
 function requestPath(url = "/") {
   const pathname = decodeURIComponent(new URL(url, "http://localhost").pathname);
-  return pathname === "/" ? "/index.html" : pathname;
+  if (pathname === "/" || pathname === "/compatibility/") {
+    return "/compatibility/index.html";
+  }
+  return pathname;
 }
 
 function publicFileFor(url) {
@@ -129,7 +132,7 @@ if (isMain) {
   server.on("error", (error) => log("error", "server_error", { error: error.stack ?? error.message }));
   server.listen(port, () => {
     log("info", "server_started", { url: `http://localhost:${port}`, logFile });
-    console.log(`Transparent Character Studio: http://localhost:${port}`);
+    console.log(`VOXL compatibility editor: http://localhost:${port}`);
     console.log(`Persistent log: ${logFile}`);
   });
 }

@@ -382,6 +382,8 @@ Long generation should return a job ID and be polled rather than holding one too
 
 Authoritative projects, accounts, entitlements, and version history belong on the VOXL service. Temporary camera position, selected tool, and open panels belong in the UI.
 
+Optional MCP UI is a companion to the standalone VOXL studio, not a hosted copy of the whole product and not another backend. It authenticates the same account and calls the same application services over the remote MCP/API boundary. Assets edited in chat and on the website therefore share project IDs and immutable version history. Hosts without interactive UI still use the underlying tools.
+
 Sources:
 
 - [OpenAI plugin architecture](https://developers.openai.com/plugins/concepts/plugins)

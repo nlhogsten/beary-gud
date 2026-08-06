@@ -12,3 +12,4 @@ Architecture decision records capture choices that implementation must preserve.
 | [0006](0006-target-neutral-identities.md) | Use target-neutral component and profile identities | Accepted |
 | [0007](0007-packaging-and-migration-policy.md) | Delay workspaces and protect compatibility migrations | Accepted |
 | [0008](0008-react-vite-studio-frontend.md) | Use one React and Vite studio frontend | Accepted; migration in progress |
+| [0009](0009-local-development-and-aws-runtime.md) | Keep development local and target an OpenTofu-managed AWS runtime | Accepted; infrastructure not yet provisioned |

@@ -13,7 +13,16 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Engine selection and the local humanoid 2D atlas workflow now exist in the verified compatibility editor. The next slice consolidates the split frontend into the canonical React/Vite engine shell before adding synchronized 3D editing.
+**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Standard React/Vite is now the canonical localhost client, with a production-shaped local Express server and container definition. The humanoid 2D atlas editor is native React; the transparent-character editor remains temporarily mounted through its compatibility iframe. The next slice removes that remaining split before synchronized 3D editing.
+
+## Architecture direction (not implementation progress)
+
+- [x] Record localhost-only development and remove ChatGPT Sites from the intended workflow.
+- [x] Record the standalone React/Vite client, shared Express API/MCP application layer, and OpenTofu-managed AWS target.
+- [x] Record that optional in-chat UI uses the same account, projects, versions, database, object storage, and APIs as the standalone studio.
+- [x] Add a resource-free OpenTofu bootstrap that does not require invented AWS identifiers.
+- [ ] Select AWS accounts, region, DNS, certificates, remote state, environment isolation, and recovery policy.
+- [ ] Provision or deploy any AWS infrastructure.
 
 ## Phase 0 — baseline and decisions
 
@@ -106,6 +115,7 @@ Status: **in progress**
 ### Work
 
 - [ ] Migrate the verified static/iframe frontend to one React 19 + TypeScript + Vite application without storage or export regressions.
+- [x] Make standard Vite the canonical localhost development and build path, with an Express production-shaped server and container definition.
 - [x] Add a typed React engine-UI registry and port the humanoid 2D editor to canvas-based React with compatible draft persistence.
 - [x] Add engine selection to the shared studio shell.
 - [x] Load format-specific editor modules from the React engine-UI registry.
@@ -207,9 +217,8 @@ Status: **not started**
 | 2026-08-05 | Phase 0 decisions and Phase 2 extraction | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, `ffprobe`, target-brand scan | 20 tests passed; legacy and registry paths passed; ProRes alpha confirmed | `8bab1ef` |
 | 2026-08-05 | Phase 3 deterministic humanoid-skin core | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, independent PNG `ffprobe`, target-brand scan | 28 tests passed; both profiles round-tripped; 64x64 RGBA import confirmed | `e4f56dc` |
 | 2026-08-05 | Phase 4 shared shell and 2D atlas slice | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, target-brand scan | 34 tests passed; both editor modules and separate storage boundaries passed; browser/package UV parity passed | `33d26c1` |
-| 2026-08-05 | Private Phase 4 compatibility checkpoint | Sites/Vite production build and private deployment | Published successfully at `https://voxl-studio.nhogsten.chatgpt.site` | `cde8ee3` |
 | 2026-08-05 | React/Vite consolidation slice and Seek pilot | `npm test`, `npm run lint`, scoped React `tsc`, `npm run typecheck:voxl`, `npx vite build`, target-brand scan; Seek setup/status audit and 24 focused source tests | 36 VOXL tests passed; native React skin module compiled; Seek CLI refreshed and remaining pilot findings recorded | `c7813d0` |
 
 ## Next unchecked step
 
-Port the transparent-character compatibility editor into its registered React module, make Vite the canonical local command, remove the iframe/static split after parity tests, then integrate the target-neutral 3D renderer.
+Port the transparent-character compatibility editor into its registered React module, remove the iframe/static split after parity tests, then integrate the target-neutral 3D renderer.

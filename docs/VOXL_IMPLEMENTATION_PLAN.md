@@ -4,6 +4,8 @@ Status: active start-to-finish delivery plan. Phases 0–3 were completed on Aug
 
 Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) for unfamiliar terms and [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) for research evidence, source links, product constraints, and the rationale for this plan.
 
+Read [the system architecture](VOXL_ARCHITECTURE.md) for the corrected client/service boundary: current development is localhost-only, while the future standalone product targets OpenTofu-managed AWS infrastructure. ChatGPT Sites is not part of the development or production architecture.
+
 Use [the VOXL build progress tracker](VOXL_PROGRESS.md) for checkboxes, current focus, verification evidence, and the next unfinished step. This implementation plan remains the detailed specification; the progress tracker is the status source of truth.
 
 ## Objective
@@ -93,8 +95,9 @@ Introduce this structure incrementally. Do not move working files until tests co
 ```text
 apps/
   studio/                         # web shell and engine UI modules
-  mcp/                            # remote MCP server and optional UI resources
-  worker/                         # HTTP/API entry point if kept separate
+  api/                            # Express HTTP API and remote MCP transport
+  mcp-ui/                         # optional host-specific companion UI resources
+  worker/                         # asynchronous jobs when kept separate
 
 packages/
   engine-contracts/               # shared TypeScript contracts and registry
@@ -111,6 +114,9 @@ packages/
 plugins/
   codex/                           # Codex skills and MCP configuration
   claude/                          # Claude skills and MCP configuration
+
+infra/
+  tofu/                            # future AWS infrastructure source of truth
 
 characters/                        # compatibility path during extraction
 exports/                           # current local export path
@@ -206,6 +212,9 @@ Engine migrations must be explicit, reversible where practical, and tested again
 - Validate every engine output deterministically before presenting it as production-ready.
 - Keep public sharing out of the first release to reduce moderation and privacy scope.
 - Purchase paid digital service on the VOXL website; plugins authenticate existing accounts.
+- Keep current development on localhost. Do not publish development checkpoints to ChatGPT Sites.
+- Treat the web studio, MCP tools, and optional in-chat UI as clients of the same API, identity, projects, versions, database, and object storage.
+- Manage future AWS environments with OpenTofu; do not hard-code account IDs, domains, secrets, or guessed production capacity.
 - Do not turn temporary inference experiments into production infrastructure without measured evidence.
 
 ## Phase 0: Baseline and decision records
@@ -405,6 +414,9 @@ Move from a local prototype to a reliable multi-user service foundation.
 - Add retention and deletion states for references and generated outputs.
 - Add per-user authorization checks on every project/file/job path.
 - Instrument provider latency, failure, validation, and cost.
+- Define the Express application-service boundary once and call it from both HTTP routes and MCP handlers.
+- Expand the OpenTofu bootstrap into isolated AWS environments only after account, region, DNS, state-backend, and recovery decisions are approved.
+- Target S3 for binary assets, RDS PostgreSQL for relational records, and ECS/Fargate for the API and asynchronous workers; add Secrets Manager and CloudWatch from the first shared environment.
 
 ### Exit criteria
 
@@ -428,6 +440,7 @@ Deliver the complete experience without depending on an AI-chat host.
 - Add explicit retention controls and project deletion.
 - Keep public galleries and social sharing out of scope.
 - Add accessibility, responsive behavior, keyboard editing, and failure recovery.
+- Build and deploy the standalone Vite client independently of chat hosts. The proposed AWS path is S3/CloudFront with API traffic reaching the Express service through an Application Load Balancer.
 
 ### Exit criteria
 
@@ -459,6 +472,8 @@ Expose the same platform safely to conversational clients.
 - Return structured results without leaking internal provider payloads or secrets.
 - Keep data tools separate from optional render/editor UI resources.
 - Add engine-specific MCP Apps UI only where the host supports it and where it improves the workflow.
+- Make optional in-chat UI a companion client of the same project/version APIs and storage as the standalone studio; it must not introduce a second database, account system, or engine implementation.
+- Use version preconditions for chat and web edits so concurrent clients cannot silently overwrite each other.
 - Test retry, disconnect, OAuth expiration, multiple concurrent UI instances, and long-running jobs.
 
 ### Exit criteria
