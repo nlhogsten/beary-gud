@@ -553,7 +553,13 @@ $("#add-effect").addEventListener("click", () => {
   commit("Enabled drift effect", () => { character().effects.drift = true; });
   toast("Drift preview enabled");
 });
-$("#export-animation").addEventListener("click", exportAnimation);
+$("#export-animation").addEventListener("click", () => {
+  if (document.body.dataset.engine === "voxl-humanoid-skin") {
+    window.dispatchEvent(new CustomEvent("voxl:skin-export"));
+    return;
+  }
+  exportAnimation();
+});
 $("#export-current").addEventListener("click", exportCurrentFrame);
 $("#download-log").addEventListener("click", downloadActivityLog);
 $("#docs").addEventListener("click", () => { $("#modal").hidden = false; });
@@ -561,6 +567,7 @@ $("#close-docs").addEventListener("click", () => { $("#modal").hidden = true; })
 $("#modal").addEventListener("click", (event) => { if (event.target === event.currentTarget) event.currentTarget.hidden = true; });
 
 document.addEventListener("keydown", (event) => {
+  if (document.body.dataset.engine === "voxl-humanoid-skin") return;
   const target = event.target;
   const isTyping = target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement;
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {

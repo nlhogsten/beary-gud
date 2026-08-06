@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Transparent Character Studio",
-  description: "Create pixel characters and export clean alpha overlays.",
+  title: "VOXL Studio",
+  description: "Create, edit, validate, preview, and export engine-specific visual assets.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

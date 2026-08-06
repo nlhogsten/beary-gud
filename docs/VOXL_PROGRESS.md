@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. The next slice adds engine selection and loads independent editor modules while preserving the current transparent-character editor.
+**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Engine selection and the local humanoid 2D atlas workflow now exist. The next slice is the renderer boundary and synchronized 3D preview/editing.
 
 ## Phase 0 — baseline and decisions
 
@@ -101,25 +101,26 @@ Status: **complete**
 
 ## Phase 4 — shared studio shell and engine UI modules
 
-Status: **not started**
+Status: **in progress**
 
 ### Work
 
-- [ ] Add engine selection to the shared studio shell.
+- [x] Add engine selection to the shared studio shell.
 - [ ] Load format-specific editor modules from the registry.
-- [ ] Keep the current transparent-character editor behavior available.
-- [ ] Build the VOXL humanoid-skin 2D atlas editor.
+- [x] Keep the current transparent-character editor behavior available.
+- [x] Build the VOXL humanoid-skin 2D atlas editor.
 - [ ] Integrate a permissively licensed viewer behind `cuboid-humanoid-renderer`.
 - [ ] Map 3D face clicks to UV pixels.
 - [ ] Synchronize 2D and 3D painting.
-- [ ] Add base/outer and body-part visibility controls.
-- [ ] Add undo/redo, local versions, compare, import, validate, and export.
+- [x] Add base/outer and body-part visibility controls.
+- [x] Add skin undo/redo, local draft persistence, PNG import, deterministic validation, and valid PNG export.
+- [ ] Add named local versions and side-by-side comparison.
 - [ ] Keep the complete editor usable locally before accounts exist.
 
 ### Exit criteria
 
-- [ ] Users can switch engines without state or schema leakage.
-- [ ] Both editor modules load through the shared shell.
+- [x] Users can switch engines without state or schema leakage.
+- [x] Both editor modules load through the shared shell.
 - [ ] A humanoid skin can be painted in synchronized 2D/3D views and exported validly.
 - [ ] Existing transparent-character drafting still works.
 
@@ -203,7 +204,8 @@ Status: **not started**
 | 2026-08-05 | Phase 1 engine contracts | `npm test`, `npm run lint`, `npm run typecheck:engine-contracts`, `npm run build`, target-brand scan | 12 tests passed; lint/types/build/scan passed | `13e2451` |
 | 2026-08-05 | Phase 0 decisions and Phase 2 extraction | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, `ffprobe`, target-brand scan | 20 tests passed; legacy and registry paths passed; ProRes alpha confirmed | `8bab1ef` |
 | 2026-08-05 | Phase 3 deterministic humanoid-skin core | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, independent PNG `ffprobe`, target-brand scan | 28 tests passed; both profiles round-tripped; 64x64 RGBA import confirmed | `e4f56dc` |
+| 2026-08-05 | Phase 4 shared shell and 2D atlas slice | `npm test`, `npm run lint`, `npm run typecheck:voxl`, `npm run build`, `npm run validate -- bear`, `npm run render -- bear`, target-brand scan | 34 tests passed; both editor modules and separate storage boundaries passed; browser/package UV parity passed | Pending implementation commit |
 
 ## Next unchecked step
 
-Add shared-shell engine selection and load the current transparent-character editor plus a new humanoid-skin 2D atlas module without sharing their document state.
+Integrate a target-neutral cuboid-humanoid renderer, then map 3D face clicks to the atlas and synchronize painting between both views.
