@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Both current editors are native, lazy-loaded React modules; the old iframe/static frontend and duplicated browser core are removed. The humanoid editor now includes a target-neutral Three.js adapter with rotatable 3D preview, raycast-to-atlas mapping, and shared 2D/3D paint state. The next checkpoint is real-browser texture-orientation and click-mapping QA, followed by named local versions and comparison.
+**Phase 4 — shared studio shell and engine UI modules.** Phases 0–3 are complete. Both current editors are native, lazy-loaded React modules, and the real-browser checkpoint now passes across editing, export/re-import, transparent outer-layer picking, responsive layouts, and directional 3D rotation. The repository-owned Playwright runner retains step, error, screenshot, download, report, and independent-review evidence. The next checkpoint is named local versions and side-by-side comparison.
 
 ## Platform and repository foundation
 
@@ -28,6 +28,11 @@ These checkpoints record the organizational/sidebar work that makes later produc
 - [x] Keep the repository root limited to shared orchestration while each app, engine package, database package, and infrastructure target owns its runtime configuration.
 - [x] Verify the host and Docker localhost workflows, the first four-table migration, and a production Bun/Hono image running as a non-root user.
 - [x] Upgrade exposed high-severity toolchain dependencies, pin the remaining Drizzle Kit loader chain to the audited esbuild release, and reach a zero-vulnerability `bun audit`.
+- [x] Define four target-neutral localhost browser journeys for studio smoke, transparent editing/export, synchronized humanoid editing, and humanoid profile/file boundaries.
+- [x] Define an independent review rubric for runtime integrity, target-neutral language, pixel rendering, cuboid orientation, layers, profiles, 2D/3D synchronization, accessibility, responsiveness, and downloads.
+- [x] Complete actual Playwright runs of the journey set and retain their `.runs/<run-id>/` evidence; the authoritative replacements pass every required step with no runtime errors.
+- [x] Complete independent rubric reviews of the applicable browser evidence, including full-page mobile containment and side/rear/top/bottom 3D views.
+- [x] Complete and validate the repository-local agent skills that route studio verification, new-engine work, and generation evaluation.
 - [ ] Connect authenticated server application services to the database; the current schema and local runtime are foundation only.
 - [ ] Select AWS accounts, region, DNS, certificates, remote state, environment isolation, and recovery policy.
 - [ ] Provision or deploy any AWS infrastructure.
@@ -134,14 +139,16 @@ Status: **in progress**
 - [x] Synchronize 2D and 3D painting through the same draft buffer, tools, visibility state, and undo history.
 - [x] Add base/outer and body-part visibility controls.
 - [x] Add skin undo/redo, local draft persistence, PNG import, deterministic validation, and valid PNG export.
+- [x] Add repository-owned Playwright journey definitions and a review rubric for the remaining browser and visual checks.
+- [x] Execute the required Playwright journeys and independently review their captured screenshots, runtime observations, and downloads.
 - [ ] Add named local versions and side-by-side comparison.
-- [ ] Keep the complete editor usable locally before accounts exist.
+- [x] Keep the complete editor usable locally before accounts exist.
 
 ### Exit criteria
 
 - [x] Users can switch engines without state or schema leakage.
 - [x] Both editor modules load through the shared shell.
-- [ ] A humanoid skin can be painted in synchronized 2D/3D views and exported validly.
+- [x] A humanoid skin can be painted in synchronized 2D/3D views and exported validly.
 - [x] Existing transparent-character drafting still works.
 
 ## Phase 5 — generative-provider research spike
@@ -229,7 +236,8 @@ Status: **not started**
 | 2026-08-05 | Local-only Vite/Express runtime and AWS architecture | `npm run check`, Vite and Express localhost smoke tests, `npm audit --omit=dev`, `tofu fmt -check`, `tofu validate`, `npm run validate -- bear`, `npm run render -- bear`, target-brand scan | 38 tests passed; lint/types/build passed; 0 production vulnerabilities; OpenTofu bootstrap valid; no AWS resources provisioned | `e24ee3f` |
 | 2026-08-05 | Bun workspace, Hono server, and local database foundation | `bun run check`, host and Docker localhost smoke tests, production-image boot, `bun run db:generate`, `bun run db:migrate`, four-table PostgreSQL probe, `bun audit`, `tofu fmt -check`, `tofu validate`, `bun run validate -- bear`, `bun run render -- bear`, target-brand scan | 39 tests passed; lint/types/build passed; local and container routes healthy; migration applied; high-severity advisories resolved; one moderate development-only Drizzle Kit transitive advisory remains | `0d77be9` |
 | 2026-08-05 | Native editor consolidation and synchronized 3D slice | `bun run check`, motion state/history parity tests, raycast UV mapping test, frozen install, `bun run db:generate`, `bun audit`, Docker localhost studio/API smoke tests, `tofu fmt -check`, `tofu validate`, `bun run validate -- bear`, `bun run render -- bear`, target-brand scan | 43 tests passed; iframe/static split removed; both editors lazy-load natively; 2D/3D paint state is shared; 0 vulnerabilities; real-browser WebGL orientation QA remains the next gate because no browser backend was available | `6a04a68` |
+| 2026-08-05 | Browser quality system and Phase 4 interaction sign-off | `bun run check`, four Playwright journeys, independent rubric reviews, official skill validation, `bun audit`, `tofu fmt -check`, `tofu validate`, `bun run validate -- bear`, `bun run render -- bear`, target-brand scan | 48 repository tests plus 9 runner tests passed; 84/84 final browser steps passed with 0 runtime errors; responsive, import/export, transparent-layer, synchronized editing, and directional rotation reviews passed; 0 vulnerabilities | `fc67261` |
 
 ## Next unchecked step
 
-Complete real-browser QA for 3D face orientation, transparent outer-layer clicks, rotation, and direct painting; then add named local versions and side-by-side comparison.
+Add named local versions and side-by-side comparison without coupling version storage to either visual engine's document schema.
