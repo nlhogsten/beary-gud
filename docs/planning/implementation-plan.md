@@ -2,11 +2,13 @@
 
 Status: active start-to-finish delivery plan. Phases 0–4 were completed on August 5, 2026. Phase 5 is in progress. The repository now uses Bun workspaces with independent studio, Hono server, character CLI, engine, database, and infrastructure ownership; this foundation does not mark later durable-service phases complete. A phase is complete only when its exit criteria and verification evidence are checked in the progress tracker.
 
-Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) for unfamiliar terms and [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) for research evidence, source links, product constraints, and the rationale for this plan.
+Read [the plain-language VOXL glossary](../reference/glossary.md) for unfamiliar terms and [VOXL product research](../research/product.md) for research evidence, source links, product constraints, and the rationale for this plan.
 
-Read [the system architecture](VOXL_ARCHITECTURE.md) for the corrected client/service boundary: current development is localhost-only, while the future standalone product targets OpenTofu-managed AWS infrastructure. ChatGPT Sites is not part of the development or production architecture.
+Read [the system architecture](../architecture/system.md) for the corrected client/service boundary: current development is localhost-only, while the future standalone product targets OpenTofu-managed AWS infrastructure. ChatGPT Sites is not part of the development or production architecture.
 
-Use [the VOXL build progress tracker](VOXL_PROGRESS.md) for checkboxes, current focus, verification evidence, and the next unfinished step. This implementation plan remains the detailed specification; the progress tracker is the status source of truth.
+Use [the VOXL build progress tracker](progress.md) for checkboxes, current focus, verification evidence, and the next unfinished step. This implementation plan remains the detailed specification; the progress tracker is the status source of truth.
+
+Before generation implementation, read the [current generation direction](../research/generation/README.md), the [complete method catalog](../research/generation/method-catalog.md), and the [experiment and build gates](../research/generation/experiment-plan.md). They identify the current hypothesis without treating it as a proven production choice.
 
 ## Objective
 
@@ -28,7 +30,7 @@ All components and references must be named for a VOXL visual artifact, geometry
 | Document kind | `voxl.humanoid-skin/v1` |
 | Geometry/export profiles | `wide-arm-64`, `slim-arm-64`, `wide-arm-128`, `slim-arm-128` |
 | Renderer adapter | `cuboid-humanoid-renderer` |
-| Generation provider | `preview-to-atlas` |
+| Generation provider capability | `template-image-generation` |
 | Package | `engine-voxl-humanoid-skin` |
 
 The rule covers code, packages, tool schemas, MCP methods, database values, prompts, fixtures, logs, analytics, UI, plugin metadata, docs, and public copy. Destination compatibility is implemented and tested behind neutral export-profile adapters. Exact destination-specific instructions, trademarks, and source links remain in restricted legal/compliance records outside the product namespace.
@@ -105,7 +107,7 @@ packages/
   engine-transparent-character/   # extracted current engine
   engine-voxl-humanoid-skin/       # new skin document and lifecycle
   provider-procedural/             # deterministic fixtures/fallback
-  provider-preview-to-atlas/       # experimental model adapter
+  provider-template-image/         # experimental managed-image adapter
   platform-projects/               # project/version/file abstractions
   platform-jobs/                   # async generation orchestration
   platform-auth/                   # identity and authorization
@@ -370,6 +372,11 @@ Prove or reject an open-ended managed-API generation path before integrating it 
 
 ### Work
 
+- Keep the generation [method catalog](../research/generation/method-catalog.md) complete and mark exactly one current experiment without deleting viable fallbacks.
+- Test template-conditioned mainstream managed image generation first because this engine supplies fixed geometry, UV mapping, layers, density, validation, rendering, and export. Treat this as a hypothesis, not a provider selection.
+- Compare two engine-owned input representations before choosing an adapter:
+  - An upscaled exact atlas template that is reduced deterministically to logical texels.
+  - A canonical flat surface sheet that is packed deterministically into the atlas.
 - Create a licensed or synthetic evaluation set of at least 30 cases:
   - Text-only requests.
   - Photos and drawings.
@@ -381,15 +388,22 @@ Prove or reject an open-ended managed-API generation path before integrating it 
   - `wide-arm-64` and `slim-arm-64` profiles.
   - Localized edits with explicit preserve constraints.
 - Define scoring for prompt fidelity, reference fidelity, UV correctness, front/back consistency, pixel sharpness, edit preservation, and human preference.
-- Build a `preview-to-atlas` provider adapter for the best provenance-acceptable, API-accessible candidate.
+- Build and test the representation renderer, normalizer, packer, invalid-region restoration, and protected-mask compositor entirely offline with deterministic fixtures.
+- Only after the offline representation gate passes, implement a provider adapter for one provenance-acceptable, API-accessible mainstream managed image model while keeping provider payloads out of engine documents.
+- Dry-plan the fixed preflight without credentials, network access, billable execution, or provider attempt records.
+- Require explicit user authorization for the named provider, credentials, network use, and USD 5 hard ceiling before running the 8-case, 2-representation feasibility preflight.
+- Advance a representation to the complete 36-case evaluation only if it passes the precommitted preflight thresholds in the [experiment plan](../research/generation/experiment-plan.md).
 - Run the fixed experiment through managed provider APIs and, where its contract permits reproducible evaluation, native host generation.
 - Treat a downloadable checkpoint without managed API access as an optional, separately approved comparison rather than a Phase 5 requirement.
+- If both static representations fail, evaluate managed mesh-conditioned retexturing next. Consider provider adaptation only for a measured, concentrated quality gap. Do not add GPU or self-hosted inference without a new ADR and explicit approval.
 - Record observable provider latency, failure and refusal rate, validation/acceptance rate, output quality distributions, retention/provenance risk, and actual/estimated API cost. Record accelerator memory only when the provider exposes it.
 - Perform a model and dataset provenance review before choosing a commercial candidate.
 - Keep all generation calls behind the provider interface.
 
 ### Exit criteria
 
+- The method catalog, current hypothesis, fixed preflight, authority gates, thresholds, fallbacks, and stop conditions agree across research, architecture, this plan, the evaluation brief, and the progress tracker.
+- At least one representation passes its offline fixture contract before any provider call.
 - The full input-to-atlas experiment is reproducible from documented commands.
 - Complex references demonstrate genuinely open-ended output rather than template assembly.
 - Every candidate output passes through deterministic validation.
@@ -404,9 +418,12 @@ Turn the successful research provider into an engine capability with controlled 
 
 ### Work
 
-- Connect prompt, references, existing document, masks, and preserve constraints to `voxl-humanoid-skin.create` and `voxl-humanoid-skin.revise`.
+- Implement creation first, then localized revision; do not collapse their separate quality and preservation gates.
+- Connect prompt, references, the accepted representation, and provider adapter to `voxl-humanoid-skin.create` without embedding provider-specific fields in its durable document.
 - Generate multiple candidates without silently charging for failed validation.
 - Add deterministic postprocessing and repair only where it does not overwrite creative content unexpectedly.
+- Validate every normalized candidate before it can become an accepted immutable version.
+- After creation passes, connect existing document, masks, and preserve constraints to `voxl-humanoid-skin.revise`.
 - Add semantic region analysis and user-editable masks.
 - Implement masked image-to-image revisions.
 - Preserve immutable prior versions and enable restoration.

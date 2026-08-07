@@ -4,7 +4,7 @@ Status: internal product, legal, and conformance research; not product-facing co
 
 Last verified: 2026-08-05. Destination behavior and policies can change. Recheck primary sources and execute destination-specific import tests before release. This record is technical research, not legal advice.
 
-This is the only repository document where destination and publisher names are intentionally used. Public components continue to use target-neutral VOXL identities under [ADR 0006](../adr/0006-target-neutral-identities.md).
+This is the only repository document where destination and publisher names are intentionally used. Public components continue to use target-neutral VOXL identities under [ADR 0006](../architecture/decisions/0006-target-neutral-identities.md).
 
 ## Minecraft compatibility research
 
@@ -46,4 +46,3 @@ Before claiming compatibility for a destination path:
 4. Record screenshots or video, exported hashes, destination version, result, and any account/mod/pack prerequisites.
 5. Repeat the test for every advertised profile. A pass for `wide-arm-64` does not prove `slim-arm-128`.
 6. Keep trademark usage and marketing wording under separate legal review.
-

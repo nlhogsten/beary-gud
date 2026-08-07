@@ -1,8 +1,32 @@
 import assert from "node:assert/strict";
-import { readFile, readdir } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import test from "node:test";
 
 const readJson = async (path) => JSON.parse(await readFile(path, "utf8"));
+
+test("documentation has one navigable hierarchy with valid local links", async () => {
+  const docs = (await readdir("docs", { recursive: true }))
+    .filter((path) => path.endsWith(".md"))
+    .map((path) => `docs/${path}`);
+  const files = ["README.md", "AGENTS.md", "CLAUDE.md", ...docs];
+
+  await access("docs/README.md");
+  await access("docs/planning/progress.md");
+  await access("docs/planning/implementation-plan.md");
+  await access("docs/architecture/system.md");
+  await access("docs/research/generation/method-catalog.md");
+  await access("docs/research/generation/experiment-plan.md");
+
+  for (const file of files) {
+    const source = await readFile(file, "utf8");
+    for (const match of source.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+      const target = match[1].split("#")[0];
+      if (!target || /^[a-z]+:/i.test(target)) continue;
+      await access(resolve(dirname(file), decodeURI(target)));
+    }
+  }
+});
 
 test("quality runner is integrated into workspace gates", async () => {
   const [rootPackage, runnerPackage, gitignore] = await Promise.all([
@@ -109,9 +133,13 @@ test("agent routers and matched skills preserve the VOXL workflow", async () => 
     readFile("CLAUDE.md", "utf8"),
   ]);
 
-  assert.match(agents, /docs\/VOXL_PROGRESS\.md/);
+  assert.match(agents, /docs\/planning\/progress\.md/);
+  assert.match(agents, /docs\/planning\/implementation-plan\.md/);
+  assert.match(agents, /docs\/architecture\/system\.md/);
   assert.match(agents, /bun run check/);
-  assert.match(claude, /docs\/VOXL_PROGRESS\.md/);
+  assert.match(claude, /docs\/planning\/progress\.md/);
+  assert.match(claude, /docs\/planning\/implementation-plan\.md/);
+  assert.match(claude, /docs\/architecture\/system\.md/);
   assert.match(claude, /bun run check/);
 
   for (const name of skillNames) {

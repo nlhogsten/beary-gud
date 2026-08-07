@@ -10,4 +10,4 @@ This is the current working engine descended from the original Bash character wo
 
 Use the PNG sequence when you need to alter individual frames. Use the MOV for the quick workflow.
 
-For the componentized platform direction, read [VOXL product research and architecture](VOXL_PRODUCT_RESEARCH.md) and [VOXL implementation plan](VOXL_IMPLEMENTATION_PLAN.md).
+For the componentized platform direction, read [VOXL product research](../research/product.md), [generation research](../research/generation/README.md), [system architecture](../architecture/system.md), and the [VOXL implementation plan](../planning/implementation-plan.md).

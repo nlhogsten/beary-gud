@@ -125,4 +125,4 @@ bun run qa:walkthrough humanoid-2d-3d --base-url http://127.0.0.1:5740
 
 The default destination is `http://127.0.0.1:5740`. Journeys contain only local paths and must not navigate to external services. Each viewport receives an isolated browser context. The runner captures every step, browser console/page errors, failed requests and error responses, expected downloads, and a Markdown report under `.runs/<run-id>/`.
 
-A runner result is only the interaction and runtime layer of verification. Visual approval is a separate review of the evidence against `apps/quality-runner/rubrics/voxl-studio-review.json`. Follow [the complete quality workflow](VOXL_QUALITY_SYSTEM.md) before checking a visual exit criterion in `VOXL_PROGRESS.md`.
+A runner result is only the interaction and runtime layer of verification. Visual approval is a separate review of the evidence against `apps/quality-runner/rubrics/voxl-studio-review.json`. Follow [the complete quality workflow](../quality/studio-verification.md) before checking a visual exit criterion in [`planning/progress.md`](../planning/progress.md).

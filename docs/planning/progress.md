@@ -1,6 +1,6 @@
 # VOXL build progress
 
-This is the day-to-day source of truth for implementation progress. [The implementation plan](VOXL_IMPLEMENTATION_PLAN.md) explains the full work and why it is ordered this way; this tracker records what is actually complete.
+This is the day-to-day source of truth for implementation progress. [The implementation plan](implementation-plan.md) explains the full work and why it is ordered this way; this tracker records what is actually complete.
 
 ## How to update this tracker
 
@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 5 provider admission, with independent density review deferred to the user.** Phases 0–4 are complete. The engine and Studio separate model geometry from texture density, implement wide/slim `64`/`128` profiles, and have passed the complete repository gate plus the updated browser journeys; the remaining independent visual judgment is intentionally still open. The fixed Phase 5 evaluation stays locked to `64x64`. Two managed-API candidates are now catalogued: the pinned candidate is blocked on dataset provenance, while the provenance-oriented candidate is blocked on immutable model identity, retention acceptance, enterprise access/pricing, and revision parity. No provider is admitted, no API call is authorized, and VOXL does not plan to rent or manage GPUs.
+**Phase 5 method and representation gate, with independent density review deferred to the user.** Phases 0–4 are complete. The current unproven hypothesis is template-conditioned mainstream managed image generation on fixed VOXL geometry, comparing an upscaled atlas with a canonical surface sheet. The method catalog preserves the procedural, LLM-tool, concept-to-atlas, mesh-conditioned, specialized, adapted, self-hosted, and native-host alternatives and states when each can be considered. No representation has passed, no provider is admitted, no API call or spend is authorized, and VOXL does not plan to rent or manage GPUs. The next build is the offline representation harness—not a production provider integration.
 
 ## Platform and repository foundation
 
@@ -194,14 +194,19 @@ Status: **in progress**
 - [x] Add deterministic `eval:plan` output that binds the complete case, rubric, provider descriptor/configuration, provenance dossier, revision policy, and materialized-input hashes while proving it reads no credentials, invokes no adapter, uses no network, makes no paid call, and writes no provider attempt evidence.
 - [x] Identify and document the first conditional managed-API candidate, fixed snapshot, evaluation configuration, price floor, retention scope, official evidence, and unresolved dataset-provenance blocker without admitting or calling it.
 - [x] Preserve the strict dataset-origin gate and catalog a second provenance-oriented managed-API candidate with official evidence, integrity hashes, and explicit model-version, retention, enterprise-access, pricing, and revision-capability blockers.
+- [x] Catalog every generation method discussed and point to template-conditioned mainstream managed image generation as the current hypothesis without claiming it works.
+- [x] Specify the upscaled-atlas and canonical-surface-sheet contracts, fixed 8-case preflight, thresholds, USD 5 stop ceiling, authority gates, fallback ladder, and ordered build stages before implementation.
 
 ### Remaining experiment gate
 
 - [x] Materialize and SHA-256 lock 25 synthetic reference assets used by 18 cases.
 - [x] Materialize and SHA-256 lock four revision baselines plus editable/protected/immutable masks.
+- [ ] Implement and test the two representation render/normalize/pack paths offline using deterministic provider-output fixtures.
 - [ ] Complete model, dataset, commercial-use, reference-use, and retention provenance review for at least one candidate.
-- [ ] Implement and admit a real API-accessible `preview-to-atlas` provider adapter only after provenance review.
-- [ ] Run the fixed experiment through managed-provider APIs and reproducible host-native compute where available, without charging product entitlements.
+- [ ] Implement and admit one real managed-image provider adapter only after the offline representation and provenance gates pass.
+- [ ] Produce a non-billable dry plan binding representation, case, model, configuration, references, masks, hashes, and spend ceiling.
+- [ ] Obtain explicit user authorization for the provider, credentials, network use, and USD 5 cap; then run the fixed 8-case, 2-representation preflight without charging product entitlements.
+- [ ] Advance only a passing representation to the complete 36-case managed-provider evaluation and reproducible host-native comparison where available.
 - [ ] Record provider latency, failure/refusal rate, validation/acceptance rate, quality distributions, retention/provenance risk, and actual/estimated API cost. Record accelerator memory only if exposed.
 - [ ] Decide from measured evidence whether to continue a managed provider, investigate provider-side adaptation/fine-tuning, change API approach, or stop.
 - [ ] Complete all Phase 5 exit criteria from the implementation plan; no provider is selected or admitted, and no GPU rental or self-hosting decision is authorized.
@@ -294,4 +299,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Choose the Phase 5 admission path without weakening the recorded gates: either explicitly accept the pinned candidate's category-level dataset disclosure for the synthetic research run, or resolve the provenance-oriented candidate's immutable-version, retention, enterprise-entitlement, pricing, and localized-revision blockers. Independent review of the final density walkthrough remains open for the user's later visual review and must not be marked complete until then.
+Implement the two engine-owned representation paths entirely offline: exact upscaled-atlas reduction and canonical-surface-sheet packing, including invalid-region restoration and protected-mask compositing. Test them with deterministic simulated provider outputs. Do not add credentials, make provider calls, or spend money. Provider provenance admission and independent review of the final density walkthrough remain separate open gates.

@@ -2,7 +2,7 @@
 
 Research captured on August 4, 2026 and revised on August 5, 2026. Product policies, model availability, pricing, and external compatibility rules can change; recheck primary sources in the restricted compliance record before launch.
 
-Read [the plain-language VOXL glossary](VOXL_GLOSSARY.md) whenever a product, AI, graphics, service, or billing term is unfamiliar.
+Read [the plain-language VOXL glossary](../reference/glossary.md) whenever a product, AI, graphics, service, or billing term is unfamiliar. For the generation approaches considered, the current hypothesis, and the experiment order, start with [generation research](generation/README.md).
 
 ## Decision summary
 
@@ -16,7 +16,7 @@ The product does not need a custom 3D generative model to begin. Three systems t
 
 The intended VOXL humanoid-skin generator is generative-first and multimodal: text, reference images, an existing skin, masks, sketches, palettes, and future input types can condition full pixel synthesis. Structured fields such as hair color are optional control metadata, not the vocabulary or limit of creation. A procedural constructor remains useful as a test fixture and fallback, but it is not the long-term creative core.
 
-The Phase 5 generation path is API-first. VOXL should call hosted generation and image-editing providers through replaceable adapters; it should not rent GPUs, operate model-serving infrastructure, or make a downloadable checkpoint part of the production architecture. The first vertical slice must compare API-accessible providers on quality, latency, cost, privacy, and provenance before any provider is admitted. A specialized downloadable checkpoint may remain optional comparative research, but it is not a delivery dependency.
+The Phase 5 generation path is API-first. VOXL should call hosted generation and image-editing providers through replaceable adapters; it should not rent GPUs, operate model-serving infrastructure, or make a downloadable checkpoint part of the production architecture. The current hypothesis tests mainstream managed image models on two fixed VOXL representations—an upscaled atlas and a canonical surface sheet—before choosing a provider path. A specialized downloadable checkpoint may remain optional comparative research, but it is not a delivery dependency. The [generation research index](generation/README.md) is authoritative when this broader product record and the active experiment differ.
 
 ## Target-neutral naming policy
 
@@ -26,7 +26,7 @@ VOXL's product architecture must never use an external application, game, platfo
 - Document kind: `voxl.humanoid-skin/v1`.
 - Export profiles: `wide-arm-64`, `slim-arm-64`, `wide-arm-128`, and `slim-arm-128`.
 - Renderer capability: `cuboid-humanoid-renderer`.
-- Provider capability: `preview-to-atlas`, regardless of the model used behind it.
+- Provider capability: `template-image-generation`, regardless of the model used behind it.
 - Package: `engine-voxl-humanoid-skin`.
 
 This rule applies to package names, API and MCP schemas, database values, prompts, fixtures, logs, analytics, UI labels, plugin metadata, public copy, and source documentation. Compatibility with an external destination belongs behind a neutral export-profile adapter and conformance test. It does not fork or rename the artifact engine. Target- and publisher-specific research belongs in a restricted legal/compliance record outside the product namespace and is not copied into product-facing repository documentation.
@@ -95,7 +95,7 @@ The product is open-ended within the physical capacity of the selected visual pr
 
 Research found that texture density, arm geometry, and 3D outer-layer presentation are separate concerns. The engine therefore owns one logical UV layout that scales by density while retaining exact model-unit proportions. VOXL initially supports `64x64` and `128x128` atlases for both wide and slim arms. A renderer may visually extrude an outer layer without changing either atlas density or document meaning.
 
-The source links and destination names supporting these conclusions live in the [restricted compatibility dossier](compliance/DESTINATION_COMPATIBILITY.md), as required by the target-neutral naming policy. Deterministic support is not a compatibility promise for every destination path, and it is not evidence that the eventual managed generation provider produces worthwhile higher-density detail.
+The source links and destination names supporting these conclusions live in the [restricted compatibility dossier](../compliance/destination-compatibility.md), as required by the target-neutral naming policy. Deterministic support is not a compatibility promise for every destination path, and it is not evidence that the eventual managed generation provider produces worthwhile higher-density detail.
 
 ## What Codex subscription compute can and cannot do
 
@@ -213,11 +213,12 @@ Do not build or rent GPU infrastructure. Prove the experience in this order:
 1. Define the shared engine contract and extract the existing workflow as `transparent-character` without changing its behavior.
 2. Build a deterministic `voxl-humanoid-skin` document, validator, renderer, editor, and exporter.
 3. Create a fixed multimodal evaluation set with complex text and image references.
-4. Compare API-accessible generation and editing providers on the fixed case set and record quality, latency, cost, retention, and provenance evidence.
-5. Connect only an admitted hosted provider behind the `voxl-humanoid-skin` engine and add localized generative edits.
-6. Test the complete generation and refinement loop with users.
-7. Add durable accounts, remote MCP, and billing only after the loop is useful.
-8. Recheck provider pricing, terms, retention, provenance, and model availability before any production admission.
+4. Build the upscaled-atlas and canonical-surface-sheet transforms offline and compare them with deterministic simulated outputs.
+5. Run the capped representation preflight through one admitted API-accessible image provider, then advance only a passing representation to the full fixed case set.
+6. Connect only a fully evaluated hosted provider behind the `voxl-humanoid-skin` engine and add creation followed by localized generative edits.
+7. Test the complete generation and refinement loop with users.
+8. Add durable accounts, remote MCP, and billing only after the loop is useful.
+9. Recheck provider pricing, terms, retention, provenance, and model availability before any production admission.
 
 This order protects the current product, avoids constraining VOXL to templates, and keeps VOXL focused on its artifact engine and application services rather than model-serving infrastructure.
 
@@ -323,9 +324,9 @@ This approach is highly controllable but creatively limited. Keep it for fixture
 
 ### Direct image generation
 
-Asking a general image model to emit a finished UV atlas in one step is unreliable. The output may look like a skin while placing body parts in the wrong coordinates, blurring pixel edges, filling unused transparent regions, or making the front and back inconsistent.
+Asking a general image model to emit a finished UV atlas in one step has material risks: it may place body parts in the wrong coordinates, blur pixel edges, fill unused transparent regions, or make front and back inconsistent. Current multimodal image models may nevertheless be capable enough on fixed templates that this should be measured rather than dismissed.
 
-Native image generation is still useful for producing a canonical front/back concept preview. Codex can use a customer's native image allowance for this step where available.
+The current first experiment therefore compares direct generation on an upscaled exact atlas with generation on a canonical flat surface sheet that VOXL packs deterministically. Native host image generation may also participate where it exposes a reproducible provider contract, but a user's host subscription is not assumed to authorize VOXL server usage. See the [method catalog](generation/method-catalog.md) and [fixed experiment gates](generation/experiment-plan.md).
 
 ### Hosted-provider research snapshot
 
@@ -347,7 +348,7 @@ The smallest useful comparison is not a provider beauty contest. It is a fixed-c
 
 The first engineering candidate is the direct OpenAI Image API with the pinned `gpt-image-2-2026-04-21` snapshot, PNG output, 1024×1024 size, and medium quality. It is conditional because VOXL's dossier approves commercial use, fixed model identity, synthetic-evaluation reference use, and synthetic-evaluation retention, while leaving dataset provenance pending. OpenAI's official training-data summary describes broad source categories and includes copyrighted material but does not publish a model-specific licensed-source inventory. A human legal/product decision must either accept that disclosure and the contractual protections for this research run or preserve the stricter gate and decline admission. The gate must not be silently weakened.
 
-The first paid shakedown, if and only if the candidate is later admitted, should request one output for cases `v1-001`, `v1-003`, `v1-005`, `v1-007`, `v1-013`, `v1-017`, `v1-027`, and `v1-030` under a $2 hard cap. Eight medium 1024×1024 outputs have a listed output-cost floor of about $0.424 before reference-image input tokens. This is only an adapter, normalization, validation, mask, evidence, and accounting test; it cannot support a provider-quality conclusion. The full locked protocol requires 140 outputs and has a medium-quality output floor of about $7.42 before input tokens.
+The first paid shakedown, if and only if a candidate is later admitted and the user explicitly authorizes it, is the representation preflight defined in the [current experiment plan](generation/experiment-plan.md): the same eight locked cases across two representations, with a USD 5 complete-run hard cap including retries. It is only a feasibility screen and cannot support a provider-quality conclusion. The full locked protocol still requires 140 outputs and, for the recorded candidate pricing, had a medium-quality output floor of about $7.42 before input tokens.
 
 Official evidence retained for the conditional candidate:
 
@@ -557,7 +558,7 @@ packages/
   engine-transparent-character/  # current format, Bash importer, alpha exports
   engine-voxl-humanoid-skin/      # UV maps, edits, validation, PNG I/O
   provider-procedural/            # deterministic fixtures and fallback
-  provider-preview-to-atlas/      # evaluation-only hosted API adapter
+  provider-template-image/        # evaluation-only managed-image adapter
 apps/
   web/                           # shared shell and engine-specific editors
   mcp/                           # authenticated engine-neutral tools and UI
@@ -570,25 +571,19 @@ workers/
 
 No migration should occur until the vertical slice proves that the skin workflow is worth pursuing.
 
-## First vertical slice
+## Current vertical slice
 
-The next implementation milestone should deliberately avoid accounts, billing, public MCP submission, provider admission, and any VOXL-operated model hosting.
+The original engine, deterministic document, renderer, synchronized editor, validator, and exporter slice is complete. The next implementation milestone deliberately avoids accounts, billing, public MCP submission, provider calls, and any VOXL-operated model hosting:
 
-1. Define the engine contract and registry.
-2. Wrap the current Bash-derived workflow as `transparent-character` and prove all existing validation/render tests still pass.
-3. Register a skeletal `voxl-humanoid-skin` engine without coupling it to the existing grid schema.
-4. Import a known valid 64x64 skin PNG.
-5. Detect or select `wide-arm-64`/`slim-arm-64` geometry.
-6. Render it on a rotatable 3D character.
-7. Click a body face and map the click to the correct texture pixel.
-8. Edit pixels in synchronized 2D and 3D views.
-9. Validate transparent and unused regions and download a valid PNG.
-10. Run the fixed generation case set through API-accessible provider adapters using synthetic, licensed, or user-authorized references.
-11. Connect an evaluation-only provider adapter to `voxl-humanoid-skin` through the engine contract without admitting it to production.
-12. Ask Codex to perform an open-ended generation and a masked revision.
-13. Confirm that the result passes the neutral export-profile import smoke test and that the `transparent-character` engine remains unchanged.
+1. Render an exact upscaled atlas template from an engine document.
+2. Render a canonical ordered surface sheet plus machine-readable panel metadata.
+3. Reduce and pack deterministic simulated provider outputs back into engine documents.
+4. Restore invalid regions and composite revision masks exactly.
+5. Prove valid fixtures are accepted, malformed surfaces are rejected actionably, and no network, credential, or billing path is used.
+6. Only after that gate passes, complete provider provenance and build a disabled-by-default adapter plus a non-billable dry plan.
+7. Ask for explicit authority before any capped external generation call.
 
-This is the smallest slice that tests both componentization and the unconstrained generative vision.
+This is the smallest next slice that tests the uncertain representation boundary without prematurely committing to a provider or infrastructure.
 
 ## Evaluation plan
 
@@ -622,4 +617,4 @@ The architecture decision should follow these results:
 - If users value editing more than first-pass generation, invest in masks, versioning, and localized image editing rather than a larger template catalog.
 - If a provider fails provenance review, replace it before commercial launch even if its visual quality is strong.
 
-The detailed delivery phases and completion gates are in [VOXL implementation plan](VOXL_IMPLEMENTATION_PLAN.md).
+The detailed delivery phases and completion gates are in the [VOXL implementation plan](../planning/implementation-plan.md).

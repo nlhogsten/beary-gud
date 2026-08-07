@@ -43,4 +43,4 @@ tofu plan -refresh=false \
 - Add cost estimates, deletion protection, backups, and recovery tests with the first stateful resources.
 - Do not add GPU or model-serving infrastructure to the baseline. Managed provider APIs are the default; any exception requires an explicit ADR and approval.
 
-See [the system architecture](../../docs/VOXL_ARCHITECTURE.md) and [ADR 0009](../../docs/adr/0009-local-development-and-aws-runtime.md).
+See [the system architecture](../../docs/architecture/system.md) and [ADR 0009](../../docs/architecture/decisions/0009-local-development-and-aws-runtime.md).

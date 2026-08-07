@@ -4,8 +4,8 @@ Use this file as the always-on repository contract. Keep operational detail in t
 
 ## Start here
 
-- Treat `docs/VOXL_PROGRESS.md` as the status source of truth and `docs/VOXL_IMPLEMENTATION_PLAN.md` as the delivery specification.
-- Read `docs/VOXL_ARCHITECTURE.md` and relevant `docs/adr/` records before changing system boundaries.
+- Treat `docs/planning/progress.md` as the status source of truth and `docs/planning/implementation-plan.md` as the delivery specification.
+- Read `docs/architecture/system.md` and relevant `docs/architecture/decisions/` records before changing system boundaries.
 - Preserve unrelated user changes. Root configuration coordinates workspaces; runtime configuration belongs to its owning package or app.
 - Treat `.codex/skills/` as canonical and keep the matching `.claude/skills/` files byte-identical for cross-editor discovery.
 

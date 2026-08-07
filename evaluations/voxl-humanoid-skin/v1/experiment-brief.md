@@ -2,6 +2,8 @@
 
 Status: specification only; no provider runs or results exist.
 
+The [generation experiment and build gates](../../../docs/research/generation/experiment-plan.md) define the fixed 8-case representation preflight that must run before this complete evaluation. The preflight compares an upscaled atlas with a canonical surface sheet; it does not alter this immutable 36-case protocol or authorize a provider call.
+
 ## Decision
 
 This experiment will decide whether a provenance-acceptable generation adapter can create and locally revise open-ended `voxl.humanoid-skin/v1` documents well enough to justify a Phase 6 integration spike. It does not select a provider or authorize permanent inference infrastructure.
@@ -10,7 +12,7 @@ The comparison must use the immutable `cases.v1.json` ordering, `rubric.v1.json`
 
 ## Candidate admission
 
-The catalog contains two conditional managed-API candidates. The direct Image API candidate has a pinned `gpt-image-2-2026-04-21` snapshot but remains unadmitted because dataset provenance is pending. The provenance-oriented Firefly Image Model 5 candidate has clearer licensed/public-domain dataset evidence but remains unadmitted because the current API does not expose an immutable model version, its documented retention needs explicit acceptance, enterprise access and pricing are unverified, and only creation—not localized revision—is represented in its manifest. Neither candidate can be called. Managed external APIs are the default candidate class; the provider operates its models and accelerators, while VOXL records requests, validates outputs, and stores evidence. A future candidate may enter the experiment only after its adapter boundary, model/version identity, commercial-use terms, model and dataset provenance, data-retention policy, and reference-use permissions are recorded. A candidate with unresolved commercial provenance is ineligible regardless of visual quality.
+The catalog contains two conditional managed-API candidates. They predate the representation preflight and are evidence records, not a commitment to use either one. The direct Image API candidate has a pinned `gpt-image-2-2026-04-21` snapshot but remains unadmitted because dataset provenance is pending. The provenance-oriented Firefly Image Model 5 candidate has clearer licensed/public-domain dataset evidence but remains unadmitted because the current API does not expose an immutable model version, its documented retention needs explicit acceptance, enterprise access and pricing are unverified, and only creation—not localized revision—is represented in its manifest. Neither candidate can be called. Managed external APIs are the default candidate class; the provider operates its models and accelerators, while VOXL records requests, validates outputs, and stores evidence. A future candidate may enter the experiment only after its adapter boundary, model/version identity, commercial-use terms, model and dataset provenance, data-retention policy, and reference-use permissions are recorded. A candidate with unresolved commercial provenance is ineligible regardless of visual quality.
 
 Native host generation may enter only when it can be invoked and measured through a reproducible provider contract. Local, notebook, rented-GPU, or self-hosted execution is not a Phase 5 requirement and requires separate explicit approval as comparative research. It cannot become product architecture without a new ADR.
 
@@ -62,13 +64,14 @@ No provider is promoted from a small aesthetic sample, and no production hosting
 
 ## Future execution protocol
 
-1. Materialize and hash every synthetic reference and baseline document; freeze a case-set lock.
-2. Record admitted candidate provenance before any generation call; evaluate API-accessible candidates first.
-3. Invoke each candidate only through a provider adapter using identical ordered inputs.
-4. Persist each immutable attempt under `.runs/evaluations/<run-id>/` using the attempt schema.
-5. Reject invalid candidates through deterministic engine validation before rendering or preference scoring.
-6. Load valid candidates in the real studio and capture comparable atlas plus front, rear, side, top, and bottom views.
-7. Score all attempts, publish distributions and failure categories, and identify the smallest next experiment that reduces the decisive uncertainty.
+1. Pass the offline representation-fixture gate and the separate 8-case representation preflight.
+2. Materialize and hash every synthetic reference and baseline document; freeze a case-set lock.
+3. Record admitted candidate provenance before any generation call; evaluate API-accessible candidates first.
+4. Invoke each candidate only through a provider adapter using identical ordered inputs.
+5. Persist each immutable attempt under `.runs/evaluations/<run-id>/` using the attempt schema.
+6. Reject invalid candidates through deterministic engine validation before rendering or preference scoring.
+7. Load valid candidates in the real studio and capture comparable atlas plus front, rear, side, top, and bottom views.
+8. Score all attempts, publish distributions and failure categories, and identify the smallest next experiment that reduces the decisive uncertainty.
 
 Research runs must not charge product entitlements.
 

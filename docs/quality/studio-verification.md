@@ -133,14 +133,14 @@ A run can support progress only when all applicable required criteria pass and n
 
 AI editors follow the same gates as human contributors:
 
-1. Read the relevant architecture, engine contract, and current `VOXL_PROGRESS.md` items.
+1. Read the relevant architecture, engine contract, and current `docs/planning/progress.md` items.
 2. Run `bun run check` and any focused deterministic commands for the changed subsystem.
 3. Start or confirm the localhost stack; never replace the local destination with an external site.
 4. Select the smallest committed journey that covers the change. Use `studio-smoke` for shell/responsive work and a format-specific journey for editor behavior.
 5. Report the exact run directory and distinguish required-step results from visual-review results.
 6. Have a separate agent or person apply the rubric for visual milestones. The implementing agent may capture evidence but must not be the sole visual approver.
 7. Fix failures and create a new run; do not edit prior evidence to make it appear successful.
-8. Update `VOXL_PROGRESS.md` only after the relevant deterministic, walkthrough, and review evidence exists.
+8. Update `docs/planning/progress.md` only after the relevant deterministic, walkthrough, and review evidence exists.
 
 Repository-local skills route recurring work:
 

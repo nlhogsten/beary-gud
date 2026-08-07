@@ -8,7 +8,7 @@ This repository began as a transparent pixel-character studio. It is now the imp
 
 VOXL names engines, packages, APIs, and editor modules after the visual artifact they implement—not after any external application, game, platform, or publisher. Compatibility is represented by neutral export profiles such as `wide-arm-64` and `slim-arm-64`.
 
-The existing animation workflow remains the current working product. VOXL is organized as a Bun workspace monorepo: independent applications live in `apps/`, reusable visual engines live in `packages/`, database and cloud infrastructure live in `infra/`, and the root package only coordinates them. Development is localhost-only; future production targets an OpenTofu-managed AWS runtime. Start with [the system architecture](docs/VOXL_ARCHITECTURE.md), [local development runbook](docs/LOCAL_DEVELOPMENT.md), [quality and walkthrough system](docs/VOXL_QUALITY_SYSTEM.md), [plain-language glossary](docs/VOXL_GLOSSARY.md), [implementation plan](docs/VOXL_IMPLEMENTATION_PLAN.md), and [checked progress tracker](docs/VOXL_PROGRESS.md).
+The existing animation workflow remains the current working product. VOXL is organized as a Bun workspace monorepo: independent applications live in `apps/`, reusable visual engines live in `packages/`, database and cloud infrastructure live in `infra/`, and the root package only coordinates them. Development is localhost-only; future production targets an OpenTofu-managed AWS runtime. Start with the [documentation guide](docs/README.md), which points to the architecture, current generation method, implementation plan, progress tracker, local runbook, quality system, and glossary.
 
 ## Start the local editor
 
@@ -41,7 +41,7 @@ bun run qa:smoke
 bun run qa:walkthrough humanoid-2d-3d
 ```
 
-Walkthrough evidence is written to the gitignored `.runs/<run-id>/` directory. A passing walkthrough means its required interactions completed without actionable browser errors; it does not by itself approve visual correctness. Review the screenshots and downloads against [`apps/quality-runner/rubrics/voxl-studio-review.json`](apps/quality-runner/rubrics/voxl-studio-review.json) before closing a visual milestone. See [the quality-system guide](docs/VOXL_QUALITY_SYSTEM.md) for the four journeys, artifact format, and agent workflow.
+Walkthrough evidence is written to the gitignored `.runs/<run-id>/` directory. A passing walkthrough means its required interactions completed without actionable browser errors; it does not by itself approve visual correctness. Review the screenshots and downloads against [`apps/quality-runner/rubrics/voxl-studio-review.json`](apps/quality-runner/rubrics/voxl-studio-review.json) before closing a visual milestone. See [the quality-system guide](docs/quality/studio-verification.md) for the four journeys, artifact format, and agent workflow.
 
 ## Make or change a character
 
@@ -54,7 +54,7 @@ bun run render -- <name>
 
 Production exports appear in `exports/<name>/`: a transparent PNG sequence, alpha MOV files, and a contact sheet. Import `<name>_loop_30s.mov` into Premiere for the ready-to-loop overlay. The editor's animated PNG is intended for quick previews and apps that support APNG; use the rendered MOV for Premiere.
 
-For Codex-driven work, use the repo skill: `$transparent-character-studio`. See [the AI workflow](docs/AI_WORKFLOW.md).
+For Codex-driven work, use the repo skill: `$transparent-character-studio`. See [the AI workflow](docs/development/ai-workflow.md).
 
 ## Old Bash animations
 
@@ -65,4 +65,4 @@ bun run import-bash -- /path/to/old-animation.sh new-character
 bun run render -- new-character
 ```
 
-Read [the local development runbook](docs/LOCAL_DEVELOPMENT.md), [quality-system guide](docs/VOXL_QUALITY_SYSTEM.md), [usage guide](docs/USAGE_GUIDE.md), [animation guide](docs/ANIMATION_GUIDE.md), [Bash migration guide](docs/BASH_MIGRATION.md), [VOXL glossary](docs/VOXL_GLOSSARY.md), [VOXL architecture](docs/VOXL_ARCHITECTURE.md), and [VOXL progress tracker](docs/VOXL_PROGRESS.md).
+Read [the documentation guide](docs/README.md), [local development runbook](docs/development/local-development.md), [quality-system guide](docs/quality/studio-verification.md), [usage guide](docs/guides/usage.md), [animation guide](docs/guides/animation.md), and [Bash migration guide](docs/guides/bash-migration.md).

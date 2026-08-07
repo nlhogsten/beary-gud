@@ -2,7 +2,7 @@
 
 This is the plain-language dictionary for the VOXL project. It explains product, AI, graphics, platform, and current character-studio terms used throughout the documentation. Terms are listed alphabetically within related groups so this can be read from top to bottom or searched as needed.
 
-For implementation status, use [the checked VOXL progress tracker](VOXL_PROGRESS.md).
+For implementation status, use [the checked VOXL progress tracker](../planning/progress.md).
 
 ## The shortest explanation
 
