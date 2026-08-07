@@ -99,6 +99,14 @@ tofu -chdir=infra/tofu validate
 
 `bun run check` runs unit/contract tests, lint, TypeScript checks, and production builds. It deliberately does not launch a browser. Use it for deterministic code, engine, schema, and build regressions; do not treat it as evidence that a canvas, WebGL interaction, responsive layout, or download works in a real browser.
 
+### Offline generation-representation gate
+
+```bash
+bun run eval:representations
+```
+
+This renders both engine-owned generation layouts, treats those deterministic templates as simulated provider outputs, normalizes them back into wide/slim `64` documents, verifies exact creation round trips and protected revision compositing, and checks actionable malformed-output rejection. It never invokes a provider adapter, reads credentials, uses the network, makes a paid call, or consumes an entitlement.
+
 ### Browser walkthroughs
 
 Start the localhost applications in one terminal:

@@ -85,11 +85,74 @@ export type HumanoidSkinPreview = {
   png: Buffer;
 };
 
+export type HumanoidSkinGenerationRepresentationId = "direct-atlas-v1" | "surface-sheet-v1";
+
+export type HumanoidSkinGenerationArtifact = Readonly<{
+  mediaType: "image/png";
+  width: 1024;
+  height: 1024;
+  bytes: Buffer;
+  sha256: string;
+}>;
+
+export type HumanoidSkinGenerationPanel = Readonly<{
+  id: string;
+  index: number;
+  part: HumanoidSkinPart;
+  layer: HumanoidSkinLayer;
+  face: HumanoidSkinFace;
+  atlas: Readonly<{ x: number; y: number; width: number; height: number }>;
+  sheet: Readonly<{ x: number; y: number; width: number; height: number }>;
+  marker: Readonly<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    rgba: readonly [number, number, number, number];
+  }>;
+}>;
+
+export type HumanoidSkinGenerationLayout = Readonly<{
+  representationId: HumanoidSkinGenerationRepresentationId;
+  version: 1;
+  profile: HumanoidSkinProfileId;
+  width: 1024;
+  height: 1024;
+  blockSize: number;
+  alphaPolicy: "rgba-median-with-reserved-transparency-key-v1";
+  invalidRegionPolicy: "force-transparent-black-v1";
+  panels?: readonly HumanoidSkinGenerationPanel[];
+}>;
+
+export type HumanoidSkinGenerationRepresentation = Readonly<{
+  id: HumanoidSkinGenerationRepresentationId;
+  profile: HumanoidSkinProfileId;
+  layout: HumanoidSkinGenerationLayout;
+  template: HumanoidSkinGenerationArtifact;
+  guide: HumanoidSkinGenerationArtifact;
+}>;
+
+export type HumanoidSkinGenerationNormalizationReport = Readonly<{
+  representationId: HumanoidSkinGenerationRepresentationId;
+  profile: HumanoidSkinProfileId;
+  transparencyKeyBlocks: number;
+  invalidRegionsRestored: number;
+  revisionApplied: boolean;
+  restoredTexels: number;
+  protectedChangedTexelsBeforeComposite: number;
+  immutableChangedTexelsBeforeComposite: number;
+  protectedChangedTexelsAfterComposite: 0;
+  immutableChangedTexelsAfterComposite: 0;
+}>;
+
 export const BASE_TEXTURE_WIDTH: 64;
 export const BASE_TEXTURE_HEIGHT: 64;
 export const HUMANOID_SKIN_TEXTURE_SIZES: readonly (64 | 128)[];
 export const HUMANOID_SKIN_DOCUMENT_KIND: "voxl.humanoid-skin/v1";
 export const HUMANOID_SKIN_SIDECAR_KIND: "voxl.humanoid-skin.sidecar/v1";
+export const HUMANOID_SKIN_GENERATION_REPRESENTATION_IDS: readonly HumanoidSkinGenerationRepresentationId[];
+export const HUMANOID_SKIN_GENERATION_CANVAS_SIZE: 1024;
+export const HUMANOID_SKIN_TRANSPARENCY_KEY: readonly [255, 0, 255, 255];
 export const HUMANOID_SKIN_PROFILE_IDS: readonly HumanoidSkinProfileId[];
 export const HUMANOID_SKIN_PROFILES: Readonly<Record<HumanoidSkinProfileId, HumanoidSkinProfile>>;
 export const humanoidSkinDescriptor: Readonly<EngineDescriptor>;
@@ -97,6 +160,11 @@ export const humanoidSkinDescriptor: Readonly<EngineDescriptor>;
 export class HumanoidSkinValidationError extends Error {
   readonly issues: ValidationIssue[];
   constructor(message: string, issues: ValidationIssue[]);
+}
+
+export class HumanoidSkinRepresentationError extends Error {
+  readonly code: string;
+  constructor(code: string, message: string);
 }
 
 export function getHumanoidSkinProfile(profileId: HumanoidSkinProfileId): HumanoidSkinProfile;
@@ -138,6 +206,23 @@ export function importHumanoidSkinPng(
 ): HumanoidSkinDocument;
 export function exportHumanoidSkinPng(document: HumanoidSkinDocument): Buffer;
 export function serializeHumanoidSkinSidecar(document: HumanoidSkinDocument): string;
+export function renderHumanoidSkinGenerationRepresentation(
+  document: HumanoidSkinDocument,
+  representationId: HumanoidSkinGenerationRepresentationId,
+): HumanoidSkinGenerationRepresentation;
+export function normalizeHumanoidSkinGenerationCandidate(values: {
+  representationId: HumanoidSkinGenerationRepresentationId;
+  profile: HumanoidSkinProfileId;
+  candidatePng: Uint8Array;
+  baselineDocument?: HumanoidSkinDocument;
+  editableMask?: Uint8Array;
+  protectedMask?: Uint8Array;
+  immutableMask?: Uint8Array;
+}): Readonly<{
+  document: HumanoidSkinDocument;
+  layout: HumanoidSkinGenerationLayout;
+  report: HumanoidSkinGenerationNormalizationReport;
+}>;
 export function encodeRgbaPng(width: number, height: number, pixels: Uint8Array): Buffer;
 export function decodeRgbaPng(input: Uint8Array): { width: number; height: number; pixels: Buffer };
 

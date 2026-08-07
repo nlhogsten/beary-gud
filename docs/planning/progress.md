@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 5 method and representation gate, with independent density review deferred to the user.** Phases 0–4 are complete. The current unproven hypothesis is template-conditioned mainstream managed image generation on fixed VOXL geometry, comparing an upscaled atlas with a canonical surface sheet. The method catalog preserves the procedural, LLM-tool, concept-to-atlas, mesh-conditioned, specialized, adapted, self-hosted, and native-host alternatives and states when each can be considered. No representation has passed, no provider is admitted, no API call or spend is authorized, and VOXL does not plan to rent or manage GPUs. The next build is the offline representation harness—not a production provider integration.
+**Phase 5 provider-neutral planning and admission, with independent density review deferred to the user.** The engine-owned upscaled-atlas and canonical-surface-sheet paths now pass deterministic offline creation, revision-preservation, invalid-region, and malformed-output gates for the fixed wide/slim `64` evaluation profiles. That proves the conversion machinery, not AI quality. No representation has passed the managed-model preflight, no provider is admitted, no API call or spend is authorized, and VOXL does not plan to rent or manage GPUs. The next gate is to complete provenance admission for one managed-image candidate and bind the representation identity into a disabled, non-billable dry plan before implementing executable provider access.
 
 ## Platform and repository foundation
 
@@ -201,7 +201,8 @@ Status: **in progress**
 
 - [x] Materialize and SHA-256 lock 25 synthetic reference assets used by 18 cases.
 - [x] Materialize and SHA-256 lock four revision baselines plus editable/protected/immutable masks.
-- [ ] Implement and test the two representation render/normalize/pack paths offline using deterministic provider-output fixtures.
+- [x] Implement and test the two representation render/normalize/pack paths offline using deterministic provider-output fixtures.
+- [x] Add `bun run eval:representations` as a repeatable gate proving exact create round trips, protected revision compositing, actionable malformed-output rejection, and zero provider/network/credential/paid-call/entitlement use.
 - [ ] Complete model, dataset, commercial-use, reference-use, and retention provenance review for at least one candidate.
 - [ ] Implement and admit one real managed-image provider adapter only after the offline representation and provenance gates pass.
 - [ ] Produce a non-billable dry plan binding representation, case, model, configuration, references, masks, hashes, and spend ceiling.
@@ -301,4 +302,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Implement the two engine-owned representation paths entirely offline: exact upscaled-atlas reduction and canonical-surface-sheet packing, including invalid-region restoration and protected-mask compositing. Test them with deterministic simulated provider outputs. Do not add credentials, make provider calls, or spend money. Provider provenance admission and independent review of the final density walkthrough remain separate open gates.
+Complete provenance admission for one managed-image candidate without weakening the recorded commercial, dataset, reference-use, retention, or model-identity gates. In parallel, extend the non-billable dry-plan identity to bind `direct-atlas-v1` or `surface-sheet-v1` and its engine-owned layout hash. Do not add credentials, enable execution, make provider calls, or spend money. Independent review of the final density walkthrough remains a separate open gate.

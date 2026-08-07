@@ -1,6 +1,6 @@
 # VOXL generation research
 
-Status: **pre-implementation decision gate**. This directory records how creative output may be produced. It does not admit a provider or claim that an approach works.
+Status: **offline representation gate complete; provider feasibility untested**. This directory records how creative output may be produced. It does not admit a provider or claim that an AI approach works.
 
 ## Current hypothesis
 
@@ -13,7 +13,7 @@ The two first representations are:
 1. **Upscaled atlas template:** enlarge each logical texel into a model-visible block, edit the exact template, then deterministically reduce it to the engine density.
 2. **Canonical surface sheet:** generate clearly ordered, flat body-surface panels, then deterministically pack them into the engine atlas.
 
-Neither representation has passed yet. The [experiment and build gates](experiment-plan.md) define how to decide.
+Both representations now pass their deterministic offline contracts using simulated provider outputs: they render reproducibly, normalize into valid documents, preserve protected revision texels exactly, and reject malformed structure actionably. This proves VOXL's conversion machinery, not image-model quality. The [experiment and build gates](experiment-plan.md) define the remaining provider preflight.
 
 ## Why this is first
 

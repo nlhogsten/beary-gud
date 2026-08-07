@@ -9,6 +9,7 @@ import {
 } from "./core.ts";
 import { loadProviderCatalog } from "./catalog.ts";
 import { materializeEvaluationAssets } from "./assets.ts";
+import { verifyOfflineRepresentationHarness } from "./representations.ts";
 
 const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const [command = "check", ...args] = process.argv.slice(2);
@@ -79,6 +80,10 @@ if (command === "check") {
   const mode = args[0] ?? "check";
   if (mode !== "check" && mode !== "write") throw new Error("assets requires either check or write.");
   const result = await materializeEvaluationAssets(repoRoot, mode);
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
+} else if (command === "representations") {
+  const result = verifyOfflineRepresentationHarness();
   console.log(JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 1;
 } else {

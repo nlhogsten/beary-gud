@@ -12,6 +12,14 @@ import {
   getHumanoidSkinRegion,
 } from "./profiles.mjs";
 import { decodeRgbaPng, encodeRgbaPng } from "./png.mjs";
+import {
+  HUMANOID_SKIN_GENERATION_CANVAS_SIZE,
+  HUMANOID_SKIN_GENERATION_REPRESENTATION_IDS,
+  HUMANOID_SKIN_TRANSPARENCY_KEY,
+  HumanoidSkinRepresentationError,
+  normalizeGenerationCandidate,
+  renderGenerationRepresentation,
+} from "./generation-representations.mjs";
 
 export {
   BASE_TEXTURE_HEIGHT,
@@ -19,6 +27,10 @@ export {
   HUMANOID_SKIN_PROFILE_IDS,
   HUMANOID_SKIN_PROFILES,
   HUMANOID_SKIN_TEXTURE_SIZES,
+  HUMANOID_SKIN_GENERATION_CANVAS_SIZE,
+  HUMANOID_SKIN_GENERATION_REPRESENTATION_IDS,
+  HUMANOID_SKIN_TRANSPARENCY_KEY,
+  HumanoidSkinRepresentationError,
   createHumanoidSkinSelectionMask,
   createMappedPixelMask,
   createUnusedPixelMask,
@@ -33,7 +45,7 @@ export const HUMANOID_SKIN_SIDECAR_KIND = "voxl.humanoid-skin.sidecar/v1";
 
 export const humanoidSkinDescriptor = Object.freeze({
   id: "voxl-humanoid-skin",
-  version: "1.1.0",
+  version: "1.2.0",
   title: "VOXL humanoid skin",
   documentTypes: [HUMANOID_SKIN_DOCUMENT_KIND],
   inputTypes: ["text/plain", "image/png", HUMANOID_SKIN_DOCUMENT_KIND],
@@ -252,6 +264,42 @@ export function exportHumanoidSkinPng(document) {
 export function serializeHumanoidSkinSidecar(document) {
   assertValidHumanoidSkinDocument(document);
   return `${JSON.stringify(document.sidecar, null, 2)}\n`;
+}
+
+export function renderHumanoidSkinGenerationRepresentation(document, representationId) {
+  assertValidHumanoidSkinDocument(document);
+  return renderGenerationRepresentation(document, representationId);
+}
+
+export function normalizeHumanoidSkinGenerationCandidate({
+  representationId,
+  profile,
+  candidatePng,
+  baselineDocument,
+  editableMask,
+  protectedMask,
+  immutableMask,
+}) {
+  getHumanoidSkinProfile(profile);
+  if (baselineDocument) assertValidHumanoidSkinDocument(baselineDocument);
+  const normalized = normalizeGenerationCandidate({
+    representationId,
+    profile,
+    candidatePng,
+    baselineDocument,
+    editableMask,
+    protectedMask,
+    immutableMask,
+  });
+  const document = createHumanoidSkinDocument({
+    profile,
+    pixels: normalized.pixels,
+    sidecar: baselineDocument
+      ? structuredClone(baselineDocument.sidecar)
+      : createHumanoidSkinSidecar(profile),
+  });
+  assertValidHumanoidSkinDocument(document);
+  return Object.freeze({ document, layout: normalized.layout, report: normalized.report });
 }
 
 function blendPixel(target, targetOffset, source, sourceOffset) {

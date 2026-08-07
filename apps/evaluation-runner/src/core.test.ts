@@ -17,6 +17,7 @@ import {
   verifyAttemptManifest,
 } from "./core.ts";
 import { loadProviderCatalog } from "./catalog.ts";
+import { verifyOfflineRepresentationHarness } from "./representations.ts";
 
 const repoRoot = new URL("../../../", import.meta.url).pathname;
 const temporary: string[] = [];
@@ -66,6 +67,25 @@ describe("generation evaluation specification", () => {
       canonicalJson({ z: 1, a: { y: 2, x: 3 } }),
       canonicalJson({ a: { x: 3, y: 2 }, z: 1 }),
     );
+  });
+});
+
+describe("offline generation representations", () => {
+  test("round-trips creation and revision fixtures without provider execution", () => {
+    const report = verifyOfflineRepresentationHarness();
+    assert.equal(report.ok, true);
+    assert.deepEqual(report.profiles, ["wide-arm-64", "slim-arm-64"]);
+    assert.deepEqual(report.representations, ["direct-atlas-v1", "surface-sheet-v1"]);
+    assert.equal(report.creationRoundTrips, 4);
+    assert.equal(report.revisionPreservationChecks, 4);
+    assert.equal(report.actionableRejections, 4);
+    assert.deepEqual(report.execution, {
+      providerAdapterUsed: false,
+      networkUsed: false,
+      credentialsRead: false,
+      paidCall: false,
+      entitlementUsed: false,
+    });
   });
 });
 

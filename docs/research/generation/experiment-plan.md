@@ -1,6 +1,6 @@
 # Current generation experiment and build gates
 
-Status: **specified, not authorized for execution**.
+Status: **offline Stage 1 implemented; provider execution not authorized**.
 
 This plan answers two different questions in order:
 
@@ -118,6 +118,8 @@ The following sequence is the build plan. A later stage does not start until the
 - Prove no network, credentials, provider adapter, or billing path is used.
 
 **Exit:** fixture outputs deterministically become valid engine documents or actionable rejections.
+
+Implemented evidence: `bun run eval:representations` exercises both representations across the fixed wide/slim `64` evaluation profiles. It reports four exact creation round trips, four protected revision checks, four actionable malformed-output rejections, and explicit zero provider/network/credential/paid-call/entitlement use. This is conversion evidence only; neither representation has passed the AI-quality preflight.
 
 ### Stage 2 — provider-neutral planning and adapter boundary
 

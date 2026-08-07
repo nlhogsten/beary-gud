@@ -19,9 +19,11 @@ test("generation evaluation workspaces are wired without a production provider",
   assert.match(rootPackage.scripts["eval:check"], /evaluation-runner check/);
   assert.match(rootPackage.scripts["eval:adapters"], /evaluation-runner adapters/);
   assert.match(rootPackage.scripts["eval:plan"], /evaluation-runner plan/);
+  assert.match(rootPackage.scripts["eval:representations"], /evaluation-runner representations/);
   assert.match(rootPackage.scripts["eval:replay"], /evaluation-runner replay/);
   assert.match(cli, /loadProviderCatalog/);
   assert.match(cli, /command === "plan"/);
+  assert.match(cli, /command === "representations"/);
   assert.match(cli, /executableAdapterCount: 0/);
   assert.doesNotMatch(cli, /eval:run|command === "run"/);
 });
