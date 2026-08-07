@@ -7,14 +7,16 @@ Use this file as the always-on repository contract. Keep operational detail in t
 - Treat `docs/planning/progress.md` as the status source of truth and `docs/planning/implementation-plan.md` as the delivery specification.
 - Read `docs/architecture/system.md` and relevant `docs/architecture/decisions/` records before changing system boundaries.
 - Preserve unrelated user changes. Root configuration coordinates workspaces; runtime configuration belongs to its owning package or app.
-- Treat `.codex/skills/` as canonical and keep the matching `.claude/skills/` files byte-identical for cross-editor discovery.
+- Treat `harness/skills/` as the editable source for Seek-managed skills. The local Seek configuration currently projects only to Codex through `.agents/skills/`.
+- Treat `.claude/skills/` as an unmanaged compatibility copy. Reconcile it deliberately from `harness/skills/` before claiming Claude parity; do not infer parity from the Codex projection.
 
 ## Route work to skills
 
-- Use `.claude/skills/verify-voxl-studio/` for browser walkthroughs, UI claims, release evidence, and progress sign-off.
-- Use `.claude/skills/add-voxl-engine/` when creating, registering, or materially changing a visual engine.
-- Use `.claude/skills/run-voxl-generation-eval/` for model/provider experiments, candidate comparisons, and generation-quality decisions.
-- Use `.codex/skills/transparent-character-studio/` for the original transparent pixel-animation workflow until it receives a Claude mirror.
+- Use `$verify-voxl-studio` for browser walkthroughs, UI claims, release evidence, and progress sign-off.
+- Use `$add-voxl-engine` when creating, registering, or materially changing a visual engine.
+- Use `$run-voxl-generation-eval` for model/provider experiments, candidate comparisons, and generation-quality decisions.
+- Use `$transparent-character-studio` only when that skill is present in the active Claude environment; its legacy repository copy remains Codex-only today.
+- Do not require a remote Seek registry, authentication, MCP connection, or hosted service for repository-local work. Report that this surface is unmanaged when a request depends on Seek applying the Codex-only local projection to Claude.
 
 ## Non-negotiable architecture rules
 

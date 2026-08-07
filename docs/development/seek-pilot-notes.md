@@ -1,42 +1,39 @@
 # Seek pilot notes
 
-Status: installed CLI updated and read-only audit complete; initialization waiting for confirmed slugs and working Seek service access.
+Status: local adoption complete and verified for Codex; no hosted Seek service or remote repository connection is required.
 
 ## Repository result
 
-- Seek `0.1.0` is installed and its local receipt is valid. The first trial exposed that the installed binary was behind its recorded source checkout; focused source tests passed and the binary was reinstalled from source commit `0820d2c`.
-- This repository is currently unmanaged by Seek.
-- The updated `seek status` now succeeds with a structured, read-only prospective plan and recommends choosing the managed repository method. This corrects the generic setup error observed from the stale binary.
-- Projection audit found four tracked, unmanaged files, all inside `.codex/skills/transparent-character-studio/`.
-- The existing skill must stay externally owned. Initialization must resolve those four exact paths as `external`; Seek must not claim the whole `.codex` directory.
-- The next safe action is `seek init --organization <confirmed> --project <confirmed>`, followed by the status-directed action and `seek check`. `seek auth status` could not reach the pre-release service during this pilot, so authorized slugs could not be discovered automatically.
+- Seek `0.1.0` is installed from the adjacent local Seek checkout, and its installation receipt matches source commit `aa85d39376891201b776b5c434646635f6d674f5`.
+- This checkout uses Seek's local authority. It has no organization, project, active hosted lore version, or remote-authentication prerequisite.
+- Four existing skills were explicitly adopted: `add-voxl-engine`, `run-voxl-generation-eval`, `transparent-character-studio`, and `verify-voxl-studio`.
+- Canonical editable files now live under `harness/skills/`. Seek owns the 13 corresponding generated files under `.agents/skills/` and reports `sourceFreshness=current`, `synchronization=in-sync`, and no pending plans.
+- The pre-existing `.codex/skills/` and `.claude/skills/` files were preserved as unmanaged compatibility copies. Seek did not claim or overwrite them.
+- The selected local target is Codex. Claude and Cursor are not Seek-managed by this selection and must not be reported as equivalent without a separate, supported projection decision.
 
-## Pre-release product findings
+## What the first trial clarified
 
-1. `seek info` verifies receipt/binary consistency but does not warn when the recorded source checkout has moved ahead of `receipt.sourceCommit`; the original installation therefore appeared healthy while stale.
-2. `seek state` still suggests `init` or `sync`, although `sync` cannot work before configuration.
-3. `seek init --help` does not explain that authorized organization/project slugs should come from `seek auth status`.
-4. Projection audit reports exact collisions well, but does not return a recommended resolution or machine-actionable next step.
-5. Setup-related command failures still use generic `SEEK_ERROR` objects with only a message instead of a typed code and optional structured next action.
+1. Repository-local skill management must not be blocked on hosted authentication, organization slugs, MCP, or a Git remote.
+2. Discovery is read-only. Adoption requires an explicit reviewed plan because it changes which exact files Seek owns; `seek approve` executes that already-inspected plan.
+3. Local adoption copies source into `harness/skills/` and generates `.agents/skills/`; it preserves the original native files rather than moving or deleting them.
+4. A local Codex projection is intentionally narrower than organization-wide multi-surface distribution. When another surface cannot be represented, agents must report it instead of silently selecting a proprietary substitute.
 
 ## What changed during the pilot
 
-- The Seek source checkout was not modified.
-- Its existing setup and installation tests passed: 24 focused tests across `setup-status` and `installation`.
-- The standalone binary was rebuilt and reinstalled from the newer, clean local source checkout. Its installation receipt now matches source commit `0820d2c`.
-- No VOXL repository registration, lore selection, projection resolution, or generated agent file was applied.
+- Seek local authority was initialized for this checkout.
+- Each of the four unmanaged skill trees was adopted through its exact reviewed plan.
+- Seek created canonical `harness/skills/` sources and an exact `.agents/skills/` Codex projection while preserving the legacy source trees.
+- `seek status` and `seek check` both report the checkout in sync, and a recursive comparison confirms the canonical and generated skill trees match.
 
 ## Intended VOXL knowledge workflow
 
-Seek is a good fit for managing the durable agent knowledge learned while building VOXL, as long as canonical knowledge and temporary local overrides stay distinct:
+Seek manages the durable repository skills learned while building VOXL, while canonical knowledge and temporary local overrides stay distinct:
 
-1. Put cross-project engineering conventions in an organization lore pack.
-2. Put VOXL architecture, target-neutral naming, verification commands, deployment boundaries, and engine-authoring conventions in a project lore pack.
-3. Keep `.codex/skills/transparent-character-studio/` externally owned during the pilot. It is a specialized operational skill, not generic generated guidance.
-4. Use Seek personal instructions only for temporary local preferences. Promote useful project learnings into reviewed project lore instead of leaving them as a permanent private override.
-5. Publish reviewed harness changes from the Seek authoring repository, select the resulting pack for this checkout, then run `seek sync` and `seek check`.
-6. Never edit Seek-generated native agent files directly; change their canonical lore or explicit projection decision.
+1. Edit repository skill source under `harness/skills/`, not the generated `.agents/skills/` projection.
+2. Run Seek's build/activation workflow and `seek check` after a canonical skill change.
+3. Use personal instructions only for temporary local preferences. Promote durable project learnings into reviewed repository source.
+4. Keep local authority while one checkout and Codex are sufficient. Organization lore packs remain a future distribution option, not a prerequisite.
+5. Keep workflow instructions, execution permissions, and tool/provider choices separate. A skill does not grant access, and local adoption does not require adding MCP or a hosted service.
+6. Preserve the legacy `.codex` and `.claude` copies until a deliberate compatibility cleanup or multi-surface migration is approved.
 
-The current blocker is operational rather than conceptual: Seek authentication could not reach the pre-release service, and valid organization/project slugs are still unknown. Once those are available, initialize with the recommended managed method and record each of the four existing skill paths as `external` before activation.
-
-These findings are pilot observations, not VOXL blockers.
+There is no current Seek blocker for local Codex use. Start a fresh Codex session after projection changes so the host can rediscover the skills.

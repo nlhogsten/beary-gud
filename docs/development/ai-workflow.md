@@ -1,5 +1,15 @@
 # AI workflow
 
+## Repository skill routing
+
+The repository's four operational skills are locally managed by Seek for Codex. Their editable source is `harness/skills/`, and Seek's generated projection is `.agents/skills/`. Invoke a skill by name and outcome rather than teaching an agent a file path; `AGENTS.md` performs the always-on routing.
+
+Use local management for repository-only work. It does not require a remote connection, Seek authentication, an MCP provider, or a hosted registry. Add a remote or organization workflow only when reviewed skills must be distributed across repositories or coding-tool surfaces.
+
+The older `.codex/skills/` and `.claude/skills/` directories remain user-owned compatibility copies. They are not evidence that Seek manages those surfaces. In particular, the current local selection is Codex-only; an agent must report Claude or Cursor parity as unsupported instead of silently adding a proprietary service or broadening the configuration.
+
+Edit `harness/skills/`, then use Seek to rebuild/activate and run `seek check`. Never edit `.agents/skills/` directly.
+
 ## Current `transparent-character` engine workflow
 
 Use `$transparent-character-studio` from this repository. Ask naturally, for example:

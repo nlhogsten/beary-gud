@@ -143,13 +143,23 @@ test("agent routers and matched skills preserve the VOXL workflow", async () => 
   assert.match(claude, /bun run check/);
 
   for (const name of skillNames) {
-    const codexRoot = `.codex/skills/${name}`;
+    const sourceRoot = `harness/skills/${name}`;
+    const generatedRoot = `.agents/skills/${name}`;
     const claudeRoot = `.claude/skills/${name}`;
-    const [codexSkill, claudeSkill, codexReference, claudeReference, metadata] =
+    const legacyCodexRoot = `.codex/skills/${name}`;
+    const [sourceSkill, generatedSkill, claudeSkill, sourceReference, generatedReference, claudeReference, legacyCodexSkill, metadata] =
       await Promise.all([
-        readFile(`${codexRoot}/SKILL.md`, "utf8"),
+        readFile(`${sourceRoot}/SKILL.md`, "utf8"),
+        readFile(`${generatedRoot}/SKILL.md`, "utf8"),
         readFile(`${claudeRoot}/SKILL.md`, "utf8"),
-        readFile(`${codexRoot}/references/${
+        readFile(`${sourceRoot}/references/${
+          name === "verify-voxl-studio"
+            ? "evidence-contract.md"
+            : name === "add-voxl-engine"
+              ? "engine-checklist.md"
+              : "evaluation-protocol.md"
+        }`, "utf8"),
+        readFile(`${generatedRoot}/references/${
           name === "verify-voxl-studio"
             ? "evidence-contract.md"
             : name === "add-voxl-engine"
@@ -163,13 +173,17 @@ test("agent routers and matched skills preserve the VOXL workflow", async () => 
               ? "engine-checklist.md"
               : "evaluation-protocol.md"
         }`, "utf8"),
-        readFile(`${codexRoot}/agents/openai.yaml`, "utf8"),
+        readFile(`${legacyCodexRoot}/SKILL.md`, "utf8"),
+        readFile(`${sourceRoot}/agents/openai.yaml`, "utf8"),
       ]);
 
-    assert.equal(codexSkill, claudeSkill);
-    assert.equal(codexReference, claudeReference);
-    assert.match(codexSkill, new RegExp(`^---\\nname: ${name}\\n`));
-    assert.doesNotMatch(codexSkill, /TODO|\[TODO/);
+    assert.equal(sourceSkill, generatedSkill);
+    assert.equal(sourceReference, generatedReference);
+    assert.equal(sourceSkill, legacyCodexSkill);
+    assert.equal(sourceSkill, claudeSkill);
+    assert.equal(sourceReference, claudeReference);
+    assert.match(sourceSkill, new RegExp(`^---\\nname: ${name}\\n`));
+    assert.doesNotMatch(sourceSkill, /TODO|\[TODO/);
     assert.match(metadata, new RegExp(`\\$${name}`));
     assert.match(metadata, /short_description: "[^"]{25,64}"/);
   }

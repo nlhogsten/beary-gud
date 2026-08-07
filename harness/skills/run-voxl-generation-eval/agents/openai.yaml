@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run VOXL Generation Evaluation"
+  short_description: "Evaluate visual providers with evidence"
+  default_prompt: "Use $run-voxl-generation-eval to compare generation providers with reproducible evidence."

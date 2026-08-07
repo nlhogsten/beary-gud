@@ -7,14 +7,16 @@ Use this file as the always-on repository contract. Keep operational detail in t
 - Treat `docs/planning/progress.md` as the status source of truth and `docs/planning/implementation-plan.md` as the delivery specification.
 - Read `docs/architecture/system.md` and relevant `docs/architecture/decisions/` records before changing system boundaries.
 - Preserve unrelated user changes. Root configuration coordinates workspaces; runtime configuration belongs to its owning package or app.
-- Treat `.codex/skills/` as canonical and keep the matching `.claude/skills/` files byte-identical for cross-editor discovery.
+- Treat `harness/skills/` as the editable source for Seek-managed skills. Seek generates `.agents/skills/` for Codex; never edit that projection directly.
+- Treat the existing `.codex/skills/` and `.claude/skills/` trees as unmanaged compatibility copies. Local Seek management does not prove Claude parity; reconcile those copies deliberately before claiming cross-editor support.
 
 ## Route work to skills
 
-- Use `.codex/skills/verify-voxl-studio/` for browser walkthroughs, UI claims, release evidence, and progress sign-off.
-- Use `.codex/skills/add-voxl-engine/` when creating, registering, or materially changing a visual engine.
-- Use `.codex/skills/run-voxl-generation-eval/` for model/provider experiments, candidate comparisons, and generation-quality decisions.
-- Use `.codex/skills/transparent-character-studio/` for the original transparent pixel-animation workflow.
+- Use `$verify-voxl-studio` for browser walkthroughs, UI claims, release evidence, and progress sign-off.
+- Use `$add-voxl-engine` when creating, registering, or materially changing a visual engine.
+- Use `$run-voxl-generation-eval` for model/provider experiments, candidate comparisons, and generation-quality decisions.
+- Use `$transparent-character-studio` for the original transparent pixel-animation workflow.
+- Prefer the local Seek path when repository-local skills are sufficient. Do not require a remote registry, authentication, MCP connection, or hosted service unless the requested outcome actually needs organization sharing or another remote capability.
 
 ## Non-negotiable architecture rules
 

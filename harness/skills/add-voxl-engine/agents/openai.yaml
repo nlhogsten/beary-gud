@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add VOXL Engine"
+  short_description: "Add a conformant visual asset engine"
+  default_prompt: "Use $add-voxl-engine to add a visual engine without crossing VOXL boundaries."
