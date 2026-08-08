@@ -9,7 +9,7 @@ This catalog preserves every generation approach discussed so that the current h
 | M0 | Manual and deterministic editing | User plus engine tools | Required refinement and fallback | Implemented in Studio |
 | M1 | Procedural constructor | Engine-owned algorithms | Fixtures, simple patterns, safe fallback | Useful but not open-ended |
 | M2 | LLM semantic parameters | Conversational model plus finite controls | Briefs and simple edits | Rejected as the sole creative vocabulary |
-| M3 | LLM tool/per-texel generation | Conversational model calling engine tools | Cheap control baseline | Retained for comparison, not primary |
+| M3 | LLM-authored safe render program | Multimodal conversational model plus engine feedback | Open-ended co-primary preflight path | **Test first** |
 | M4 | Direct atlas image generation | Mainstream managed image model | Current preflight representation A | **Test first** |
 | M5 | Canonical surface-sheet generation | Mainstream managed image model plus deterministic packer | Current preflight representation B | **Test first** |
 | M6 | Concept or multiview then atlas | Image model pipeline plus deterministic or learned conversion | Fallback for reference consistency | Not selected |
@@ -43,15 +43,21 @@ An LLM emits fields such as garment colors, hair shape, motifs, and region choic
 
 **Decision:** use a small structured brief for orchestration, never as the complete visual vocabulary.
 
-## M3 — LLM tool or per-texel generation
+## M3 — LLM-authored safe render program
 
-An LLM calls operations such as `fill-region`, `paint-texels`, or `apply-pattern`, possibly inspecting a render between turns. Function calling lets a model request schema-defined application actions, but the application still executes and validates them. [OpenAI function-calling guide](https://developers.openai.com/api/docs/guides/function-calling)
+An LLM emits a versioned JSON render program containing bounded operations such as `fill`, `checker`, `stripes`, `copy-surface`, and `paint-texels`. VOXL executes the program deterministically, validates the resulting pixels, renders views, and may return those views and validation feedback for another model turn. Function calling lets a model request schema-defined application actions while the application remains the executor and policy authority. [OpenAI function-calling guide](https://developers.openai.com/api/docs/guides/function-calling)
 
-**Strengths:** no separate visual generator is required for simple geometric work.
+The model does not need the engine source code or a fine-tune to begin. Each request supplies a compact, engine-owned tool contract: program kind/version, selected profile, valid surface names and dimensions, operation schemas, limits, the user's prompt and references, and—after an attempt—render/validation feedback. A small set of accepted examples may be cached with the system prompt. The per-texel operation is a universal output vocabulary: it can express any valid mapped texture, while the higher-level operations shorten common geometric patterns. The validated pixels remain the durable source of truth; the program and its hash are provenance.
 
-**Risks:** long tool traces, high token use, weak dense-pixel composition, and dependence on repeated visual feedback.
+**Strengths:** directly tests the Bash-character inspiration; keeps exact geometry and safety in the engine; uses a general managed multimodal API rather than a specialized model or VOXL GPU; supports deterministic correction loops; and is not constrained to a finite list of semantic character properties.
 
-**Status:** retain as a measured baseline, not the assumed primary path.
+**Risks:** models may still struggle with dense composition, wraparound consistency, reference translation, long JSON, or preserving details across correction turns. The language is expressively open but does not guarantee that a model can author a good program. That is an evaluation question, not a reason to assume success or failure.
+
+**Current contract:** `voxl.humanoid-skin.render-program/v1` is implemented offline with five operations, strict unknown-field rejection, local surface coordinates, operation/program/write budgets, deterministic execution, exact revision compositing, and no arbitrary JavaScript, shell, filesystem, network, environment, or model access. `bun run eval:render-programs` proves both `64` profiles expose every mapped texel and reproduce arbitrary fixture pixels exactly.
+
+**Fine-tuning trigger:** do not fine-tune first. Consider provider-side adaptation only after a representative managed-model evaluation reveals a repeated, concentrated error pattern, prompt/tool-contract and feedback improvements plateau, and accepted program/correction pairs form a provenance-safe training set.
+
+**Status:** co-primary preflight path alongside M4 and M5.
 
 ## M4 — direct upscaled-atlas image generation
 
@@ -135,8 +141,8 @@ A Codex, Claude, or other host may expose image generation using the user's host
 The likely product combines methods by responsibility:
 
 - M0/M1 for exact editing, fixtures, and fallback.
-- M4 or M5 for initial open-ended generation if the preflight passes.
-- An LLM brief from M2 for conversational orchestration.
+- M3, M4, or M5 for initial open-ended generation according to measured preflight results.
+- The LLM in M3 can also produce the small M2 brief used for orchestration.
 - Deterministic masks and compositing for revisions.
 - M6 or M7 only for failure modes the simpler method cannot solve.
 - M9 only after measured evidence, and M10 only after a separate architecture decision.

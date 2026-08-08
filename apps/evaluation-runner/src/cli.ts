@@ -10,6 +10,7 @@ import {
 import { loadProviderCatalog } from "./catalog.ts";
 import { materializeEvaluationAssets } from "./assets.ts";
 import { verifyOfflineRepresentationHarness } from "./representations.ts";
+import { verifyOfflineRenderProgramHarness } from "./render-programs.ts";
 
 const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const [command = "check", ...args] = process.argv.slice(2);
@@ -84,6 +85,10 @@ if (command === "check") {
   if (!result.ok) process.exitCode = 1;
 } else if (command === "representations") {
   const result = verifyOfflineRepresentationHarness();
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
+} else if (command === "render-programs") {
+  const result = verifyOfflineRenderProgramHarness();
   console.log(JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 1;
 } else {

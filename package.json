@@ -41,6 +41,7 @@
     "eval:assets": "bun run --cwd apps/evaluation-runner assets",
     "eval:plan": "bun run --cwd apps/evaluation-runner plan",
     "eval:representations": "bun run --cwd apps/evaluation-runner representations",
+    "eval:render-programs": "bun run --cwd apps/evaluation-runner render-programs",
     "eval:replay": "bun run --cwd apps/evaluation-runner replay",
     "env:init": "./scripts/env-local.sh init",
     "db:generate": "bun run --cwd infra/db db:generate",

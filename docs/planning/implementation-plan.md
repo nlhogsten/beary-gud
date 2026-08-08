@@ -373,8 +373,9 @@ Prove or reject an open-ended managed-API generation path before integrating it 
 ### Work
 
 - Keep the generation [method catalog](../research/generation/method-catalog.md) complete and mark exactly one current experiment without deleting viable fallbacks.
-- Test template-conditioned mainstream managed image generation first because this engine supplies fixed geometry, UV mapping, layers, density, validation, rendering, and export. Treat this as a hypothesis, not a provider selection.
-- Compare two engine-owned input representations before choosing an adapter:
+- Compare a managed multimodal LLM authoring a safe render program with template-conditioned mainstream managed image generation because this engine supplies fixed geometry, UV mapping, layers, density, validation, rendering, and export. Treat all three paths as hypotheses, not provider selections.
+- Compare three engine-owned generation paths before production integration:
+  - A versioned, bounded JSON render program with surface-local coordinates, high-level patterns, arbitrary per-texel writes, deterministic execution, and rendered feedback.
   - An upscaled exact atlas template that is reduced deterministically to logical texels.
   - A canonical flat surface sheet that is packed deterministically into the atlas.
 - Create a licensed or synthetic evaluation set of at least 30 cases:
@@ -388,14 +389,15 @@ Prove or reject an open-ended managed-API generation path before integrating it 
   - `wide-arm-64` and `slim-arm-64` profiles.
   - Localized edits with explicit preserve constraints.
 - Define scoring for prompt fidelity, reference fidelity, UV correctness, front/back consistency, pixel sharpness, edit preservation, and human preference.
-- Build and test the representation renderer, normalizer, packer, invalid-region restoration, and protected-mask compositor entirely offline with deterministic fixtures.
-- Only after the offline representation gate passes, implement a provider adapter for one provenance-acceptable, API-accessible mainstream managed image model while keeping provider payloads out of engine documents.
+- Build and test the render-program schema/tool description, validator, bounded interpreter, program hash, representation renderer, normalizer, packer, invalid-region restoration, and protected-mask compositor entirely offline with deterministic fixtures.
+- Prove the per-texel operation can express every mapped output texel, while rejecting unknown fields, code-like operations, invalid coordinates, mask violations, and resource-budget exhaustion.
+- Only after the offline path gates pass, implement provider adapters for provenance-acceptable, API-accessible managed candidates while keeping provider payloads out of engine documents.
 - Dry-plan the fixed preflight without credentials, network access, billable execution, or provider attempt records.
-- Require explicit user authorization for the named provider, credentials, network use, and USD 5 hard ceiling before running the 8-case, 2-representation feasibility preflight.
-- Advance a representation to the complete 36-case evaluation only if it passes the precommitted preflight thresholds in the [experiment plan](../research/generation/experiment-plan.md).
+- Require explicit user authorization for the named providers, credentials, network use, and USD 5 combined hard ceiling before running the 8-case, compatible 3-path feasibility preflight.
+- Advance a path to the complete 36-case evaluation only if it passes the precommitted preflight thresholds in the [experiment plan](../research/generation/experiment-plan.md).
 - Run the fixed experiment through managed provider APIs and, where its contract permits reproducible evaluation, native host generation.
 - Treat a downloadable checkpoint without managed API access as an optional, separately approved comparison rather than a Phase 5 requirement.
-- If both static representations fail, evaluate managed mesh-conditioned retexturing next. Consider provider adaptation only for a measured, concentrated quality gap. Do not add GPU or self-hosted inference without a new ADR and explicit approval.
+- If all three paths fail, improve the safe tool contract from recorded failures or evaluate managed mesh-conditioned retexturing next. Consider provider adaptation only for a measured, concentrated quality gap after prompt/examples/feedback improvements plateau. Do not add GPU or self-hosted inference without a new ADR and explicit approval.
 - Record observable provider latency, failure and refusal rate, validation/acceptance rate, output quality distributions, retention/provenance risk, and actual/estimated API cost. Record accelerator memory only when the provider exposes it.
 - Perform a model and dataset provenance review before choosing a commercial candidate.
 - Keep all generation calls behind the provider interface.
@@ -403,7 +405,7 @@ Prove or reject an open-ended managed-API generation path before integrating it 
 ### Exit criteria
 
 - The method catalog, current hypothesis, fixed preflight, authority gates, thresholds, fallbacks, and stop conditions agree across research, architecture, this plan, the evaluation brief, and the progress tracker.
-- At least one representation passes its offline fixture contract before any provider call.
+- All three initial paths pass their offline fixture contracts before any provider call.
 - The full input-to-atlas experiment is reproducible from documented commands.
 - Complex references demonstrate genuinely open-ended output rather than template assembly.
 - Every candidate output passes through deterministic validation.

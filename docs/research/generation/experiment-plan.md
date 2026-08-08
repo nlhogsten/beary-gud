@@ -1,19 +1,20 @@
 # Current generation experiment and build gates
 
-Status: **offline Stage 1 implemented; provider execution not authorized**.
+Status: **offline Stage 1 implemented for all three paths; provider execution not authorized**.
 
 This plan answers two different questions in order:
 
-1. Can current mainstream managed image models produce useful fixed-geometry texture candidates from static visual templates?
-2. If they can, what is the smallest production system VOXL must build around them?
+1. Can a current managed multimodal LLM author useful fixed-geometry textures through a safe render program and bounded visual-feedback loop?
+2. Can current mainstream managed image models produce better candidates from static visual templates?
+3. If either approach works, what is the smallest production system VOXL must build around it?
 
 The experiment must answer the first question before Phase 6 implements the second.
 
 ## Decision under test
 
-Continue template-conditioned managed image generation only if either an upscaled atlas template or a canonical surface sheet produces valid, recognizable, editable candidates across simple, dense, asymmetric, reference-driven, outer-layer, and localized-revision cases at the precommitted quality and cost floor.
+Continue a managed generation path only if a safe render program, upscaled atlas template, or canonical surface sheet produces valid, recognizable, editable candidates across simple, dense, asymmetric, reference-driven, outer-layer, and localized-revision cases at the precommitted quality and cost floor.
 
-If both representations fail, test managed mesh-conditioned retexturing next. Do not jump directly to a custom or self-hosted model.
+If all three paths fail, use the failure evidence to improve the bounded program contract or test managed mesh-conditioned retexturing next. Do not jump directly to fine-tuning, a custom model, or self-hosted inference.
 
 ## Fixed feasibility preflight
 
@@ -30,14 +31,25 @@ The preflight reuses eight already frozen Phase 5 cases; it does not create a ne
 | `v1-027` | localized color revision with protected details |
 | `v1-030` | slim profile, transparent outer-layer revision |
 
-For each admitted mainstream image candidate, request one output for each case using both representations:
+Evaluate admitted candidates only on paths their documented interfaces actually support:
 
+- `render-program-v1` for a managed multimodal conversational model with structured tool output and image inputs
 - `direct-atlas-v1`
 - `surface-sheet-v1`
 
-That is 16 outputs per provider. It is a feasibility screen, not a provider-quality conclusion. A method that passes proceeds to the complete immutable 36-case evaluation and its required candidate counts.
+For each image path, request one output per case. For the render-program path, allow at most three model turns per case: an initial program and up to two corrections using deterministic validation plus engine-rendered views. The prompt, ordered references, initial document, masks, output density, and scoring rubric remain identical across compatible paths. The combined preflight retains the existing **USD 5 total hard cap**; allocation by candidate/path must be frozen in the dry plan before calls. This is a feasibility screen, not a provider-quality conclusion. A path that passes proceeds to the complete immutable 36-case evaluation and its required candidate counts.
 
-## Representation contracts
+## Generation-path contracts
+
+### `render-program-v1`
+
+1. Supply the selected profile's compact engine-owned contract, not engine source: program kind/version, valid surfaces and local dimensions, operation schemas, coordinate semantics, and budgets.
+2. Supply the unchanged case prompt, authorized ordered references, optional baseline/masks, and a small fixed example set.
+3. Require structured JSON output matching `voxl.humanoid-skin.render-program/v1`; never execute model-authored shell, JavaScript, Python, templates, filesystem actions, network calls, or dynamic expressions.
+4. Validate the program before execution, enforce program/operation/texel-write budgets, and execute operations deterministically in array order.
+5. Construct and validate the candidate document, render the standard views, and—within the turn limit—return only sanitized validation issues and those renders for correction.
+6. For revisions, composite only editable texels and restore protected, immutable, and all other non-editable pixels byte-for-byte from the baseline.
+7. Persist accepted pixels as the authoritative version and retain the program hash/program as reproducible attempt provenance; a later edit does not depend on replaying the program.
 
 ### `direct-atlas-v1`
 
@@ -62,7 +74,7 @@ Every output follows the same steps:
 
 1. Decode and hash the raw provider bytes.
 2. Check dimensions, media type, and configured representation.
-3. Normalize only through predeclared representation-specific operations.
+3. Validate and execute only the declared safe render-program operations, or normalize only through the declared image-representation operations.
 4. For revisions, composite generated pixels only inside the editable mask; copy protected and immutable pixels byte-for-byte from the baseline.
 5. Force invalid atlas regions to the profile-required value.
 6. Construct an engine document and run deterministic validation.
@@ -74,7 +86,7 @@ No candidate-specific manual repainting, face swapping, cleanup, or prompt revis
 
 ## Preflight thresholds
 
-A representation may advance to the full evaluation only when:
+A path may advance to the full evaluation only when:
 
 - Every accepted result passes deterministic engine validation after only the declared normalization.
 - At least six of eight cases are judged usable without manual rescue.
@@ -82,7 +94,8 @@ A representation may advance to the full evaluation only when:
 - Both revision cases have `0%` changed texels in immutable regions and no more than the full experiment's protected-region threshold; deterministic compositing should make this exact.
 - Prompt fidelity and reference fidelity each have a median of at least `3.5/5` for applicable accepted cases.
 - Pixel sharpness and face-boundary correctness pass for at least `90%` of accepted candidates.
-- Observed output cost remains within a **USD 5 hard cap for the complete preflight**, including retries; reaching the cap stops execution.
+- The render-program path uses no more than three model turns per case and executes no arbitrary code; reaching either the turn or resource budget stops that attempt.
+- Observed output cost remains within a **USD 5 hard cap for the combined complete preflight**, including retries; reaching the cap stops execution.
 - No provider retention, provenance, or commercial-use gate is bypassed.
 
 Passing preflight authorizes only the full research evaluation, not Phase 6 or production selection.
@@ -91,7 +104,8 @@ Passing preflight authorizes only the full research evaluation, not Phase 6 or p
 
 All boxes must be checked in `planning/progress.md` before a network generation call:
 
-- [ ] The two representation specifications and normalizers are implemented and tested offline.
+- [x] The safe render-program specification, validator, bounded interpreter, and feedback-ready tool contract are implemented and tested offline.
+- [x] The two image-representation specifications and normalizers are implemented and tested offline.
 - [ ] The chosen provider/model/configuration has completed the required provenance admission.
 - [ ] The adapter is registered and its dry plan binds the case, representation, model, configuration, reference hashes, masks, and spending ceiling.
 - [ ] Only committed project-authored synthetic inputs are in the request set.
@@ -110,21 +124,24 @@ The following sequence is the build plan. A later stage does not start until the
 
 **Exit:** repository documentation names one current experiment without claiming one selected provider or production method.
 
-### Stage 1 — offline representation harness
+### Stage 1 — offline generation-path harness
 
+- Add the engine-owned safe render-program schema, compact model-facing contract, validator, bounded interpreter, and deterministic provenance hash.
 - Add engine-owned generation-template and surface-sheet renderers.
 - Add exact packing, block reduction, palette/alpha policy, invalid-region restoration, and protected-mask compositing.
 - Create deterministic fixtures that simulate provider outputs.
 - Prove no network, credentials, provider adapter, or billing path is used.
 
-**Exit:** fixture outputs deterministically become valid engine documents or actionable rejections.
+**Exit:** fixture programs and simulated image outputs deterministically become valid engine documents or actionable rejections.
 
 Implemented evidence: `bun run eval:representations` exercises both representations across the fixed wide/slim `64` evaluation profiles. It reports four exact creation round trips, four protected revision checks, four actionable malformed-output rejections, and explicit zero provider/network/credential/paid-call/entitlement use. This is conversion evidence only; neither representation has passed the AI-quality preflight.
 
+Implemented evidence: `bun run eval:render-programs` exercises the safe program across the same profiles. It reports two complete tool-contract checks, two deterministic creation checks, two all-mapped-texel addressability checks, two protected revision checks, and two code-like-operation rejections, with zero provider/network/credential/paid-call/entitlement/arbitrary-code use. This is interpreter expressiveness and safety evidence only; no LLM has demonstrated visual authorship yet.
+
 ### Stage 2 — provider-neutral planning and adapter boundary
 
-- Extend provider requests only as necessary to declare representation identity and public controls; do not leak provider payloads into engine documents.
-- Implement one provenance-admitted managed image adapter.
+- Extend provider requests only as necessary to declare path identity, bounded feedback-turn policy, and public controls; do not leak provider payloads into engine documents.
+- Implement provenance-admitted managed adapters only for the candidates needed by the frozen comparison: a multimodal structured-output adapter for `render-program-v1` and an image adapter for the static image paths.
 - Add timeouts, sanitized errors, usage capture, and explicit network/spend authorization.
 - Keep execution disabled by default and prove dry planning remains non-billable.
 
@@ -132,11 +149,11 @@ Implemented evidence: `bun run eval:representations` exercises both representati
 
 ### Stage 3 — capped feasibility preflight
 
-- Execute the eight cases and two representations only after every authority gate passes.
+- Execute the eight cases on the three compatible paths only after every authority gate passes.
 - Capture raw outputs, normalized candidates, validation, views, latency, failure category, and actual cost.
 - Stop automatically at the spending ceiling.
 
-**Exit:** a versioned report says advance one representation, test mesh-conditioned retexturing, or stop.
+**Exit:** a versioned report says advance one path, revise the safe program contract from measured failures, test mesh-conditioned retexturing, or stop.
 
 ### Stage 4 — complete Phase 5 evaluation
 
@@ -148,7 +165,7 @@ Implemented evidence: `bun run eval:representations` exercises both representati
 
 ### Stage 5 — Phase 6 creation capability
 
-- Connect the accepted representation and adapter to engine create operations.
+- Connect the accepted generation path and adapter to engine create operations.
 - Generate multiple candidates through asynchronous idempotent research/product jobs.
 - Validate before acceptance and create immutable versions only for accepted candidates.
 - Add Studio prompt/reference submission, progress, candidate comparison, rejection explanations, and manual refinement.

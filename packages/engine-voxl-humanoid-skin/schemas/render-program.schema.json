@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://voxl.invalid/schemas/humanoid-skin/render-program-v1.json",
+  "title": "VOXL Humanoid Skin Render Program v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "formatVersion", "profile", "operations"],
+  "properties": {
+    "kind": { "const": "voxl.humanoid-skin.render-program/v1" },
+    "formatVersion": { "const": 1 },
+    "profile": {
+      "enum": ["wide-arm-64", "slim-arm-64", "wide-arm-128", "slim-arm-128"]
+    },
+    "operations": {
+      "type": "array",
+      "maxItems": 512,
+      "items": { "$ref": "#/$defs/operation" }
+    }
+  },
+  "$defs": {
+    "rgba": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "integer", "minimum": 0, "maximum": 255 },
+        { "type": "integer", "minimum": 0, "maximum": 255 },
+        { "type": "integer", "minimum": 0, "maximum": 255 },
+        { "type": "integer", "minimum": 0, "maximum": 255 }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["part", "layer", "face"],
+      "properties": {
+        "part": { "enum": ["head", "torso", "right-arm", "left-arm", "right-leg", "left-leg"] },
+        "layer": { "enum": ["base", "outer"] },
+        "face": { "enum": ["top", "bottom", "right", "front", "left", "back"] }
+      }
+    },
+    "rect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "texel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "rgba"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 },
+        "rgba": { "$ref": "#/$defs/rgba" }
+      }
+    },
+    "fill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "surface", "rgba"],
+      "properties": {
+        "op": { "const": "fill" },
+        "surface": { "$ref": "#/$defs/surface" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "rgba": { "$ref": "#/$defs/rgba" }
+      }
+    },
+    "paintTexels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "surface", "texels"],
+      "properties": {
+        "op": { "const": "paint-texels" },
+        "surface": { "$ref": "#/$defs/surface" },
+        "texels": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16384,
+          "items": { "$ref": "#/$defs/texel" }
+        }
+      }
+    },
+    "checker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "surface", "colors", "cellWidth", "cellHeight"],
+      "properties": {
+        "op": { "const": "checker" },
+        "surface": { "$ref": "#/$defs/surface" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "colors": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/rgba" }
+        },
+        "cellWidth": { "type": "integer", "minimum": 1 },
+        "cellHeight": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "stripes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "surface", "colors", "stripeWidth", "direction"],
+      "properties": {
+        "op": { "const": "stripes" },
+        "surface": { "$ref": "#/$defs/surface" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "colors": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/rgba" }
+        },
+        "stripeWidth": { "type": "integer", "minimum": 1 },
+        "direction": { "enum": ["horizontal", "vertical"] }
+      }
+    },
+    "copySurface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "from", "to"],
+      "properties": {
+        "op": { "const": "copy-surface" },
+        "from": { "$ref": "#/$defs/surface" },
+        "to": { "$ref": "#/$defs/surface" },
+        "transform": { "enum": ["none", "mirror-x", "mirror-y", "rotate-180"] }
+      }
+    },
+    "operation": {
+      "oneOf": [
+        { "$ref": "#/$defs/fill" },
+        { "$ref": "#/$defs/paintTexels" },
+        { "$ref": "#/$defs/checker" },
+        { "$ref": "#/$defs/stripes" },
+        { "$ref": "#/$defs/copySurface" }
+      ]
+    }
+  }
+}

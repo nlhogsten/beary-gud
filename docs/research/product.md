@@ -16,7 +16,7 @@ The product does not need a custom 3D generative model to begin. Three systems t
 
 The intended VOXL humanoid-skin generator is generative-first and multimodal: text, reference images, an existing skin, masks, sketches, palettes, and future input types can condition full pixel synthesis. Structured fields such as hair color are optional control metadata, not the vocabulary or limit of creation. A procedural constructor remains useful as a test fixture and fallback, but it is not the long-term creative core.
 
-The Phase 5 generation path is API-first. VOXL should call hosted generation and image-editing providers through replaceable adapters; it should not rent GPUs, operate model-serving infrastructure, or make a downloadable checkpoint part of the production architecture. The current hypothesis tests mainstream managed image models on two fixed VOXL representations—an upscaled atlas and a canonical surface sheet—before choosing a provider path. A specialized downloadable checkpoint may remain optional comparative research, but it is not a delivery dependency. The [generation research index](generation/README.md) is authoritative when this broader product record and the active experiment differ.
+The Phase 5 generation path is API-first. VOXL should call hosted multimodal and image-generation providers through replaceable adapters; it should not rent GPUs, operate model-serving infrastructure, or make a downloadable checkpoint part of the production architecture. The current hypothesis compares a mainstream managed multimodal LLM authoring a safe engine render program with managed image models using an upscaled atlas or canonical surface sheet. A specialized downloadable checkpoint may remain optional comparative research, but it is not a delivery dependency. The [generation research index](generation/README.md) is authoritative when this broader product record and the active experiment differ.
 
 ## Target-neutral naming policy
 
@@ -213,8 +213,8 @@ Do not build or rent GPU infrastructure. Prove the experience in this order:
 1. Define the shared engine contract and extract the existing workflow as `transparent-character` without changing its behavior.
 2. Build a deterministic `voxl-humanoid-skin` document, validator, renderer, editor, and exporter.
 3. Create a fixed multimodal evaluation set with complex text and image references.
-4. Build the upscaled-atlas and canonical-surface-sheet transforms offline and compare them with deterministic simulated outputs.
-5. Run the capped representation preflight through one admitted API-accessible image provider, then advance only a passing representation to the full fixed case set.
+4. Build the bounded safe render-program interpreter plus the upscaled-atlas and canonical-surface-sheet transforms offline; compare them with deterministic fixtures.
+5. Run the capped three-path preflight through compatible admitted API-accessible multimodal and image providers, then advance only a passing path to the full fixed case set.
 6. Connect only a fully evaluated hosted provider behind the `voxl-humanoid-skin` engine and add creation followed by localized generative edits.
 7. Test the complete generation and refinement loop with users.
 8. Add durable accounts, remote MCP, and billing only after the loop is useful.
@@ -322,11 +322,17 @@ The LLM emits fields such as hairstyle, skin tone, top, pants, shoes, accessorie
 
 This approach is highly controllable but creatively limited. Keep it for fixtures, deterministic examples, offline fallback, and possibly simple starter assets. Do not make it the main generator for the open-ended product vision.
 
+### LLM-authored safe render program
+
+A multimodal LLM can receive the prompt, reference images, a compact description of the chosen engine profile, and a strict JSON tool schema. It then writes a bounded render program using surface-local fills, patterns, copies, and arbitrary per-texel writes. VOXL validates and executes that data, renders the result, and may return the images and validation issues for up to two correction turns.
+
+This is closer to the original Bash-character experiment than a finite semantic constructor. `paint-texels` can express any valid mapped texture, so new visual themes do not require adding a new `hairStyle` or `armorType` field. The high-level operations merely compress common work. The LLM does not execute source code, and it does not need fine-tuning to begin: each request supplies the versioned tool contract and fixed examples. Fine-tuning is considered only after measured repeated failures and a provenance-safe set of accepted corrections exist.
+
 ### Direct image generation
 
 Asking a general image model to emit a finished UV atlas in one step has material risks: it may place body parts in the wrong coordinates, blur pixel edges, fill unused transparent regions, or make front and back inconsistent. Current multimodal image models may nevertheless be capable enough on fixed templates that this should be measured rather than dismissed.
 
-The current first experiment therefore compares direct generation on an upscaled exact atlas with generation on a canonical flat surface sheet that VOXL packs deterministically. Native host image generation may also participate where it exposes a reproducible provider contract, but a user's host subscription is not assumed to authorize VOXL server usage. See the [method catalog](generation/method-catalog.md) and [fixed experiment gates](generation/experiment-plan.md).
+The current first experiment therefore compares safe render-program authorship, direct generation on an upscaled exact atlas, and generation on a canonical flat surface sheet that VOXL packs deterministically. Native host generation may also participate where it exposes a reproducible provider contract, but a user's host subscription is not assumed to authorize VOXL server usage. See the [method catalog](generation/method-catalog.md) and [fixed experiment gates](generation/experiment-plan.md).
 
 ### Hosted-provider research snapshot
 
@@ -348,7 +354,7 @@ The smallest useful comparison is not a provider beauty contest. It is a fixed-c
 
 The first engineering candidate is the direct OpenAI Image API with the pinned `gpt-image-2-2026-04-21` snapshot, PNG output, 1024×1024 size, and medium quality. It is conditional because VOXL's dossier approves commercial use, fixed model identity, synthetic-evaluation reference use, and synthetic-evaluation retention, while leaving dataset provenance pending. OpenAI's official training-data summary describes broad source categories and includes copyrighted material but does not publish a model-specific licensed-source inventory. A human legal/product decision must either accept that disclosure and the contractual protections for this research run or preserve the stricter gate and decline admission. The gate must not be silently weakened.
 
-The first paid shakedown, if and only if a candidate is later admitted and the user explicitly authorizes it, is the representation preflight defined in the [current experiment plan](generation/experiment-plan.md): the same eight locked cases across two representations, with a USD 5 complete-run hard cap including retries. It is only a feasibility screen and cannot support a provider-quality conclusion. The full locked protocol still requires 140 outputs and, for the recorded candidate pricing, had a medium-quality output floor of about $7.42 before input tokens.
+The first paid shakedown, if and only if compatible candidates are later admitted and the user explicitly authorizes them, is the generation-path preflight defined in the [current experiment plan](generation/experiment-plan.md): the same eight locked cases across a safe render program and two image representations, with a combined USD 5 complete-run hard cap including retries. It is only a feasibility screen and cannot support a provider-quality conclusion. The full locked image protocol still requires 140 outputs and, for the recorded candidate pricing, had a medium-quality output floor of about $7.42 before input tokens.
 
 Official evidence retained for the conditional candidate:
 
@@ -573,17 +579,16 @@ No migration should occur until the vertical slice proves that the skin workflow
 
 ## Current vertical slice
 
-The original engine, deterministic document, renderer, synchronized editor, validator, and exporter slice is complete. The next implementation milestone deliberately avoids accounts, billing, public MCP submission, provider calls, and any VOXL-operated model hosting:
+The original engine, deterministic document, renderer, synchronized editor, validator, exporter, and offline generation-path slice is complete. The next implementation milestone deliberately avoids accounts, billing, public MCP submission, billable provider calls, and any VOXL-operated model hosting:
 
-1. Render an exact upscaled atlas template from an engine document.
-2. Render a canonical ordered surface sheet plus machine-readable panel metadata.
-3. Reduce and pack deterministic simulated provider outputs back into engine documents.
-4. Restore invalid regions and composite revision masks exactly.
-5. Prove valid fixtures are accepted, malformed surfaces are rejected actionably, and no network, credential, or billing path is used.
-6. Only after that gate passes, complete provider provenance and build a disabled-by-default adapter plus a non-billable dry plan.
-7. Ask for explicit authority before any capped external generation call.
+1. Complete provenance admission for compatible managed multimodal and image candidates.
+2. Extend provider-neutral requests and dry plans to bind `render-program-v1`, `direct-atlas-v1`, or `surface-sheet-v1` plus their engine contract/layout hashes.
+3. Bind the render-program feedback-turn and resource ceilings and the shared preflight cost allocation into the plan identity.
+4. Build disabled-by-default adapters with sanitized errors and usage capture while keeping credentials outside plans and evidence.
+5. Prove planning remains non-billable and makes no network, credential, provider, entitlement, or attempt-record action.
+6. Ask for explicit authority before any capped external generation call.
 
-This is the smallest next slice that tests the uncertain representation boundary without prematurely committing to a provider or infrastructure.
+This is the smallest next slice that prepares a fair model comparison without prematurely committing to a provider or infrastructure.
 
 ## Evaluation plan
 

@@ -9,6 +9,7 @@
     "assets": "bun src/cli.ts assets",
     "plan": "bun src/cli.ts plan",
     "representations": "bun src/cli.ts representations",
+    "render-programs": "bun src/cli.ts render-programs",
     "replay": "bun src/cli.ts replay",
     "test": "bun test src/core.test.ts && bun test src/assets.test.ts",
     "typecheck": "tsc --noEmit"

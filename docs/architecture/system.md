@@ -66,18 +66,22 @@ prompt + references + existing version/masks
      provider operates model + GPUs
                     |
                     v
-       image or atlas candidate(s)
+   safe render program or image candidate(s)
                     |
                     v
        engine adapter + validator
-  map/normalize to an exact density profile,
+ validate/execute or map/normalize to a profile,
   reject invalid output, render evidence
                     |
                     v
        immutable VOXL asset version
 ```
 
-A provider adapter may use one API request or a short API pipeline—for example, create a coherent visual concept and then transform it into a texture-atlas candidate. That is still API usage: VOXL defines and evaluates the pipeline, while the external provider operates the generative models and accelerators. Deterministic engine code handles exact dimensions, profile rules, validation, rendering, and export. Whether any API can preserve enough detail and geometry through this pipeline is the central Phase 5 experiment, not an assumed capability. The deterministic engine supports `64x64` and `128x128` atlases, but the precommitted provider evaluation remains `64x64` until a separately versioned experiment measures higher-density generation.
+A provider adapter may use one API request or a short API pipeline. One candidate path asks a managed multimodal LLM to author a bounded, versioned JSON render program from the prompt, references, compact engine tool contract, and rendered feedback. Other paths ask a managed image model to create an atlas or canonical surface sheet. In every case the external provider operates the generative model and accelerators, while VOXL only validates and executes declared engine operations or deterministically normalizes returned pixels.
+
+The render program is data, never arbitrary source code: no model-authored shell, JavaScript, Python, dynamic expression, filesystem action, environment access, or network request is executable. Its per-texel operation makes the output vocabulary complete for the engine's mapped texture, while operation and write budgets keep execution bounded. The validated pixel document is authoritative; the program and hash are attempt provenance. A model first learns this tool through a compact schema, surface list, fixed examples, and render/validation feedback. Fine-tuning is not required to start and is deferred until measured repeated failures justify it.
+
+These are still managed API paths: VOXL defines and evaluates the pipeline, while the provider operates the models and GPUs. Deterministic engine code handles exact dimensions, profile rules, validation, rendering, and export. Whether any API can preserve enough detail and geometry is the central Phase 5 experiment, not an assumed capability. The engine supports `64x64` and `128x128` atlases, but the precommitted provider evaluation remains `64x64` until a separately versioned experiment measures higher-density generation.
 
 ## Geometry and texture density
 

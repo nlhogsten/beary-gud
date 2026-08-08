@@ -20,6 +20,16 @@ import {
   normalizeGenerationCandidate,
   renderGenerationRepresentation,
 } from "./generation-representations.mjs";
+import {
+  HUMANOID_SKIN_RENDER_PROGRAM_KIND,
+  HUMANOID_SKIN_RENDER_PROGRAM_LIMITS,
+  HUMANOID_SKIN_RENDER_PROGRAM_SCHEMA,
+  HumanoidSkinRenderProgramError,
+  assertValidHumanoidSkinRenderProgram,
+  describeHumanoidSkinRenderProgram,
+  executeHumanoidSkinRenderProgramPixels,
+  validateHumanoidSkinRenderProgram,
+} from "./render-program.mjs";
 
 export {
   BASE_TEXTURE_HEIGHT,
@@ -31,6 +41,11 @@ export {
   HUMANOID_SKIN_GENERATION_REPRESENTATION_IDS,
   HUMANOID_SKIN_TRANSPARENCY_KEY,
   HumanoidSkinRepresentationError,
+  HUMANOID_SKIN_RENDER_PROGRAM_KIND,
+  HUMANOID_SKIN_RENDER_PROGRAM_LIMITS,
+  HUMANOID_SKIN_RENDER_PROGRAM_SCHEMA,
+  HumanoidSkinRenderProgramError,
+  assertValidHumanoidSkinRenderProgram,
   createHumanoidSkinSelectionMask,
   createMappedPixelMask,
   createUnusedPixelMask,
@@ -38,6 +53,8 @@ export {
   encodeRgbaPng,
   getHumanoidSkinProfile,
   getHumanoidSkinRegion,
+  describeHumanoidSkinRenderProgram,
+  validateHumanoidSkinRenderProgram,
 };
 
 export const HUMANOID_SKIN_DOCUMENT_KIND = "voxl.humanoid-skin/v1";
@@ -45,7 +62,7 @@ export const HUMANOID_SKIN_SIDECAR_KIND = "voxl.humanoid-skin.sidecar/v1";
 
 export const humanoidSkinDescriptor = Object.freeze({
   id: "voxl-humanoid-skin",
-  version: "1.2.0",
+  version: "1.3.0",
   title: "VOXL humanoid skin",
   documentTypes: [HUMANOID_SKIN_DOCUMENT_KIND],
   inputTypes: ["text/plain", "image/png", HUMANOID_SKIN_DOCUMENT_KIND],
@@ -300,6 +317,68 @@ export function normalizeHumanoidSkinGenerationCandidate({
   });
   assertValidHumanoidSkinDocument(document);
   return Object.freeze({ document, layout: normalized.layout, report: normalized.report });
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map((item) => item === undefined ? "null" : canonicalJson(item)).join(",")}]`;
+  if (value && typeof value === "object") {
+    const keys = Object.keys(value)
+      .filter((key) => value[key] !== undefined)
+      .sort();
+    return `{${keys.map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+export function executeHumanoidSkinRenderProgram({
+  program,
+  baselineDocument,
+  editableMask,
+  protectedMask,
+  immutableMask,
+}) {
+  assertValidHumanoidSkinRenderProgram(program);
+  if (baselineDocument) {
+    assertValidHumanoidSkinDocument(baselineDocument);
+    if (baselineDocument.profile !== program.profile) {
+      throw new HumanoidSkinRenderProgramError(
+        "baseline_profile_mismatch",
+        "Baseline document profile must match the render program profile.",
+      );
+    }
+  } else if (editableMask || protectedMask || immutableMask) {
+    throw new HumanoidSkinRenderProgramError(
+      "baseline_required",
+      "Revision masks require a baseline document.",
+    );
+  }
+
+  const initial = baselineDocument ?? createBlankHumanoidSkinDocument(program.profile);
+  const execution = executeHumanoidSkinRenderProgramPixels({
+    program,
+    initialPixels: initial.pixels,
+    editableMask,
+    protectedMask,
+    immutableMask,
+  });
+  const programSha256 = createHash("sha256")
+    .update(canonicalJson(program))
+    .digest("hex");
+  const sidecar = structuredClone(initial.sidecar);
+  sidecar.operations.push({
+    kind: "voxl.humanoid-skin.render-program-execution/v1",
+    programKind: program.kind,
+    programSha256,
+    operationsExecuted: execution.report.operationsExecuted,
+    texelWrites: execution.report.texelWrites,
+  });
+  const document = createHumanoidSkinDocument({
+    profile: program.profile,
+    pixels: execution.pixels,
+    sidecar,
+  });
+  assertValidHumanoidSkinDocument(document);
+  return Object.freeze({ document, programSha256, report: execution.report });
 }
 
 function blendPixel(target, targetOffset, source, sourceOffset) {

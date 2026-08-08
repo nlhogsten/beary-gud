@@ -145,6 +145,71 @@ export type HumanoidSkinGenerationNormalizationReport = Readonly<{
   immutableChangedTexelsAfterComposite: 0;
 }>;
 
+export type HumanoidSkinRgba = readonly [number, number, number, number];
+export type HumanoidSkinRenderSurface = Readonly<{
+  part: HumanoidSkinPart;
+  layer: HumanoidSkinLayer;
+  face: HumanoidSkinFace;
+}>;
+export type HumanoidSkinRenderRect = Readonly<{
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}>;
+export type HumanoidSkinRenderProgramOperation =
+  | Readonly<{
+      op: "fill";
+      surface: HumanoidSkinRenderSurface;
+      rect?: HumanoidSkinRenderRect;
+      rgba: HumanoidSkinRgba;
+    }>
+  | Readonly<{
+      op: "paint-texels";
+      surface: HumanoidSkinRenderSurface;
+      texels: readonly Readonly<{ x: number; y: number; rgba: HumanoidSkinRgba }>[];
+    }>
+  | Readonly<{
+      op: "checker";
+      surface: HumanoidSkinRenderSurface;
+      rect?: HumanoidSkinRenderRect;
+      colors: readonly HumanoidSkinRgba[];
+      cellWidth: number;
+      cellHeight: number;
+    }>
+  | Readonly<{
+      op: "stripes";
+      surface: HumanoidSkinRenderSurface;
+      rect?: HumanoidSkinRenderRect;
+      colors: readonly HumanoidSkinRgba[];
+      stripeWidth: number;
+      direction: "horizontal" | "vertical";
+    }>
+  | Readonly<{
+      op: "copy-surface";
+      from: HumanoidSkinRenderSurface;
+      to: HumanoidSkinRenderSurface;
+      transform?: "none" | "mirror-x" | "mirror-y" | "rotate-180";
+    }>;
+export type HumanoidSkinRenderProgram = Readonly<{
+  kind: "voxl.humanoid-skin.render-program/v1";
+  formatVersion: 1;
+  profile: HumanoidSkinProfileId;
+  operations: readonly HumanoidSkinRenderProgramOperation[];
+}>;
+export type HumanoidSkinRenderProgramReport = Readonly<{
+  kind: "voxl.humanoid-skin.render-program/v1";
+  profile: HumanoidSkinProfileId;
+  operationsExecuted: number;
+  texelWrites: number;
+  revisionApplied: boolean;
+  restoredTexels: number;
+  protectedChangedTexelsBeforeComposite: number;
+  immutableChangedTexelsBeforeComposite: number;
+  protectedChangedTexelsAfterComposite: 0;
+  immutableChangedTexelsAfterComposite: 0;
+}>;
+
 export const BASE_TEXTURE_WIDTH: 64;
 export const BASE_TEXTURE_HEIGHT: 64;
 export const HUMANOID_SKIN_TEXTURE_SIZES: readonly (64 | 128)[];
@@ -153,6 +218,15 @@ export const HUMANOID_SKIN_SIDECAR_KIND: "voxl.humanoid-skin.sidecar/v1";
 export const HUMANOID_SKIN_GENERATION_REPRESENTATION_IDS: readonly HumanoidSkinGenerationRepresentationId[];
 export const HUMANOID_SKIN_GENERATION_CANVAS_SIZE: 1024;
 export const HUMANOID_SKIN_TRANSPARENCY_KEY: readonly [255, 0, 255, 255];
+export const HUMANOID_SKIN_RENDER_PROGRAM_KIND: "voxl.humanoid-skin.render-program/v1";
+export const HUMANOID_SKIN_RENDER_PROGRAM_LIMITS: Readonly<{
+  maxProgramBytes: 1000000;
+  maxOperations: 512;
+  maxTexelsPerPaintOperation: 16384;
+  maxTexelWrites: 65536;
+  maxPatternColors: 16;
+}>;
+export const HUMANOID_SKIN_RENDER_PROGRAM_SCHEMA: Readonly<Record<string, unknown>>;
 export const HUMANOID_SKIN_PROFILE_IDS: readonly HumanoidSkinProfileId[];
 export const HUMANOID_SKIN_PROFILES: Readonly<Record<HumanoidSkinProfileId, HumanoidSkinProfile>>;
 export const humanoidSkinDescriptor: Readonly<EngineDescriptor>;
@@ -165,6 +239,12 @@ export class HumanoidSkinValidationError extends Error {
 export class HumanoidSkinRepresentationError extends Error {
   readonly code: string;
   constructor(code: string, message: string);
+}
+
+export class HumanoidSkinRenderProgramError extends Error {
+  readonly code: string;
+  readonly issues: ValidationIssue[];
+  constructor(code: string, message: string, issues?: ValidationIssue[]);
 }
 
 export function getHumanoidSkinProfile(profileId: HumanoidSkinProfileId): HumanoidSkinProfile;
@@ -222,6 +302,29 @@ export function normalizeHumanoidSkinGenerationCandidate(values: {
   document: HumanoidSkinDocument;
   layout: HumanoidSkinGenerationLayout;
   report: HumanoidSkinGenerationNormalizationReport;
+}>;
+export function validateHumanoidSkinRenderProgram(program: unknown): ValidationResult;
+export function assertValidHumanoidSkinRenderProgram(program: unknown): ValidationResult;
+export function describeHumanoidSkinRenderProgram(profile: HumanoidSkinProfileId): Readonly<{
+  kind: "voxl.humanoid-skin.render-program/v1";
+  formatVersion: 1;
+  profile: HumanoidSkinProfileId;
+  semantics: Readonly<Record<string, string>>;
+  limits: typeof HUMANOID_SKIN_RENDER_PROGRAM_LIMITS;
+  jsonSchema: Readonly<Record<string, unknown>>;
+  operations: readonly Readonly<{ op: string; purpose: string }>[];
+  surfaces: readonly Readonly<HumanoidSkinRenderSurface & { id: string; width: number; height: number }>[];
+}>;
+export function executeHumanoidSkinRenderProgram(values: {
+  program: HumanoidSkinRenderProgram;
+  baselineDocument?: HumanoidSkinDocument;
+  editableMask?: Uint8Array;
+  protectedMask?: Uint8Array;
+  immutableMask?: Uint8Array;
+}): Readonly<{
+  document: HumanoidSkinDocument;
+  programSha256: string;
+  report: HumanoidSkinRenderProgramReport;
 }>;
 export function encodeRgbaPng(width: number, height: number, pixels: Uint8Array): Buffer;
 export function decodeRgbaPng(input: Uint8Array): { width: number; height: number; pixels: Buffer };

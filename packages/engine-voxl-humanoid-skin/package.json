@@ -8,6 +8,7 @@
       "types": "./src/index.d.ts",
       "import": "./src/index.mjs"
     },
-    "./profiles": "./src/profiles.mjs"
+    "./profiles": "./src/profiles.mjs",
+    "./schemas/render-program": "./schemas/render-program.schema.json"
   }
 }

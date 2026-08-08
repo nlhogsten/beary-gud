@@ -13,7 +13,7 @@ This is the day-to-day source of truth for implementation progress. [The impleme
 
 ## Current focus
 
-**Phase 5 provider-neutral planning and admission, with independent density review deferred to the user.** The engine-owned upscaled-atlas and canonical-surface-sheet paths now pass deterministic offline creation, revision-preservation, invalid-region, and malformed-output gates for the fixed wide/slim `64` evaluation profiles. That proves the conversion machinery, not AI quality. No representation has passed the managed-model preflight, no provider is admitted, no API call or spend is authorized, and VOXL does not plan to rent or manage GPUs. The next gate is to complete provenance admission for one managed-image candidate and bind the representation identity into a disabled, non-billable dry plan before implementing executable provider access.
+**Phase 5 provider-neutral planning and admission, with independent density review deferred to the user.** Three engine-owned paths now pass deterministic offline gates for the fixed wide/slim `64` evaluation profiles: a bounded safe render program, upscaled atlas, and canonical surface sheet. The program contract exposes every mapped texel without arbitrary code; the image paths prove exact conversion, invalid-region handling, and protected revision compositing. This proves engine machinery and expressive capacity, not that an LLM or image model can make good art. No path has passed the managed-model preflight, no provider is admitted, no API call or spend is authorized, and VOXL does not plan to rent or manage GPUs. The next gate is provenance admission plus disabled dry planning for compatible managed multimodal and image candidates before executable provider access.
 
 ## Platform and repository foundation
 
@@ -194,8 +194,8 @@ Status: **in progress**
 - [x] Add deterministic `eval:plan` output that binds the complete case, rubric, provider descriptor/configuration, provenance dossier, revision policy, and materialized-input hashes while proving it reads no credentials, invokes no adapter, uses no network, makes no paid call, and writes no provider attempt evidence.
 - [x] Identify and document the first conditional managed-API candidate, fixed snapshot, evaluation configuration, price floor, retention scope, official evidence, and unresolved dataset-provenance blocker without admitting or calling it.
 - [x] Preserve the strict dataset-origin gate and catalog a second provenance-oriented managed-API candidate with official evidence, integrity hashes, and explicit model-version, retention, enterprise-access, pricing, and revision-capability blockers.
-- [x] Catalog every generation method discussed and point to template-conditioned mainstream managed image generation as the current hypothesis without claiming it works.
-- [x] Specify the upscaled-atlas and canonical-surface-sheet contracts, fixed 8-case preflight, thresholds, USD 5 stop ceiling, authority gates, fallback ladder, and ordered build stages before implementation.
+- [x] Catalog every generation method discussed and point to the three-way safe-render-program/upscaled-atlas/surface-sheet comparison as the current hypothesis without claiming any path works with AI.
+- [x] Specify the render-program and two image-representation contracts, fixed 8-case preflight, turn/resource limits, thresholds, combined USD 5 stop ceiling, authority gates, fallback ladder, and ordered build stages before implementation.
 
 ### Remaining experiment gate
 
@@ -203,11 +203,14 @@ Status: **in progress**
 - [x] Materialize and SHA-256 lock four revision baselines plus editable/protected/immutable masks.
 - [x] Implement and test the two representation render/normalize/pack paths offline using deterministic provider-output fixtures.
 - [x] Add `bun run eval:representations` as a repeatable gate proving exact create round trips, protected revision compositing, actionable malformed-output rejection, and zero provider/network/credential/paid-call/entitlement use.
+- [x] Implement the versioned `render-program/v1` JSON schema, compact profile-specific model tool description, five bounded surface-local operations, strict validator, deterministic interpreter/hash, and exact revision compositor without arbitrary-code execution.
+- [x] Prove `paint-texels` can express arbitrary RGBA at every mapped texel for both fixed profiles and reject unknown code-like operations, invalid coordinates, unknown fields, over-budget programs, missing baselines, and overlapping masks.
+- [x] Add `bun run eval:render-programs` as a repeatable gate reporting two contract, two deterministic-creation, two universal-addressability, two protected-revision, and two actionable-rejection passes with zero provider/network/credential/paid-call/entitlement/arbitrary-code use.
 - [ ] Complete model, dataset, commercial-use, reference-use, and retention provenance review for at least one candidate.
-- [ ] Implement and admit one real managed-image provider adapter only after the offline representation and provenance gates pass.
-- [ ] Produce a non-billable dry plan binding representation, case, model, configuration, references, masks, hashes, and spend ceiling.
-- [ ] Obtain explicit user authorization for the provider, credentials, network use, and USD 5 cap; then run the fixed 8-case, 2-representation preflight without charging product entitlements.
-- [ ] Advance only a passing representation to the complete 36-case managed-provider evaluation and reproducible host-native comparison where available.
+- [ ] Implement and admit compatible managed multimodal/image provider adapters only after the offline path and provenance gates pass.
+- [ ] Produce non-billable dry plans binding generation path, case, model, configuration, references, masks, turn/resource limits, hashes, allocation, and combined spend ceiling.
+- [ ] Obtain explicit user authorization for the providers, credentials, network use, and USD 5 combined cap; then run the fixed 8-case compatible-path preflight without charging product entitlements.
+- [ ] Advance only a passing path to the complete 36-case managed-provider evaluation and reproducible host-native comparison where available.
 - [ ] Record provider latency, failure/refusal rate, validation/acceptance rate, quality distributions, retention/provenance risk, and actual/estimated API cost. Record accelerator memory only if exposed.
 - [ ] Decide from measured evidence whether to continue a managed provider, investigate provider-side adaptation/fine-tuning, change API approach, or stop.
 - [ ] Complete all Phase 5 exit criteria from the implementation plan; no provider is selected or admitted, and no GPU rental or self-hosting decision is authorized.
@@ -303,4 +306,4 @@ Status: **not started**
 
 ## Next unchecked step
 
-Complete provenance admission for one managed-image candidate without weakening the recorded commercial, dataset, reference-use, retention, or model-identity gates. In parallel, extend the non-billable dry-plan identity to bind `direct-atlas-v1` or `surface-sheet-v1` and its engine-owned layout hash. Do not add credentials, enable execution, make provider calls, or spend money. Independent review of the final density walkthrough remains a separate open gate.
+Complete provenance admission for compatible managed multimodal and image candidates without weakening the recorded commercial, dataset, reference-use, retention, or model-identity gates. Extend the non-billable dry-plan identity to bind `render-program-v1`, `direct-atlas-v1`, or `surface-sheet-v1`, including engine-contract/layout hashes, render-feedback turn limits, and the shared spending allocation. Do not add credentials, enable execution, make provider calls, or spend money. Independent review of the final density walkthrough remains a separate open gate.

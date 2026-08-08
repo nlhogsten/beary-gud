@@ -18,6 +18,7 @@ import {
 } from "./core.ts";
 import { loadProviderCatalog } from "./catalog.ts";
 import { verifyOfflineRepresentationHarness } from "./representations.ts";
+import { verifyOfflineRenderProgramHarness } from "./render-programs.ts";
 
 const repoRoot = new URL("../../../", import.meta.url).pathname;
 const temporary: string[] = [];
@@ -85,6 +86,27 @@ describe("offline generation representations", () => {
       credentialsRead: false,
       paidCall: false,
       entitlementUsed: false,
+    });
+  });
+});
+
+describe("offline render programs", () => {
+  test("proves bounded execution, universal texel addressability, and revision preservation without a provider", () => {
+    const report = verifyOfflineRenderProgramHarness();
+    assert.equal(report.ok, true);
+    assert.deepEqual(report.profiles, ["wide-arm-64", "slim-arm-64"]);
+    assert.equal(report.contractChecks, 2);
+    assert.equal(report.deterministicCreationChecks, 2);
+    assert.equal(report.universalAddressabilityChecks, 2);
+    assert.equal(report.revisionPreservationChecks, 2);
+    assert.equal(report.actionableRejections, 2);
+    assert.deepEqual(report.execution, {
+      providerAdapterUsed: false,
+      networkUsed: false,
+      credentialsRead: false,
+      paidCall: false,
+      entitlementUsed: false,
+      arbitraryCodeExecuted: false,
     });
   });
 });
