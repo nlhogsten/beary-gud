@@ -87,6 +87,30 @@
         }
       }
     },
+    "paintSurfaceGrid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "surface", "palette", "rows"],
+      "properties": {
+        "op": { "const": "paint-surface-grid" },
+        "surface": { "$ref": "#/$defs/surface" },
+        "palette": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1024,
+          "items": { "$ref": "#/$defs/rgba" }
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "integer", "minimum": 0, "maximum": 1023 }
+          }
+        }
+      }
+    },
     "checker": {
       "type": "object",
       "additionalProperties": false,
@@ -136,6 +160,7 @@
     },
     "operation": {
       "oneOf": [
+        { "$ref": "#/$defs/paintSurfaceGrid" },
         { "$ref": "#/$defs/fill" },
         { "$ref": "#/$defs/paintTexels" },
         { "$ref": "#/$defs/checker" },

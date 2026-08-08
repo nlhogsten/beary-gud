@@ -62,7 +62,7 @@ export const HUMANOID_SKIN_SIDECAR_KIND = "voxl.humanoid-skin.sidecar/v1";
 
 export const humanoidSkinDescriptor = Object.freeze({
   id: "voxl-humanoid-skin",
-  version: "1.3.0",
+  version: "1.4.0",
   title: "VOXL humanoid skin",
   documentTypes: [HUMANOID_SKIN_DOCUMENT_KIND],
   inputTypes: ["text/plain", "image/png", HUMANOID_SKIN_DOCUMENT_KIND],

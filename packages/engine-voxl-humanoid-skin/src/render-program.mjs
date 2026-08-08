@@ -12,6 +12,7 @@ export const HUMANOID_SKIN_RENDER_PROGRAM_LIMITS = Object.freeze({
   maxTexelsPerPaintOperation: 16_384,
   maxTexelWrites: 65_536,
   maxPatternColors: 16,
+  maxGridPaletteColors: 1_024,
 });
 
 function deepFreeze(value) {
@@ -24,8 +25,9 @@ function deepFreeze(value) {
 export const HUMANOID_SKIN_RENDER_PROGRAM_SCHEMA = deepFreeze(structuredClone(renderProgramJsonSchema));
 
 const OPERATION_NAMES = Object.freeze([
-  "fill",
+  "paint-surface-grid",
   "paint-texels",
+  "fill",
   "checker",
   "stripes",
   "copy-surface",
@@ -145,8 +147,60 @@ function validateOperation(operation, index, profileId, issues) {
   }
 
   const common = new Set(["op", "surface"]);
-  if (operation.op !== "paint-texels") common.add("rect");
+  if (operation.op !== "paint-texels" && operation.op !== "paint-surface-grid") common.add("rect");
   const region = validateSurface(operation.surface, profileId, `${path}.surface`, issues);
+
+  if (operation.op === "paint-surface-grid") {
+    common.add("palette");
+    common.add("rows");
+    checkKeys(operation, common, path, issues);
+    if (!Array.isArray(operation.palette)
+      || operation.palette.length < 1
+      || operation.palette.length > HUMANOID_SKIN_RENDER_PROGRAM_LIMITS.maxGridPaletteColors) {
+      issues.push(issue(
+        "invalid_grid_palette",
+        `Grid palette must contain 1-${HUMANOID_SKIN_RENDER_PROGRAM_LIMITS.maxGridPaletteColors} RGBA values.`,
+        `${path}.palette`,
+      ));
+    } else {
+      operation.palette.forEach((color, colorIndex) => {
+        validateRgba(color, `${path}.palette[${colorIndex}]`, issues);
+      });
+    }
+    if (!Array.isArray(operation.rows)
+      || (region && operation.rows.length !== region.height)) {
+      issues.push(issue(
+        "grid_dimensions_invalid",
+        "Grid rows must exactly match the selected surface height.",
+        `${path}.rows`,
+      ));
+      return region ? region.width * region.height : 0;
+    }
+    operation.rows.forEach((row, rowIndex) => {
+      const rowPath = `${path}.rows[${rowIndex}]`;
+      if (!Array.isArray(row) || (region && row.length !== region.width)) {
+        issues.push(issue(
+          "grid_dimensions_invalid",
+          "Every grid row must exactly match the selected surface width.",
+          rowPath,
+        ));
+        return;
+      }
+      row.forEach((paletteIndex, columnIndex) => {
+        if (!Number.isInteger(paletteIndex)
+          || paletteIndex < 0
+          || !Array.isArray(operation.palette)
+          || paletteIndex >= operation.palette.length) {
+          issues.push(issue(
+            "grid_palette_index_invalid",
+            "Grid values must be integer indexes into the operation palette.",
+            `${rowPath}[${columnIndex}]`,
+          ));
+        }
+      });
+    });
+    return region ? region.width * region.height : 0;
+  }
 
   if (operation.op === "fill") {
     common.add("rgba");
@@ -295,15 +349,17 @@ export function describeHumanoidSkinRenderProgram(profileId) {
       coordinates: "Surface-local integer texels with origin at the surface's top-left.",
       ordering: "Operations execute in array order; later writes replace earlier RGBA values.",
       sourceOfTruth: "The validated output pixels are authoritative; the program is reproducible provenance.",
+      generationIntent: "Use paint-surface-grid for dense visual authorship, paint-texels for sparse corrections, and compression helpers only when useful.",
     }),
     limits: HUMANOID_SKIN_RENDER_PROGRAM_LIMITS,
     jsonSchema: deepFreeze(jsonSchema),
     operations: Object.freeze([
-      Object.freeze({ op: "fill", purpose: "Set a whole surface or rectangle to one RGBA value." }),
-      Object.freeze({ op: "paint-texels", purpose: "Set arbitrary individual texels; this can express any valid texture." }),
-      Object.freeze({ op: "checker", purpose: "Repeat 2-16 colors in rectangular cells." }),
-      Object.freeze({ op: "stripes", purpose: "Repeat 2-16 colors horizontally or vertically." }),
-      Object.freeze({ op: "copy-surface", purpose: "Copy an equal-sized surface with an optional mirror or 180-degree rotation." }),
+      Object.freeze({ op: "paint-surface-grid", role: "primary", purpose: "Author every texel of one surface as palette-indexed pixel rows." }),
+      Object.freeze({ op: "paint-texels", role: "sparse-revision", purpose: "Replace arbitrary individual texels without resending an unchanged surface." }),
+      Object.freeze({ op: "fill", role: "optional-compression", purpose: "Compress a uniform surface or rectangle; never required for generation." }),
+      Object.freeze({ op: "checker", role: "optional-compression", purpose: "Compress a small repeated checker motif; never required for generation." }),
+      Object.freeze({ op: "stripes", role: "optional-compression", purpose: "Compress a small repeated stripe motif; never required for generation." }),
+      Object.freeze({ op: "copy-surface", role: "optional-compression", purpose: "Reuse an intentionally identical surface; never required for generation." }),
     ]),
     surfaces: Object.freeze(profile.regions.map((region) => Object.freeze({
       id: surfaceId(region),
@@ -436,6 +492,13 @@ export function executeHumanoidSkinRenderProgramPixels({
         setPixel(pixels, profile.width, region, texel.x, texel.y, texel.rgba);
       }
       texelWrites += operation.texels.length;
+    } else if (operation.op === "paint-surface-grid") {
+      for (let y = 0; y < region.height; y += 1) {
+        for (let x = 0; x < region.width; x += 1) {
+          setPixel(pixels, profile.width, region, x, y, operation.palette[operation.rows[y][x]]);
+        }
+      }
+      texelWrites += region.width * region.height;
     } else {
       texelWrites += executeAreaOperation(pixels, profile, region, operation);
     }

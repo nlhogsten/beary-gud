@@ -8,7 +8,7 @@ Architecture decision records capture choices that implementation must preserve.
 | [0002](0002-engine-owned-document-schemas.md) | Let each engine own its document schema | Accepted |
 | [0003](0003-immutable-asset-versions.md) | Store revisions as immutable asset versions | Accepted |
 | [0004](0004-asynchronous-idempotent-jobs.md) | Run generation as asynchronous, idempotent jobs | Accepted |
-| [0005](0005-generative-first-humanoid-skins.md) | Make humanoid-skin creation generative-first | Accepted |
+| [0005](0005-generative-first-humanoid-skins.md) | Make humanoid-skin creation generative-first | Accepted; provider interpretation refined by 0013 |
 | [0006](0006-target-neutral-identities.md) | Use target-neutral component and profile identities | Accepted |
 | [0007](0007-packaging-and-migration-policy.md) | Delay workspaces and protect compatibility migrations | Superseded in part by 0010; safeguards retained |
 | [0008](0008-react-vite-studio-frontend.md) | Use one React and Vite studio frontend | Accepted; migration in progress |
@@ -16,3 +16,4 @@ Architecture decision records capture choices that implementation must preserve.
 | [0010](0010-bun-workspace-and-service-boundaries.md) | Use Bun workspaces and keep runtime configuration with its owner | Accepted |
 | [0011](0011-managed-generation-apis-by-default.md) | Use managed generation APIs and keep model serving out of the accepted architecture | Accepted |
 | [0012](0012-separate-geometry-from-texture-density.md) | Keep model geometry independent from texture density | Accepted |
+| [0013](0013-dense-pixels-as-render-program-vocabulary.md) | Use dense surface-local pixels as the safe render-program creative vocabulary | Accepted |

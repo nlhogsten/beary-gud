@@ -324,9 +324,9 @@ This approach is highly controllable but creatively limited. Keep it for fixture
 
 ### LLM-authored safe render program
 
-A multimodal LLM can receive the prompt, reference images, a compact description of the chosen engine profile, and a strict JSON tool schema. It then writes a bounded render program using surface-local fills, patterns, copies, and arbitrary per-texel writes. VOXL validates and executes that data, renders the result, and may return the images and validation issues for up to two correction turns.
+A multimodal LLM can receive an abstract prompt, reference images, images without text, a compact description of the chosen engine profile, and a strict JSON tool schema. It then authors complete surface-local pixel grids using compact palette indexes. VOXL validates and executes that data, renders the result, and may return the images and validation issues for up to two correction turns.
 
-This is closer to the original Bash-character experiment than a finite semantic constructor. `paint-texels` can express any valid mapped texture, so new visual themes do not require adding a new `hairStyle` or `armorType` field. The high-level operations merely compress common work. The LLM does not execute source code, and it does not need fine-tuning to begin: each request supplies the versioned tool contract and fixed examples. Fine-tuning is considered only after measured repeated failures and a provenance-safe set of accepted corrections exist.
+This is closer to the original Bash-character experiment than a finite semantic constructor. Dense grids can express any valid mapped texture, so new visual themes do not require adding a new `hairStyle` or `armorType` field. Sparse texel writes handle localized changes; fill, copy, checker, and stripe helpers merely compress uniform or tiny repeated sub-patterns and may never be used. The LLM does not execute source code, and it does not need fine-tuning to begin: each request supplies the versioned tool contract and fixed examples. Fine-tuning is considered only after measured repeated failures and a provenance-safe set of accepted corrections exist.
 
 ### Direct image generation
 

@@ -43,13 +43,14 @@ For each image path, request one output per case. For the render-program path, a
 
 ### `render-program-v1`
 
-1. Supply the selected profile's compact engine-owned contract, not engine source: program kind/version, valid surfaces and local dimensions, operation schemas, coordinate semantics, and budgets.
+1. Supply the selected profile's compact engine-owned contract, not engine source: program kind/version, valid surfaces and local dimensions, dense-grid/sparse-patch schemas, optional compression helpers, coordinate semantics, and budgets.
 2. Supply the unchanged case prompt, authorized ordered references, optional baseline/masks, and a small fixed example set.
-3. Require structured JSON output matching `voxl.humanoid-skin.render-program/v1`; never execute model-authored shell, JavaScript, Python, templates, filesystem actions, network calls, or dynamic expressions.
-4. Validate the program before execution, enforce program/operation/texel-write budgets, and execute operations deterministically in array order.
-5. Construct and validate the candidate document, render the standard views, and—within the turn limit—return only sanitized validation issues and those renders for correction.
-6. For revisions, composite only editable texels and restore protected, immutable, and all other non-editable pixels byte-for-byte from the baseline.
-7. Persist accepted pixels as the authoritative version and retain the program hash/program as reproducible attempt provenance; a later edit does not depend on replaying the program.
+3. Ask the model to author complete palette-indexed pixel grids for the surfaces it is creating. Use sparse texel writes for localized corrections. Treat fills, copies, and tiny repeated patterns only as optional compression—not as the prompt vocabulary or expected whole-character construction method.
+4. Require structured JSON output matching `voxl.humanoid-skin.render-program/v1`; never execute model-authored shell, JavaScript, Python, templates, filesystem actions, network calls, or dynamic expressions.
+5. Validate the program before execution, including exact grid dimensions and palette indexes; enforce program/operation/texel-write budgets and execute operations deterministically in array order.
+6. Construct and validate the candidate document, render the standard views, and—within the turn limit—return only sanitized validation issues and those renders for correction.
+7. For revisions, composite only editable texels and restore protected, immutable, and all other non-editable pixels byte-for-byte from the baseline.
+8. Persist accepted pixels as the authoritative version and retain the program hash/program as reproducible attempt provenance; a later edit does not depend on replaying the program.
 
 ### `direct-atlas-v1`
 
@@ -126,7 +127,7 @@ The following sequence is the build plan. A later stage does not start until the
 
 ### Stage 1 — offline generation-path harness
 
-- Add the engine-owned safe render-program schema, compact model-facing contract, validator, bounded interpreter, and deterministic provenance hash.
+- Add the engine-owned safe render-program schema, compact model-facing contract, dense palette-indexed surface grids, sparse corrections, optional compression helpers, validator, bounded interpreter, and deterministic provenance hash.
 - Add engine-owned generation-template and surface-sheet renderers.
 - Add exact packing, block reduction, palette/alpha policy, invalid-region restoration, and protected-mask compositing.
 - Create deterministic fixtures that simulate provider outputs.

@@ -159,6 +159,12 @@ export type HumanoidSkinRenderRect = Readonly<{
 }>;
 export type HumanoidSkinRenderProgramOperation =
   | Readonly<{
+      op: "paint-surface-grid";
+      surface: HumanoidSkinRenderSurface;
+      palette: readonly HumanoidSkinRgba[];
+      rows: readonly (readonly number[])[];
+    }>
+  | Readonly<{
       op: "fill";
       surface: HumanoidSkinRenderSurface;
       rect?: HumanoidSkinRenderRect;
@@ -225,6 +231,7 @@ export const HUMANOID_SKIN_RENDER_PROGRAM_LIMITS: Readonly<{
   maxTexelsPerPaintOperation: 16384;
   maxTexelWrites: 65536;
   maxPatternColors: 16;
+  maxGridPaletteColors: 1024;
 }>;
 export const HUMANOID_SKIN_RENDER_PROGRAM_SCHEMA: Readonly<Record<string, unknown>>;
 export const HUMANOID_SKIN_PROFILE_IDS: readonly HumanoidSkinProfileId[];
@@ -312,7 +319,7 @@ export function describeHumanoidSkinRenderProgram(profile: HumanoidSkinProfileId
   semantics: Readonly<Record<string, string>>;
   limits: typeof HUMANOID_SKIN_RENDER_PROGRAM_LIMITS;
   jsonSchema: Readonly<Record<string, unknown>>;
-  operations: readonly Readonly<{ op: string; purpose: string }>[];
+  operations: readonly Readonly<{ op: string; role: "primary" | "sparse-revision" | "optional-compression"; purpose: string }>[];
   surfaces: readonly Readonly<HumanoidSkinRenderSurface & { id: string; width: number; height: number }>[];
 }>;
 export function executeHumanoidSkinRenderProgram(values: {

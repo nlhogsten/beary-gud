@@ -17,7 +17,8 @@ It currently provides:
 - Deterministic block-median reduction, surface packing, reserved transparency-key handling, and invalid-region restoration.
 - Exact revision compositing that permits changes only inside the editable mask and copies protected texels from the baseline byte-for-byte.
 - Actionable rejection of malformed candidate dimensions, damaged surface-sheet structure, and invalid or overlapping masks.
-- A versioned safe render-program schema with surface-local `fill`, `checker`, `stripes`, `copy-surface`, and arbitrary `paint-texels` operations.
+- A versioned safe render-program schema whose primary operation authors complete surface-local pixel grids with compact palette indexes.
+- Sparse `paint-texels` revisions plus optional `fill`, `checker`, `stripes`, and `copy-surface` compression helpers that are never required for generation.
 - A compact profile-specific tool description that exposes valid surface names and dimensions without exposing engine source.
 - Strict render-program validation, operation/write/size budgets, deterministic execution and hashing, and rejection of unknown code-like operations.
 - A provider-independent engine descriptor with validate, render, and export capabilities.

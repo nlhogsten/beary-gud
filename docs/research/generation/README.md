@@ -10,7 +10,7 @@ The first visual type does not require arbitrary mesh generation. Its geometry, 
 
 The three first paths are:
 
-1. **Safe render program:** give a multimodal conversational model the versioned engine tool contract, prompt, references, and rendered feedback; execute its bounded JSON program locally and validate the result.
+1. **Safe dense-pixel render program:** give a multimodal conversational model the versioned engine tool contract, abstract prompt, optional references, and rendered feedback; let it author complete surface-local pixel grids, execute the bounded JSON locally, and validate the result.
 2. **Upscaled atlas template:** enlarge each logical texel into a model-visible block, edit the exact template, then deterministically reduce it to the engine density.
 3. **Canonical surface sheet:** generate clearly ordered, flat body-surface panels, then deterministically pack them into the engine atlas.
 
@@ -25,7 +25,7 @@ All three paths now pass their deterministic offline contracts. The program inte
 
 ## How the model learns the VOXL tool
 
-No model is expected to infer VOXL's engine from its name. The provider adapter sends the engine-owned `render-program/v1` contract: legal surfaces and dimensions, five operation schemas, resource limits, coordinate semantics, and a few fixed examples. The model emits only JSON. VOXL validates and executes it, renders the result, and can return visual and validation feedback for a bounded correction turn. This is ordinary in-context tool use, not training.
+No model is expected to infer VOXL's engine from its name. The provider adapter sends the engine-owned `render-program/v1` contract: legal surfaces and dimensions, the primary palette-indexed grid schema, sparse correction and optional compression schemas, resource limits, coordinate semantics, and a few fixed examples. The model emits only JSON. VOXL validates and executes it, renders the result, and can return visual and validation feedback for a bounded correction turn. This is ordinary in-context tool use, not training.
 
 Fine-tuning is deliberately deferred. It becomes a candidate only if controlled evaluation shows a stable failure pattern that better prompts, examples, tool design, and feedback do not solve—and only after VOXL has enough accepted program/correction pairs to justify it.
 

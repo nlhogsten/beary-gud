@@ -38,12 +38,15 @@ test("describes the complete local-coordinate tool contract without engine sourc
   assert.equal(contract.kind, HUMANOID_SKIN_RENDER_PROGRAM_KIND);
   assert.equal(contract.surfaces.length, 72);
   assert.deepEqual(contract.operations.map(({ op }) => op), [
-    "fill",
+    "paint-surface-grid",
     "paint-texels",
+    "fill",
     "checker",
     "stripes",
     "copy-surface",
   ]);
+  assert.equal(contract.operations[0].role, "primary");
+  assert.equal(contract.operations.find(({ op }) => op === "stripes").role, "optional-compression");
   assert.deepEqual(
     contract.surfaces.find(({ id }) => id === "head.base.front"),
     { id: "head.base.front", part: "head", layer: "base", face: "front", width: 8, height: 8 },
@@ -51,8 +54,14 @@ test("describes the complete local-coordinate tool contract without engine sourc
   assert.match(contract.semantics.coordinates, /Surface-local/);
 });
 
-test("executes bounded primitives deterministically into a valid document", () => {
+test("executes dense pixel grids, sparse corrections, and optional compression helpers deterministically", () => {
   const fixture = program("wide-arm-64", [
+    {
+      op: "paint-surface-grid",
+      surface: surface("right-leg", "base", "front"),
+      palette: [[12, 24, 36, 255], [210, 180, 90, 255]],
+      rows: Array.from({ length: 12 }, (_, y) => Array.from({ length: 4 }, (_, x) => (x + y) % 2)),
+    },
     { op: "fill", surface: surface("head", "base", "front"), rgba: [20, 30, 40, 255] },
     {
       op: "checker",
@@ -95,32 +104,40 @@ test("executes bounded primitives deterministically into a valid document", () =
   assert.deepEqual(first.document.pixels, second.document.pixels);
   assert.equal(first.programSha256, second.programSha256);
   assert.equal(first.programSha256, reordered.programSha256);
-  assert.equal(first.report.operationsExecuted, 5);
-  assert.equal(first.report.texelWrites, 257);
+  assert.equal(first.report.operationsExecuted, 6);
+  assert.equal(first.report.texelWrites, 305);
   assert.equal(validateHumanoidSkinDocument(first.document).ok, true);
   assert.equal(first.document.sidecar.operations.at(-1).programSha256, first.programSha256);
 });
 
-test("paint-texels can express every mapped output texel without finite semantic parameters", () => {
+test("dense surface grids can express every mapped output texel without finite semantic parameters", () => {
   const profile = getHumanoidSkinProfile("wide-arm-128");
   const expected = createBlankHumanoidSkinDocument(profile.id);
-  const operations = profile.regions.map((region, regionIndex) => ({
-    op: "paint-texels",
-    surface: surface(region.part, region.layer, region.face),
-    texels: Array.from({ length: region.width * region.height }, (_, index) => {
-      const x = index % region.width;
-      const y = Math.floor(index / region.width);
+  const operations = profile.regions.map((region, regionIndex) => {
+    const palette = [];
+    const paletteIndex = new Map();
+    const rows = Array.from({ length: region.height }, (_, y) => Array.from({ length: region.width }, (_, x) => {
       const rgba = [
         (regionIndex * 37 + x * 11 + y * 3) % 256,
         (regionIndex * 19 + x * 5 + y * 13) % 256,
         (regionIndex * 7 + x * 17 + y * 23) % 256,
         region.layer === "base" ? 255 : (regionIndex * 29 + x * 31 + y * 2) % 256,
       ];
-      const offset = ((region.y + y) * profile.width + region.x + x) * 4;
-      expected.pixels.set(rgba, offset);
-      return { x, y, rgba };
-    }),
-  }));
+      const key = rgba.join(",");
+      if (!paletteIndex.has(key)) {
+        paletteIndex.set(key, palette.length);
+        palette.push(rgba);
+      }
+      expected.pixels.set(rgba, ((region.y + y) * profile.width + region.x + x) * 4);
+      return paletteIndex.get(key);
+    }));
+    return {
+      op: "paint-surface-grid",
+      surface: surface(region.part, region.layer, region.face),
+      palette,
+      rows,
+    };
+  });
   const result = executeHumanoidSkinRenderProgram({ program: program(profile.id, operations) });
   assert.deepEqual(result.document.pixels, expected.pixels);
   assert.equal(validateHumanoidSkinDocument(result.document).ok, true);
@@ -144,6 +161,24 @@ test("rejects unknown code-like operations, bad coordinates, unknown fields, and
     () => executeHumanoidSkinRenderProgram({ program: outOfBounds }),
     "render_program_invalid",
   );
+
+  const malformedGrid = program("wide-arm-64", [{
+    op: "paint-surface-grid",
+    surface: surface("head", "base", "front"),
+    palette: [[0, 0, 0, 255]],
+    rows: Array.from({ length: 8 }, () => Array.from({ length: 7 }, () => 1)),
+  }]);
+  const gridValidation = validateHumanoidSkinRenderProgram(malformedGrid);
+  assert.ok(gridValidation.issues.some(({ code }) => code === "grid_dimensions_invalid"));
+  const badGridIndex = program("wide-arm-64", [{
+    op: "paint-surface-grid",
+    surface: surface("head", "base", "front"),
+    palette: [[0, 0, 0, 255]],
+    rows: Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => 1)),
+  }]);
+  assert.ok(validateHumanoidSkinRenderProgram(badGridIndex).issues.some(
+    ({ code }) => code === "grid_palette_index_invalid",
+  ));
 
   const tooManyOperations = program("wide-arm-64", Array.from({ length: 513 }, () => ({
     op: "fill",

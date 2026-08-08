@@ -76,6 +76,15 @@ export function verifyOfflineRenderProgramHarness(): OfflineRenderProgramHarness
     const profile = getHumanoidSkinProfile(profileId);
     const contract = describeHumanoidSkinRenderProgram(profileId);
     const schemaFixture = program(profileId, [
+      {
+        op: "paint-surface-grid",
+        surface: surface("right-leg", "base", "front"),
+        palette: [[20, 30, 40, 255], [80, 90, 100, 255]],
+        rows: Array.from(
+          { length: 12 * profile.texelScale },
+          (_, y) => Array.from({ length: 4 * profile.texelScale }, (_, x) => (x + y) % 2),
+        ),
+      },
       { op: "fill", surface: surface("head", "base", "front"), rgba: [1, 2, 3, 255] },
       {
         op: "paint-texels",
@@ -106,7 +115,8 @@ export function verifyOfflineRenderProgramHarness(): OfflineRenderProgramHarness
     const schemaAcceptsProfileProgram = new Ajv2020({ allErrors: true, strict: true })
       .compile(contract.jsonSchema)(schemaFixture);
     const contractPassed = contract.surfaces.length === profile.regions.length
-      && contract.operations.some(({ op }) => op === "paint-texels")
+      && contract.operations.some(({ op, role }) => op === "paint-surface-grid" && role === "primary")
+      && contract.operations.some(({ op, role }) => op === "paint-texels" && role === "sparse-revision")
       && schemaAcceptsProfileProgram
       && contract.surfaces.every(({ id, width, height }) => {
         const region = profile.byKey[id];
@@ -118,18 +128,20 @@ export function verifyOfflineRenderProgramHarness(): OfflineRenderProgramHarness
       kind: "contract",
       passed: contractPassed,
       detail: contractPassed
-        ? "Tool contract exposes every engine surface in local coordinates plus the arbitrary-texel operation."
-        : "Tool contract is missing an engine surface or universal texel operation.",
+        ? "Tool contract exposes every engine surface, dense pixel grids, and sparse texel correction in local coordinates."
+        : "Tool contract is missing an engine surface or primary dense-pixel operation.",
     });
 
     const creationProgram = program(profileId, [
       { op: "fill", surface: surface("head", "base", "front"), rgba: [31, 61, 91, 255] },
       {
-        op: "checker",
+        op: "paint-surface-grid",
         surface: surface("torso", "base", "front"),
-        colors: [[220, 80, 45, 255], [20, 45, 90, 255]],
-        cellWidth: profile.texelScale,
-        cellHeight: profile.texelScale,
+        palette: [[220, 80, 45, 255], [20, 45, 90, 255]],
+        rows: Array.from(
+          { length: 12 * profile.texelScale },
+          (_, y) => Array.from({ length: 8 * profile.texelScale }, (_, x) => ((x * 3 + y * 5) % 7 < 3 ? 0 : 1)),
+        ),
       },
       {
         op: "paint-texels",
@@ -153,22 +165,32 @@ export function verifyOfflineRenderProgramHarness(): OfflineRenderProgramHarness
     });
 
     const expected = createBlankHumanoidSkinDocument(profileId);
-    const universalOperations: HumanoidSkinRenderProgramOperation[] = profile.regions.map((region, regionIndex) => ({
-      op: "paint-texels",
-      surface: surface(region.part, region.layer, region.face),
-      texels: Array.from({ length: region.width * region.height }, (_, index) => {
-        const x = index % region.width;
-        const y = Math.floor(index / region.width);
+    const universalOperations: HumanoidSkinRenderProgramOperation[] = profile.regions.map((region, regionIndex) => {
+      const palette: [number, number, number, number][] = [];
+      const paletteIndexes = new Map<string, number>();
+      const rows = Array.from({ length: region.height }, (_, y) => Array.from({ length: region.width }, (_, x) => {
+        const index = y * region.width + x;
         const rgba: [number, number, number, number] = [
           (regionIndex * 43 + x * 7) % 256,
           (regionIndex * 17 + y * 13) % 256,
           (regionIndex * 29 + x * 3 + y * 5) % 256,
           region.layer === "base" ? 255 : (regionIndex * 31 + index) % 256,
         ];
+        const key = rgba.join(",");
+        if (!paletteIndexes.has(key)) {
+          paletteIndexes.set(key, palette.length);
+          palette.push(rgba);
+        }
         expected.pixels.set(rgba, ((region.y + y) * profile.width + region.x + x) * 4);
-        return { x, y, rgba };
-      }),
-    }));
+        return paletteIndexes.get(key) ?? 0;
+      }));
+      return {
+        op: "paint-surface-grid",
+        surface: surface(region.part, region.layer, region.face),
+        palette,
+        rows,
+      };
+    });
     const universal = executeHumanoidSkinRenderProgram({ program: program(profileId, universalOperations) });
     const universalPassed = samePixels(universal.document.pixels, expected.pixels)
       && validateHumanoidSkinDocument(universal.document).ok;

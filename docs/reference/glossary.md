@@ -263,6 +263,14 @@ A saved set of trained model weights. A checkpoint can be loaded by compatible i
 
 Information supplied to guide generation, such as text, images, masks, palettes, an existing asset, or a seed.
 
+### Compression helper
+
+An optional render-program shortcut that represents a small uniform or repeated pixel area with fewer values—for example, a fill or tiny repeated pattern. It does not define what the character can contain, and a model can generate an entire result without using one.
+
+### Dense pixel grid
+
+A rectangular row-and-column description containing every pixel for one visual surface. VOXL grids use compact indexes into a supplied RGBA palette. They are the primary output format for the LLM-authored render-program path.
+
 ### Deterministic
 
 Producing the same result when given the same exact inputs. File validation, coordinate mapping, and format export should be deterministic even when creative generation is not.
@@ -277,7 +285,7 @@ Additional training that adapts an existing model to a narrower task, visual sty
 
 ### Generative-first
 
-Using an image model to synthesize open-ended visual patterns as the primary creative path. Templates and procedural parts remain useful for tests and fallbacks but do not define what users are allowed to create.
+Using a managed generative model to interpret open-ended text and image inputs as the primary creative path. The result may be pixels from an image model or dense pixel instructions from a multimodal LLM. Templates and procedural parts remain useful for tests and fallbacks but do not define what users are allowed to create.
 
 ### GPU
 
@@ -293,7 +301,7 @@ An external service that runs a generation model behind an API and charges per r
 
 ### LLM
 
-Large Language Model. Codex and Claude are examples. In VOXL, an LLM understands the conversation and references, plans operations, calls tools, and explains results. Exact texture construction and validation are handled by visual providers and deterministic engine code.
+Large Language Model. Codex and Claude are examples. In VOXL, a multimodal LLM may understand the conversation and references, author dense pixel instructions, call tools, inspect renders, and explain results. Deterministic engine code still validates and executes those instructions exactly.
 
 ### Mask
 
@@ -338,6 +346,10 @@ The recorded origin and history of a model, dataset, reference, or output. Prove
 ### Reference image
 
 An image supplied to guide content, appearance, palette, pose, or style. A reference is an input, not necessarily something copied pixel for pixel.
+
+### Render program
+
+Strict JSON data describing pixels the deterministic engine should write. It is validated and bounded; it is not JavaScript, shell, Python, or another executable programming language. In the humanoid-skin engine, dense surface grids are the main creative payload and sparse texel writes are used for corrections.
 
 ### Revision
 

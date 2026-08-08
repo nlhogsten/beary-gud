@@ -375,7 +375,7 @@ Prove or reject an open-ended managed-API generation path before integrating it 
 - Keep the generation [method catalog](../research/generation/method-catalog.md) complete and mark exactly one current experiment without deleting viable fallbacks.
 - Compare a managed multimodal LLM authoring a safe render program with template-conditioned mainstream managed image generation because this engine supplies fixed geometry, UV mapping, layers, density, validation, rendering, and export. Treat all three paths as hypotheses, not provider selections.
 - Compare three engine-owned generation paths before production integration:
-  - A versioned, bounded JSON render program with surface-local coordinates, high-level patterns, arbitrary per-texel writes, deterministic execution, and rendered feedback.
+  - A versioned, bounded JSON render program with dense palette-indexed surface grids as its primary creative output, sparse per-texel revisions, optional compression helpers, deterministic execution, and rendered feedback.
   - An upscaled exact atlas template that is reduced deterministically to logical texels.
   - A canonical flat surface sheet that is packed deterministically into the atlas.
 - Create a licensed or synthetic evaluation set of at least 30 cases:
@@ -390,7 +390,7 @@ Prove or reject an open-ended managed-API generation path before integrating it 
   - Localized edits with explicit preserve constraints.
 - Define scoring for prompt fidelity, reference fidelity, UV correctness, front/back consistency, pixel sharpness, edit preservation, and human preference.
 - Build and test the render-program schema/tool description, validator, bounded interpreter, program hash, representation renderer, normalizer, packer, invalid-region restoration, and protected-mask compositor entirely offline with deterministic fixtures.
-- Prove the per-texel operation can express every mapped output texel, while rejecting unknown fields, code-like operations, invalid coordinates, mask violations, and resource-budget exhaustion.
+- Prove dense surface grids can express every mapped output texel and sparse patches can revise them, while rejecting unknown fields, code-like operations, invalid grid dimensions/indexes, coordinates, mask violations, and resource-budget exhaustion.
 - Only after the offline path gates pass, implement provider adapters for provenance-acceptable, API-accessible managed candidates while keeping provider payloads out of engine documents.
 - Dry-plan the fixed preflight without credentials, network access, billable execution, or provider attempt records.
 - Require explicit user authorization for the named providers, credentials, network use, and USD 5 combined hard ceiling before running the 8-case, compatible 3-path feasibility preflight.

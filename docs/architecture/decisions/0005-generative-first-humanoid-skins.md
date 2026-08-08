@@ -1,6 +1,6 @@
 # ADR 0005: Make humanoid-skin creation generative-first
 
-Status: accepted
+Status: Accepted; provider interpretation refined by ADR 0013
 
 Date: 2026-08-05
 
@@ -15,3 +15,7 @@ A fixed trait customizer cannot express the open-ended patterns, asymmetry, refe
 ## Consequences
 
 The engine must evaluate real, API-accessible preview-to-atlas generation before a provider is integrated. Deterministic validation and repair remain mandatory around every generative output. ADR 0011 keeps GPU and model-serving infrastructure outside the accepted architecture.
+
+## Refined interpretation
+
+ADR 0013 preserves the generative-first and open-ended decision while removing the assumption that an image-producing model must be the sole primary path. Phase 5 compares managed image generation with a managed multimodal LLM authoring dense surface-local pixel grids. Neither path is selected until measured evaluation passes.
